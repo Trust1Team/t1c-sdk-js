@@ -7,7 +7,7 @@ import {UrlUtil} from '../../util/UrlUtil';
 
 export interface Connection {
   get(
-    basePath: string | undefined,
+    basePath: string,
     suffix: string,
     queryParams?: any[],
     headers?: undefined,
