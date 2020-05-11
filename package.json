@@ -1,0 +1,96 @@
+{
+  "name": "t1c-sdk-js",
+  "version": "3.0.0",
+  "description": "Trust1Connector JavaScript SDK",
+  "main": "dist/T1Csdk.js",
+  "types": "dist/lib/index.d.ts",
+  "files": [
+    "build/src"
+  ],
+  "license": "SEE LICENSE IN license.txt",
+  "homepage": "https://github.com/Trust1Team/t1c-sdk-js",
+  "keywords": [],
+  "scripts": {
+    "clean-dist": "shx rm -rf dist",
+    "clean-ts": "shx rm -rf lib lib-esm",
+    "clean-all": "shx rm -rf dist lib lib-esm",
+    "ts": "tsc && tsc -m es6 --outDir lib-esm",
+    "build-all": "npm run clean-all && npm run ts && webpack --mode=none --progress",
+    "build-ts": "npm run clean-ts && npm run ts",
+    "build-dev": "npm run clean-dist && webpack --mode development --progress",
+    "build-prod": "npm run clean-dist && webpack --mode production --progress"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com:Trust1Team/t1c-sdk-js.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/debug": "^4.1.5",
+    "@types/es6-promise": "^3.3.0",
+    "@types/form-data": "^2.5.0",
+    "@types/jest": "^25.2.1",
+    "@types/jwt-decode": "^2.2.1",
+    "@types/moment": "^2.13.0",
+    "@types/node": "^13.11.1",
+    "@types/pkijs": "^0.0.1",
+    "@types/platform": "^1.3.2",
+    "@types/sha256": "^0.2.0",
+    "@types/uuid": "^7.0.3",
+    "asn1js": "^2.0.21",
+    "axios-mock-adapter": "^1.18.1",
+    "babel-core": "^6.26.3",
+    "babel-jest": "^26.0.1",
+    "babel-loader": "^8.1.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babelify": "^10.0.0",
+    "browserify": "^16.5.1",
+    "del": "^5.1.0",
+    "dts-bundle": "^0.7.3",
+    "gts": "^2.0.1",
+    "jest": "^26.0.1",
+    "jest-extended": "^0.11.5",
+    "shx": "^0.3.2",
+    "ts-jest": "^25.5.1",
+    "ts-loader": "^7.0.3",
+    "typescript": "^3.8.3",
+    "uglify-js": "^3.9.2",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "webpack": "^4.43.0",
+    "webpack-bundle-analyzer": "^3.7.0",
+    "webpack-cli": "^3.3.11",
+    "webpack-dev-server": "^3.11.0",
+    "webpack-stream": "^5.2.1"
+  },
+  "dependencies": {
+    "@babel/core": "^7.9.6",
+    "@types/lodash": "^4.14.150",
+    "Base64": "^1.1.0",
+    "axios": "^0.19.2",
+    "jsencrypt": "^3.0.0-rc.1",
+    "lodash": "^4.17.15",
+    "moment": "^2.25.3",
+    "pkijs": "2.0.56",
+    "platform": "^1.3.5",
+    "semver": "^7.3.2",
+    "sha256": "^0.2.0",
+    "store2": "^2.11.1",
+    "uuid": "^8.0.0"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "extends": "./node_modules/gts/tsconfig-google.json",
+  "compilerOptions": {
+    "target": "es5",
+    "module": "commonjs",
+    "declaration": true,
+    "diagnostics": true,
+    "removeComments": true,
+    "sourceMap": true,
+    "typeRoots": ["node_modules/@types"],
+    "lib": [ "es2015", "dom"],
+    "outDir": "lib",
+    "moduleResolution": "node",
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": false
+  },
+  "compileOnSave": false,
+  "exclude": [
+    "node_modules"
+  ],
+  "files": [
+    "src/scripts/core/T1CSdk.ts",
+    "src/scripts/core/T1CConfig.ts"
+  ]
+}
