@@ -14,7 +14,7 @@ var __extends = (this && this.__extends) || (function () {
 import axios from 'axios';
 import { T1CLibException } from '../exceptions/CoreExceptions';
 import * as store from 'store2';
-import { UrlUtil } from "../../util/UrlUtil";
+import { UrlUtil } from '../../util/UrlUtil';
 var GenericConnection = (function () {
     function GenericConnection(cfg) {
         this.cfg = cfg;

@@ -1,6 +1,6 @@
 import { T1CConfig } from '../T1CConfig';
 import { T1CLibException } from '../exceptions/CoreExceptions';
-import { DataArrayResponse } from "../../..";
+import { DataArrayResponse, SingleReaderResponse } from '../../..';
 export interface Connection {
     get(basePath: string | undefined, suffix: string, queryParams?: any[], headers?: undefined, callback?: ((error: T1CLibException, data: DataArrayResponse) => void) | undefined): Promise<any>;
     post(basePath: string, suffix: string, body: RequestBody, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any>;
@@ -35,7 +35,7 @@ export declare abstract class GenericConnection implements Connection {
     constructor(cfg: T1CConfig);
     private static disabledWithoutApiKey;
     private static extractAccessToken;
-    get(basePath: string, suffix: string, queryParams?: any[], headers?: RequestHeaders | undefined, callback?: ((error: T1CLibException, data: DataArrayResponse) => void) | undefined): Promise<any>;
+    get(basePath: string, suffix: string, queryParams?: any[], headers?: any, callback?: ((error: T1CLibException, data: DataArrayResponse) => void) | ((error: T1CLibException, data: SingleReaderResponse) => void) | undefined): Promise<any>;
     post(basePath: string, suffix: string, body: RequestBody, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any>;
     put(basePath: string, suffix: string, body: RequestBody, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any>;
     delete(basePath: string, suffix: string, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any>;

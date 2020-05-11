@@ -1,5 +1,5 @@
 import * as platform from 'platform';
-import { CheckGclVersion, CheckGclVersionResponse } from './CoreModel';
+import { CheckGclVersion, CheckGclVersionResponse, } from './CoreModel';
 import { T1CLibException } from '../exceptions/CoreExceptions';
 var CORE_CONSENT = '/consent';
 var CORE_INFO = '/';
@@ -21,17 +21,18 @@ var CoreService = (function () {
             data: {
                 manufacturer: platform.manufacturer || '',
                 browser: {
-                    name: platform.name ? platform.name : "unknown",
-                    version: platform.version ? platform.version : "unknown"
+                    name: platform.name ? platform.name : 'unknown',
+                    version: platform.version ? platform.version : 'unknown',
                 },
                 os: {
-                    name: ((_a = platform.os) === null || _a === void 0 ? void 0 : _a.family) ? (_b = platform.os) === null || _b === void 0 ? void 0 : _b.family : "unknown",
-                    version: ((_c = platform.os) === null || _c === void 0 ? void 0 : _c.version) ? (_d = platform.os) === null || _d === void 0 ? void 0 : _d.version : "unknown",
-                    architecture: ((_e = platform.os) === null || _e === void 0 ? void 0 : _e.architecture) ? platform.os.architecture.toString() : "unknown"
+                    name: ((_a = platform.os) === null || _a === void 0 ? void 0 : _a.family) ? (_b = platform.os) === null || _b === void 0 ? void 0 : _b.family : 'unknown',
+                    version: ((_c = platform.os) === null || _c === void 0 ? void 0 : _c.version) ? (_d = platform.os) === null || _d === void 0 ? void 0 : _d.version : 'unknown',
+                    architecture: ((_e = platform.os) === null || _e === void 0 ? void 0 : _e.architecture) ? platform.os.architecture.toString()
+                        : 'unknown',
                 },
-                ua: platform.ua ? platform.ua : "unknown"
+                ua: platform.ua ? platform.ua : 'unknown',
             },
-            success: true
+            success: true,
         };
     };
     CoreService.prototype.getConsent = function (title, codeWord, durationInDays, alertLevel, alertPosition, type, timeoutInSeconds, callback) {
@@ -43,7 +44,15 @@ var CoreService = (function () {
         if (timeoutInSeconds) {
             timeout = timeoutInSeconds;
         }
-        return this.connection.post(this.url, CORE_CONSENT, { title: title, text: codeWord, days: days, alert_level: alertLevel, alert_position: alertPosition, type: type, timeout: timeout }, undefined, undefined, callback);
+        return this.connection.post(this.url, CORE_CONSENT, {
+            title: title,
+            text: codeWord,
+            days: days,
+            alert_level: alertLevel,
+            alert_position: alertPosition,
+            type: type,
+            timeout: timeout,
+        }, undefined, undefined, callback);
     };
     CoreService.prototype.getImplicitConsent = function (codeWord, durationInDays, type, callback) {
         var days = this.connection.cfg.defaultConsentDuration;
@@ -107,10 +116,10 @@ var CoreService = (function () {
         return this.connection.get(this.url, CORE_READERS, undefined, undefined, callback);
     };
     CoreService.prototype.readersCardAvailable = function (callback) {
-        return this.connection.get(this.url, CORE_READERS, CoreService.cardInsertedFilter(true), undefined, callback);
+        return this.connection.get(this.url, CORE_READERS, [CoreService.cardInsertedFilter(true)], undefined, callback);
     };
     CoreService.prototype.readersCardsUnavailable = function (callback) {
-        return this.connection.get(this.url, CORE_READERS, CoreService.cardInsertedFilter(false), undefined, callback);
+        return this.connection.get(this.url, CORE_READERS, [CoreService.cardInsertedFilter(false)], undefined, callback);
     };
     CoreService.prototype.infoBrowserSync = function () {
         return CoreService.platformInfo();
@@ -120,7 +129,10 @@ var CoreService = (function () {
     };
     CoreService.prototype.checkGclVersion = function (client, gclVersion) {
         return new Promise(function (resolve, reject) {
-            client.core().info().then(function (infoResponse) {
+            client
+                .core()
+                .info()
+                .then(function (infoResponse) {
                 var installedGclVersion = semver.coerce(infoResponse.data.version);
                 var outdated = false;
                 if (gclVersion) {

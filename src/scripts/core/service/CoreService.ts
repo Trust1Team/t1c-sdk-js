@@ -361,7 +361,6 @@ export class CoreService implements AbstractCore {
     reader_id: string,
     callback?: (error: T1CLibException, data: SingleReaderResponse) => void
   ): Promise<SingleReaderResponse> {
-    // @ts-ignore
     return this.connection.get(
       this.url,
       CORE_READERS + '/' + reader_id,
@@ -386,11 +385,10 @@ export class CoreService implements AbstractCore {
   public readersCardAvailable(
     callback?: (error: T1CLibException, data: CardReadersResponse) => void
   ): Promise<CardReadersResponse> {
-    // @ts-ignore
     return this.connection.get(
       this.url,
       CORE_READERS,
-      CoreService.cardInsertedFilter(true),
+      [CoreService.cardInsertedFilter(true)],
       undefined,
       callback
     );
@@ -399,11 +397,10 @@ export class CoreService implements AbstractCore {
   public readersCardsUnavailable(
     callback?: (error: T1CLibException, data: CardReadersResponse) => void
   ): Promise<CardReadersResponse> {
-    // @ts-ignore
     return this.connection.get(
       this.url,
       CORE_READERS,
-      CoreService.cardInsertedFilter(false),
+      [CoreService.cardInsertedFilter(false)],
       undefined,
       callback
     );

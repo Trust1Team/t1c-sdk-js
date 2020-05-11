@@ -20,12 +20,12 @@ var GCLConfigOptions = (function () {
 export { GCLConfigOptions };
 var T1CConfig = (function () {
     function T1CConfig(options) {
-        this._gwUrl = "https://apim.t1t.be";
-        this._gclUrl = "https://t1c.t1t.io";
-        this._dsContextPath = "";
-        this._apiKey = "PROVIDE APIKEY";
-        this._gwJwt = "PROVIDE DS JWT";
-        this._gclJwt = "PROVIDE GCL JWT";
+        this._gwUrl = 'https://apim.t1t.be';
+        this._gclUrl = 'https://t1c.t1t.io';
+        this._dsContextPath = '';
+        this._apiKey = 'PROVIDE APIKEY';
+        this._gwJwt = 'PROVIDE DS JWT';
+        this._gclJwt = 'PROVIDE GCL JWT';
         this._citrix = false;
         this._agentPort = -1;
         this._forceHardwarePinpad = false;
@@ -34,10 +34,10 @@ var T1CConfig = (function () {
         this._defaultConsentDuration = 1;
         this._defaultConsentTimeout = 10;
         this._osPinDialog = false;
-        this._contextToken = "";
-        this._lang = "en";
-        this._gclDownloadLink = "";
-        this._gclVersion = "NOT SPECIFIED";
+        this._contextToken = '';
+        this._lang = 'en';
+        this._gclDownloadLink = '';
+        this._gclVersion = 'NOT SPECIFIED';
         if (options) {
             if (options.gclVersion) {
                 this.gclVersion = options.gclVersion;
@@ -86,103 +86,169 @@ var T1CConfig = (function () {
         }
     }
     Object.defineProperty(T1CConfig.prototype, "gclUrl", {
-        get: function () { return this._gclUrl; },
-        set: function (value) { this._gclUrl = value; },
+        get: function () {
+            return this._gclUrl;
+        },
+        set: function (value) {
+            this._gclUrl = value;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "dsUrl", {
-        get: function () { return this.gwUrl + this.dsContextPath; },
+        get: function () {
+            return this.gwUrl + this.dsContextPath;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "dsContextPath", {
-        get: function () { return this._dsContextPath; },
-        set: function (value) { this._dsContextPath = value; },
+        get: function () {
+            return this._dsContextPath;
+        },
+        set: function (value) {
+            this._dsContextPath = value;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "apiKey", {
-        get: function () { return this._apiKey; },
-        set: function (value) { this._apiKey = value; },
+        get: function () {
+            return this._apiKey;
+        },
+        set: function (value) {
+            this._apiKey = value;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "citrix", {
-        get: function () { return this._citrix; },
-        set: function (value) { this._citrix = value; },
+        get: function () {
+            return this._citrix;
+        },
+        set: function (value) {
+            this._citrix = value;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "agentPort", {
-        get: function () { return this._agentPort; },
-        set: function (value) { this._agentPort = value; },
+        get: function () {
+            return this._agentPort;
+        },
+        set: function (value) {
+            this._agentPort = value;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "gwUrl", {
-        get: function () { return this._gwUrl; },
-        set: function (value) { this._gwUrl = value; },
+        get: function () {
+            return this._gwUrl;
+        },
+        set: function (value) {
+            this._gwUrl = value;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "forceHardwarePinpad", {
-        get: function () { return this._forceHardwarePinpad; },
-        set: function (value) { this._forceHardwarePinpad = value; },
+        get: function () {
+            return this._forceHardwarePinpad;
+        },
+        set: function (value) {
+            this._forceHardwarePinpad = value;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "tokenCompatible", {
-        get: function () { return this._tokenCompatible; },
-        set: function (value) { this._tokenCompatible = value; },
+        get: function () {
+            return this._tokenCompatible;
+        },
+        set: function (value) {
+            this._tokenCompatible = value;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "defaultConsentDuration", {
-        get: function () { return this._defaultConsentDuration; },
-        set: function (value) { this._defaultConsentDuration = value; },
+        get: function () {
+            return this._defaultConsentDuration;
+        },
+        set: function (value) {
+            this._defaultConsentDuration = value;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "defaultConsentTimeout", {
-        get: function () { return this._defaultConsentTimeout; },
-        set: function (value) { this._defaultConsentTimeout = value; },
+        get: function () {
+            return this._defaultConsentTimeout;
+        },
+        set: function (value) {
+            this._defaultConsentTimeout = value;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "osPinDialog", {
-        get: function () { return this._osPinDialog; },
-        set: function (value) { this._osPinDialog = value; },
+        get: function () {
+            return this._osPinDialog;
+        },
+        set: function (value) {
+            this._osPinDialog = value;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "contextToken", {
-        get: function () { return this._contextToken; },
-        set: function (value) { this._contextToken = value; },
+        get: function () {
+            return this._contextToken;
+        },
+        set: function (value) {
+            this._contextToken = value;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "gclJwt", {
-        get: function () { return this._gclJwt; },
-        set: function (value) { this._gclJwt = value; },
+        get: function () {
+            return this._gclJwt;
+        },
+        set: function (value) {
+            this._gclJwt = value;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "lang", {
-        get: function () { return this._lang; },
-        set: function (value) { this._lang = value; },
+        get: function () {
+            return this._lang;
+        },
+        set: function (value) {
+            this._lang = value;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "gclDownloadLink", {
-        get: function () { return this._gclDownloadLink; },
-        set: function (value) { this._gclDownloadLink = value; },
+        get: function () {
+            return this._gclDownloadLink;
+        },
+        set: function (value) {
+            this._gclDownloadLink = value;
+        },
         enumerable: true,
         configurable: true
     });
     Object.defineProperty(T1CConfig.prototype, "gclVersion", {
-        get: function () { return this._gclVersion; },
-        set: function (value) { this._gclVersion = value; },
+        get: function () {
+            return this._gclVersion;
+        },
+        set: function (value) {
+            this._gclVersion = value;
+        },
         enumerable: true,
         configurable: true
     });

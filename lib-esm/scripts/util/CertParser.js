@@ -1,71 +1,9 @@
 import * as asn1js from 'asn1js';
 import * as Base64 from 'Base64';
-import { T1CCertificate } from '../core/service/CoreModel';
-import Certificate from 'pkijs/build/Certificate';
+import Certificate from 'pkijs/src/Certificate';
 var CertParser = (function () {
     function CertParser() {
     }
-    CertParser.process = function (response, parseCerts, callback) {
-        if (response &&
-            response.data &&
-            typeof response.data === 'object' &&
-            !Array.isArray(response.data)) {
-            var _loop_1 = function (key) {
-                var value = response.data[key];
-                if (key.indexOf('certificate') > -1) {
-                    if (typeof value === 'string') {
-                        response.data[key] = { base64: value };
-                        CertParser.setParsed(response.data[key], value, parseCerts);
-                    }
-                    else if (Array.isArray(value)) {
-                        var newData_1 = [];
-                        value.forEach(function (certificate) {
-                            var cert = new T1CCertificate(certificate);
-                            CertParser.setParsed(cert, certificate, parseCerts);
-                            newData_1.push(cert);
-                        });
-                        response.data[key] = newData_1;
-                    }
-                    else if (typeof value === 'object') {
-                        response.data[key] = { base64: value.base64 };
-                        if (value.id) {
-                            response.data[key].id = value.id;
-                        }
-                        if (parseCerts) {
-                            response.data[key].parsed = CertParser.processCert(value.base64);
-                        }
-                    }
-                }
-            };
-            for (var key in response.data) {
-                _loop_1(key);
-            }
-        }
-        else {
-            if (Array.isArray(response.data)) {
-                var newData_2 = [];
-                response.data.forEach(function (certificate) {
-                    if (typeof certificate === 'string') {
-                        var cert = new T1CCertificate(certificate);
-                        CertParser.setParsed(cert, certificate, parseCerts);
-                        newData_2.push(cert);
-                    }
-                    else {
-                        var cert = new T1CCertificate(certificate.base64, certificate.id);
-                        CertParser.setParsed(cert, certificate.base64, parseCerts);
-                        newData_2.push(cert);
-                    }
-                });
-                response.data = newData_2;
-            }
-            else {
-                var cert = new T1CCertificate(response.data);
-                CertParser.setParsed(cert, response.data, parseCerts);
-                response.data = cert;
-            }
-        }
-        return ResponseHandler.response(response, callback);
-    };
     CertParser.processCert = function (certificate) {
         var rawCert = Base64.atob(certificate);
         var buffer = CertParser.str2ab(rawCert);

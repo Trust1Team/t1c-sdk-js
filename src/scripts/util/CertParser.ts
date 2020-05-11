@@ -2,7 +2,7 @@ import * as asn1js from 'asn1js';
 import * as Base64 from 'Base64';
 import {T1CLibException} from '../core/exceptions/CoreExceptions';
 import {T1CCertificate, T1CResponse} from '../core/service/CoreModel';
-import Certificate from 'pkijs/build/Certificate';
+import Certificate from 'pkijs/src/Certificate';
 
 export class CertParser {
   /*  public static process(
