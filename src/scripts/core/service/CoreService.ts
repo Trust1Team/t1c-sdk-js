@@ -415,7 +415,7 @@ export class CoreService implements AbstractCore {
     return this.url;
   }
 
-  public checkGclVersion(
+  public checkT1cApiVersion(
     client: T1CClient,
     gclVersion?: string
   ): Promise<CheckGclVersionResponse> {
@@ -432,10 +432,10 @@ export class CoreService implements AbstractCore {
             if (gclVersion) {
               outdated = semver.ltr(installedGclVersion, gclVersion);
             } else {
-              if (client.config().gclVersion) {
+              if (client.config().t1cVersion) {
                 outdated = semver.ltr(
                   installedGclVersion,
-                  client.config().gclVersion
+                  client.config().t1cVersion
                 );
               } else {
                 reject(
@@ -454,7 +454,7 @@ export class CoreService implements AbstractCore {
                 new CheckGclVersionResponse(
                   new CheckGclVersion(
                     outdated,
-                    client.config().gclDownloadLink
+                    client.config().t1cDownloadLink
                   ),
                   true
                 )

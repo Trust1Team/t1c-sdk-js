@@ -5,70 +5,23 @@ import * as pkijs from 'pkijs';
 
 export interface AbstractCore {
   // async
-  getConsent(
-    title: string,
-    codeWord: string,
-    durationInDays?: number,
-    alertLevel?: string,
-    alertPosition?: string,
-    type?: string,
-    timeoutInSeconds?: number,
-    callback?: (error: T1CLibException, data: BoolDataResponse) => void
-  ): Promise<BoolDataResponse>;
-  getImplicitConsent(
-    codeWord: string,
-    durationInDays?: number,
-    type?: string,
-    callback?: (error: T1CLibException, data: BoolDataResponse) => void
-  ): Promise<BoolDataResponse>;
-  info(
-    callback?: (error: T1CLibException, data: InfoResponse) => void
-  ): void | Promise<InfoResponse>;
-  infoBrowser(
-    callback?: (error: T1CLibException | undefined, data: BrowserInfoResponse) => void
-  ): Promise<BrowserInfoResponse> | undefined;
-  pollCardInserted(
-    secondsToPollCard?: number,
-    callback?: (error: T1CLibException, data: CardReader) => void,
-    connectReader?: () => void,
-    insertCard?: () => void,
-    cardTimeout?: () => void
-  ): Promise<CardReader>;
-  pollReadersWithCards(
-    secondsToPollCard?: number,
-    callback?: (error: T1CLibException, data: CardReadersResponse) => void,
-    connectReader?: () => void,
-    insertCard?: () => void,
-    cardTimeout?: () => void
-  ): Promise<CardReadersResponse>;
-  pollReaders(
-    secondsToPollReader?: number,
-    callback?: (error: T1CLibException, data: CardReadersResponse) => void,
-    connectReader?: () => void,
-    readerTimeout?: () => void
-  ): Promise<CardReadersResponse>;
-  reader(
-    reader_id: string,
-    callback?: (error: T1CLibException, data: SingleReaderResponse) => void
-  ): Promise<SingleReaderResponse>;
-  readers(
-    callback?: (error: T1CLibException, data: CardReadersResponse) => void
-  ): Promise<CardReadersResponse>;
-  readersCardAvailable(
-    callback?: (error: T1CLibException, data: CardReadersResponse) => void
-  ): Promise<CardReadersResponse>;
-  readersCardsUnavailable(
-    callback?: (error: T1CLibException, data: CardReadersResponse) => void
-  ): Promise<CardReadersResponse>;
+  getConsent(title: string, codeWord: string, durationInDays?: number, alertLevel?: string, alertPosition?: string, type?: string, timeoutInSeconds?: number, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
+  getImplicitConsent(codeWord: string, durationInDays?: number, type?: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
+  info(callback?: (error: T1CLibException, data: InfoResponse) => void): void | Promise<InfoResponse>;
+  infoBrowser(callback?: (error: T1CLibException | undefined, data: BrowserInfoResponse) => void): Promise<BrowserInfoResponse> | undefined;
+  pollCardInserted(secondsToPollCard?: number, callback?: (error: T1CLibException, data: CardReader) => void, connectReader?: () => void, insertCard?: () => void, cardTimeout?: () => void): Promise<CardReader>;
+  pollReadersWithCards(secondsToPollCard?: number, callback?: (error: T1CLibException, data: CardReadersResponse) => void, connectReader?: () => void, insertCard?: () => void, cardTimeout?: () => void): Promise<CardReadersResponse>;
+  pollReaders(secondsToPollReader?: number, callback?: (error: T1CLibException, data: CardReadersResponse) => void, connectReader?: () => void, readerTimeout?: () => void): Promise<CardReadersResponse>;
+  reader(reader_id: string, callback?: (error: T1CLibException, data: SingleReaderResponse) => void): Promise<SingleReaderResponse>;
+  readers(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
+  readersCardAvailable(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
+  readersCardsUnavailable(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
 
   // sync
   getUrl(): string;
   infoBrowserSync(): BrowserInfoResponse;
 
-  checkGclVersion(
-    client: T1CClient,
-    gclVersion?: string
-  ): Promise<CheckGclVersionResponse>;
+  checkT1cApiVersion(client: T1CClient, gclVersion?: string): Promise<CheckGclVersionResponse>;
 
   // t1c-lib-info
   version(): Promise<string>;

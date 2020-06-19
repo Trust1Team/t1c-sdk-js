@@ -24,6 +24,10 @@ We're present on Gitter in the following room:
 [Trust1Connector-gitter]
 
 ## Development
+Verify the dependencies, actual vs new versions
+```shell script
+npm outdated
+```
 To build the library locally
 ```bash
 yarn build-dev

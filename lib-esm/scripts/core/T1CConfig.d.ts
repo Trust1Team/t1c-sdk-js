@@ -1,5 +1,7 @@
 export declare class GCLConfigOptions {
-    gclUrl?: string | undefined;
+    t1cApiUrl?: string | undefined;
+    t1cApiPort?: string | undefined;
+    t1cRpcPort?: string | undefined;
     gwOrProxyUrl?: string | undefined;
     apiKey?: string | undefined;
     gwJwt?: string | undefined;
@@ -13,11 +15,11 @@ export declare class GCLConfigOptions {
     lang?: string | undefined;
     gclDownloadLink?: string | undefined;
     gclVersion?: string | undefined;
-    constructor(gclUrl?: string | undefined, gwOrProxyUrl?: string | undefined, apiKey?: string | undefined, gwJwt?: string | undefined, dsContextPath?: string | undefined, agentPort?: number | undefined, forceHardwarePinpad?: boolean | undefined, sessionTimeout?: number | undefined, consentDuration?: number | undefined, consentTimeout?: number | undefined, osPinDialog?: boolean | undefined, lang?: string | undefined, gclDownloadLink?: string | undefined, gclVersion?: string | undefined);
+    constructor(t1cApiUrl?: string | undefined, t1cApiPort?: string | undefined, t1cRpcPort?: string | undefined, gwOrProxyUrl?: string | undefined, apiKey?: string | undefined, gwJwt?: string | undefined, dsContextPath?: string | undefined, agentPort?: number | undefined, forceHardwarePinpad?: boolean | undefined, sessionTimeout?: number | undefined, consentDuration?: number | undefined, consentTimeout?: number | undefined, osPinDialog?: boolean | undefined, lang?: string | undefined, gclDownloadLink?: string | undefined, gclVersion?: string | undefined);
 }
 export declare class T1CConfig {
     private _gwUrl;
-    private _gclUrl;
+    private _t1cApiUrl;
     private _dsContextPath;
     private _apiKey;
     private _gwJwt;
@@ -35,8 +37,8 @@ export declare class T1CConfig {
     private _gclDownloadLink;
     private _gclVersion;
     constructor(options: GCLConfigOptions);
-    get gclUrl(): string;
-    set gclUrl(value: string);
+    get t1cApiUrl(): string;
+    set t1cApiUrl(value: string);
     get dsUrl(): string;
     get dsContextPath(): string;
     set dsContextPath(value: string);

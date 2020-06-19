@@ -61,7 +61,7 @@ export interface RequestCallback {
 
 export interface SecurityConfig {
   sendGwJwt: boolean;
-  sendGclJwt: boolean;
+  sendT1CJwt: boolean;
   sendApiKey: boolean;
   sendToken: boolean;
   skipCitrixCheck: boolean;
@@ -100,7 +100,7 @@ export abstract class GenericConnection implements Connection {
 
   /**
    * Checks headers for an "access_token" header. This header is used by the DS to send the client JWT.
-   * If found, the value is saved as GCL JWT.
+   * If found, the value is saved as T1C JWT.
    * @param {RequestHeaders} headers
    * @param {T1CConfig} config
    */
@@ -109,7 +109,7 @@ export abstract class GenericConnection implements Connection {
     config: T1CConfig
   ) {
     if (headers && headers.access_token) {
-      config.gclJwt = headers.access_token;
+      config.t1cJwt = headers.access_token;
     }
   }
 
@@ -260,7 +260,7 @@ export abstract class GenericConnection implements Connection {
   getSecurityConfig(): SecurityConfig {
     return {
       sendGwJwt: true,
-      sendGclJwt: false,
+      sendT1CJwt: false,
       sendApiKey: true,
       sendToken: true,
       skipCitrixCheck: false,
@@ -323,8 +323,8 @@ export abstract class GenericConnection implements Connection {
       if (securityConfig.sendApiKey) {
         config.headers.apikey = gclConfig.apiKey;
       }
-      if (securityConfig.sendGclJwt) {
-        config.headers.Authorization = 'Bearer ' + gclConfig.gclJwt;
+      if (securityConfig.sendT1CJwt) {
+        config.headers.Authorization = 'Bearer ' + gclConfig.t1cJwt;
       }
       // browser fingerprinting
       /*            if (gclConfig.tokenCompatible && securityConfig.sendToken) {
@@ -335,7 +335,7 @@ export abstract class GenericConnection implements Connection {
       return new Promise((resolve, reject) => {
         let securityPromise;
         if (securityConfig.sendGwJwt) {
-          securityPromise = gclConfig.gclJwt;
+          securityPromise = gclConfig.t1cJwt;
         } else {
           securityPromise = Promise.resolve('');
         }
@@ -502,7 +502,7 @@ export class LocalAdminConnection extends GenericConnection
   getSecurityConfig(): SecurityConfig {
     return {
       sendGwJwt: false,
-      sendGclJwt: false,
+      sendT1CJwt: false,
       sendApiKey: false,
       sendToken: true,
       skipCitrixCheck: true,
@@ -522,7 +522,7 @@ export class LocalAuthAdminConnection extends GenericConnection
   getRequestHeaders(headers: RequestHeaders): RequestHeaders {
     const reqHeaders: RequestHeaders = super.getRequestHeaders(headers);
     //reqHeaders[GenericConnection.HEADER_GCL_LANG] = this.cfg.lang;
-    reqHeaders.Authorization = 'Bearer ' + this.cfg.gclJwt;
+    reqHeaders.Authorization = 'Bearer ' + this.cfg.t1cJwt;
     /*        if (this.cfg.tokenCompatible && this.getSecurityConfig().sendToken) {
                         reqHeaders[
                             GenericConnection.AUTH_TOKEN_HEADER
@@ -534,7 +534,7 @@ export class LocalAuthAdminConnection extends GenericConnection
   getSecurityConfig(): SecurityConfig {
     return {
       sendGwJwt: false,
-      sendGclJwt: true,
+      sendT1CJwt: true,
       sendApiKey: false,
       sendToken: true,
       skipCitrixCheck: true,
@@ -606,7 +606,7 @@ export class LocalAuthConnection extends GenericConnection
   getRequestHeaders(headers?: RequestHeaders): RequestHeaders {
     const reqHeaders = super.getRequestHeaders(headers);
     //reqHeaders[GenericConnection.HEADER_GCL_LANG] = this.cfg.lang;
-    reqHeaders.Authorization = 'Bearer ' + this.cfg.gclJwt;
+    reqHeaders.Authorization = 'Bearer ' + this.cfg.t1cJwt;
     /*        if (this.cfg.tokenCompatible && this.getSecurityConfig().sendToken) {
                         reqHeaders[
                             GenericConnection.AUTH_TOKEN_HEADER
@@ -618,7 +618,7 @@ export class LocalAuthConnection extends GenericConnection
   getSecurityConfig(): SecurityConfig {
     return {
       sendGwJwt: false,
-      sendGclJwt: true,
+      sendT1CJwt: true,
       sendApiKey: false,
       sendToken: true,
       skipCitrixCheck: false,
@@ -759,7 +759,7 @@ export class LocalConnection extends GenericConnection implements Connection {
   getSecurityConfig(): SecurityConfig {
     return {
       sendGwJwt: false,
-      sendGclJwt: false,
+      sendT1CJwt: false,
       sendApiKey: false,
       sendToken: true,
       skipCitrixCheck: false,
@@ -961,7 +961,7 @@ export class RemoteApiKeyConnection extends GenericConnection
   getSecurityConfig(): SecurityConfig {
     return {
       sendGwJwt: false,
-      sendGclJwt: false,
+      sendT1CJwt: false,
       sendApiKey: true,
       sendToken: false,
       skipCitrixCheck: true,
@@ -981,7 +981,7 @@ export class RemoteJwtConnection extends GenericConnection
   getSecurityConfig(): SecurityConfig {
     return {
       sendGwJwt: true,
-      sendGclJwt: false,
+      sendT1CJwt: false,
       sendApiKey: false,
       sendToken: false,
       skipCitrixCheck: true,
@@ -1133,8 +1133,8 @@ export class LocalTestConnection extends GenericConnection
       if (params) {
         config.params = params;
       }
-      if (gclConfig.gclJwt) {
-        config.headers.Authorization = 'Bearer ' + gclConfig.gclJwt;
+      if (gclConfig.t1cJwt) {
+        config.headers.Authorization = 'Bearer ' + gclConfig.t1cJwt;
       }
 
       return new Promise((resolve, reject) => {

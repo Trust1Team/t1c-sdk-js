@@ -14,7 +14,7 @@ export interface AbstractCore {
     readersCardsUnavailable(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
     getUrl(): string;
     infoBrowserSync(): BrowserInfoResponse;
-    checkGclVersion(client: T1CClient, gclVersion?: string): Promise<CheckGclVersionResponse>;
+    checkT1cApiVersion(client: T1CClient, gclVersion?: string): Promise<CheckGclVersionResponse>;
     version(): Promise<string>;
 }
 export declare class T1CResponse {

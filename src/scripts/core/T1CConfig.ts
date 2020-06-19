@@ -4,10 +4,12 @@ import * as moment from 'moment';
 import {T1CLibException} from './exceptions/CoreExceptions';
 import {T1CContainerid} from './service/CoreModel';
 
-export class GCLConfigOptions {
+export class T1CConfigOptions {
   constructor(
-    public gclUrl?: string,
-    public gwOrProxyUrl?: string,
+    public t1cApiUrl?: string,
+    public t1cApiPort?: string,
+    public t1cRpcPort?: string,
+    public dsUrl?: string,
     public apiKey?: string,
     public gwJwt?: string,
     public dsContextPath?: string,
@@ -18,8 +20,8 @@ export class GCLConfigOptions {
     public consentTimeout?: number,
     public osPinDialog?: boolean,
     public lang?: string,
-    public gclDownloadLink?: string,
-    public gclVersion?: string
+    public t1cDownloadLink?: string,
+    public t1cVersion?: string
   ) {}
 }
 
@@ -28,39 +30,47 @@ export class GCLConfigOptions {
  * Most settings are configurable by the user; some are set by the library itself.
  */
 export class T1CConfig {
-  private _gwUrl = 'https://apim.t1t.be';
-  private _gclUrl = 'https://t1c.t1t.io';
+  private _dsUrl = 'https://apim.t1t.be';
+  private _t1cApiUrl = 'https://t1c.t1t.io';
+  private _t1cApiPort = '51983';
+  private _t1cRpcPort = '50051';
   private _dsContextPath = '';
   private _apiKey = 'PROVIDE APIKEY';
   private _gwJwt = 'PROVIDE DS JWT';
-  private _gclJwt = 'PROVIDE GCL JWT';
+  private _t1cJwt = 'PROVIDE GCL JWT';
   private _citrix = false;
   private _agentPort = -1;
   private _forceHardwarePinpad = false;
   private _defaultSessionTimeout = 5;
   private _tokenCompatible = true;
   private _defaultConsentDuration = 1; //TODO specify unit
-  private _defaultConsentTimeout = 10; //TODO specifi unit
+  private _defaultConsentTimeout = 10; //TODO specify unit
   private _osPinDialog = false;
   private _contextToken = '';
   private _lang = 'en';
-  private _gclDownloadLink = '';
-  private _gclVersion = 'NOT SPECIFIED';
+  private _t1cDownloadLink = '';
+  private _t1cVersion = 'NOT SPECIFIED';
 
   // constructor for DTO
-  public constructor(options: GCLConfigOptions) {
+  public constructor(options: T1CConfigOptions) {
     if (options) {
-      if (options.gclVersion) {
-        this.gclVersion = options.gclVersion;
+      if (options.t1cVersion) {
+        this._t1cVersion = options.t1cVersion;
       }
-      if (options.gclUrl) {
-        this._gclUrl = options.gclUrl;
+      if (options.t1cApiUrl) {
+        this._t1cApiUrl = options.t1cApiUrl;
       }
-      if (options.gclDownloadLink) {
-        this._gclDownloadLink = options.gclDownloadLink;
+      if (options.t1cApiPort) {
+        this._t1cApiPort = options.t1cApiPort;
       }
-      if (options.gwOrProxyUrl) {
-        this._gwUrl = options.gwOrProxyUrl;
+      if (options.t1cRpcPort) {
+        this._t1cRpcPort = options.t1cRpcPort;
+      }
+      if (options.t1cDownloadLink) {
+        this._t1cDownloadLink = options.t1cDownloadLink;
+      }
+      if (options.dsUrl) {
+        this._dsUrl = options.dsUrl;
       }
       if (options.apiKey) {
         this._apiKey = options.apiKey;
@@ -93,7 +103,7 @@ export class T1CConfig {
       }
 
       // resolve DS context path
-      if (this.gwUrl) {
+      if (this.dsUrl) {
         if (options.dsContextPath) {
           this._dsContextPath = options.dsContextPath;
         }
@@ -101,14 +111,14 @@ export class T1CConfig {
     }
   }
 
-  get gclUrl(): string {
-    return this._gclUrl;
+  get t1cApiUrl(): string {
+    return this._t1cApiUrl;
   }
-  set gclUrl(value: string) {
-    this._gclUrl = value;
+  set t1cApiUrl(value: string) {
+    this._t1cApiUrl = value;
   }
   get dsUrl(): string {
-    return this.gwUrl + this.dsContextPath;
+    return this._dsUrl + this._dsContextPath;
   }
 
   get dsContextPath(): string {
@@ -139,11 +149,8 @@ export class T1CConfig {
     this._agentPort = value;
   }
 
-  get gwUrl(): string {
-    return this._gwUrl;
-  }
-  set gwUrl(value: string) {
-    this._gwUrl = value;
+  set dsUrl(value: string) {
+    this._dsUrl = value;
   }
 
   get forceHardwarePinpad(): boolean {
@@ -188,11 +195,11 @@ export class T1CConfig {
     this._contextToken = value;
   }
 
-  get gclJwt(): string {
-    return this._gclJwt;
+  get t1cJwt(): string {
+    return this._t1cJwt;
   }
-  set gclJwt(value: string) {
-    this._gclJwt = value;
+  set t1cJwt(value: string) {
+    this._t1cJwt = value;
   }
 
   get lang(): string {
@@ -202,17 +209,17 @@ export class T1CConfig {
     this._lang = value;
   }
 
-  get gclDownloadLink(): string {
-    return this._gclDownloadLink;
+  get t1cDownloadLink(): string {
+    return this._t1cDownloadLink;
   }
-  set gclDownloadLink(value: string) {
-    this._gclDownloadLink = value;
+  set t1cDownloadLink(value: string) {
+    this._t1cDownloadLink = value;
   }
 
-  get gclVersion(): string {
-    return this._gclVersion;
+  get t1cVersion(): string {
+    return this._t1cVersion;
   }
-  set gclVersion(value: string) {
-    this._gclVersion = value;
+  set t1cVersion(value: string) {
+    this._t1cVersion = value;
   }
 }

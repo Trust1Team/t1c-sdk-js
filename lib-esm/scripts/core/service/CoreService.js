@@ -127,7 +127,7 @@ var CoreService = (function () {
     CoreService.prototype.getUrl = function () {
         return this.url;
     };
-    CoreService.prototype.checkGclVersion = function (client, gclVersion) {
+    CoreService.prototype.checkT1cApiVersion = function (client, gclVersion) {
         return new Promise(function (resolve, reject) {
             client
                 .core()
@@ -139,15 +139,15 @@ var CoreService = (function () {
                     outdated = semver.ltr(installedGclVersion, gclVersion);
                 }
                 else {
-                    if (client.config().gclVersion) {
-                        outdated = semver.ltr(installedGclVersion, client.config().gclVersion);
+                    if (client.config().t1cVersion) {
+                        outdated = semver.ltr(installedGclVersion, client.config().t1cVersion);
                     }
                     else {
                         reject(new T1CLibException(412, '701', 'No version to check against was provided', client));
                     }
                 }
                 if (outdated === true) {
-                    resolve(new CheckGclVersionResponse(new CheckGclVersion(outdated, client.config().gclDownloadLink), true));
+                    resolve(new CheckGclVersionResponse(new CheckGclVersion(outdated, client.config().t1cDownloadLink), true));
                 }
                 else {
                     resolve(new CheckGclVersionResponse(new CheckGclVersion(outdated), true));

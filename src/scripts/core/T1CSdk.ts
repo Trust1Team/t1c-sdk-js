@@ -26,7 +26,7 @@ import {DSException} from './exceptions/DSException';
 
 // check if any polyfills are needed
 const defaults = {
-  gclUrl: 'https://localhost:34752/v3',
+  t1cApiUrl: 'https://localhost:51983/v3',
   gwUrl: 'https://accapim.t1t.be:443',
   dsContextPath: '/trust1team/gclds/v3',
   dsContextPathTestMode: '/gcl-ds-web/v3',
@@ -42,7 +42,7 @@ const defaults = {
 };
 
 export class T1CClient {
-  private _gclInstalled: boolean | undefined;
+  private _t1cInstalled: boolean | undefined;
   private localConfig: T1CConfig;
   private coreService: CoreService;
   private connection: LocalConnection;
@@ -53,7 +53,7 @@ export class T1CClient {
   private remoteApiKeyConnection: RemoteApiKeyConnection;
   private localTestConnection: LocalTestConnection;
 
-  public constructor(cfg: T1CConfig, automatic: boolean) {
+  public constructor(cfg: T1CConfig) {
     // resolve config to singleton
     this.localConfig = cfg;
     // init communication
@@ -66,12 +66,12 @@ export class T1CClient {
     this.localTestConnection = new LocalTestConnection(this.localConfig);
     // in citrix mode the admin endpoint should not be called through the agent
     /*    this.adminService = new AdminService(
-      this.localConfig.gclUrl,
+      this.localConfig.t1cApiUrl,
       this.authAdminConnection,
       this.adminConnection
     );*/
     this.coreService = new CoreService(
-      this.localConfig.gclUrl,
+      this.localConfig.t1cApiUrl,
       this.authConnection
     );
     // init DS if DS url is provided
@@ -99,29 +99,20 @@ export class T1CClient {
     );
     // keep reference to client in ClientService
     ClientService.setClient(this);*/
-
-    if (!automatic) {
-      // setup security - fail safe
-      //T1CClient.initLibrary();
-    }
   }
 
   public static checkPolyfills() {
     Polyfills.check();
   }
 
-  public static initialize(
-    cfg: T1CConfig,
-    callback?: (error?: T1CLibException, client?: T1CClient) => void
-  ): Promise<T1CClient> {
+  public static initialize(cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
     return new Promise((resolve, reject) => {
       const initTime = moment();
-      const client = new T1CClient(cfg, true);
+      const client = new T1CClient(cfg);
       // keep reference to client in ClientService
-      //ClientService.setClient(client);
-
+      // ClientService.setClient(client);
       // will be set to false if init fails
-      client.gclInstalled = true;
+      client.t1cInstalled = true;
 
       /*      T1CClient.initLibrary().then(
         () => {
@@ -146,9 +137,6 @@ export class T1CClient {
   /**
    * Init security context
    */
-  /*  private static initLibrary(): Promise<T1CClient> {
-    //return InitUtil.initializeLibrary(ClientService.getClient());
-  }*/
 
   /*  public encryptPin(pin: string): string {
     //return PinEnforcer.encryptPin(pin);
@@ -205,8 +193,8 @@ export class T1CClient {
     return this.pluginFactory.createFileExchange();
   };*/
 
-  set gclInstalled(value: boolean) {
-    this._gclInstalled = value;
+  set t1cInstalled(value: boolean) {
+    this._t1cInstalled = value;
   }
 
   /*  public download(
@@ -222,7 +210,7 @@ export class T1CClient {
             info.data.manufacturer,
             info.data.os,
             info.data.ua,
-            this.config().gwUrl,
+            this.config().dsUrl,
             version
           );
           return this.ds().then(
@@ -252,10 +240,10 @@ export class T1CClient {
   /*  public updateAuthConnection(cfg: T1CConfig) {
     this.authConnection = new LocalAuthConnection(cfg);
     this.adminService = new AdminService(
-      cfg.gclUrl,
+      cfg.t1cApiUrl,
       this.authConnection,
       this.adminConnection
     ); // TODO check if authConnection or LocalAuthAdminConnection should be passed
-    this.coreService = new CoreService(cfg.gclUrl, this.authConnection);
+    this.coreService = new CoreService(cfg.t1cApiUrl, this.authConnection);
   }*/
 }

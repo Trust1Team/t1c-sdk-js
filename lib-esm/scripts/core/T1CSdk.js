@@ -3,7 +3,7 @@ import { LocalConnection, RemoteJwtConnection, LocalAuthConnection, LocalTestCon
 import * as moment from 'moment';
 import { Polyfills } from '../util/Polyfills';
 var defaults = {
-    gclUrl: 'https://localhost:34752/v3',
+    t1cApiUrl: 'https://localhost:51983/v3',
     gwUrl: 'https://accapim.t1t.be:443',
     dsContextPath: '/trust1team/gclds/v3',
     dsContextPathTestMode: '/gcl-ds-web/v3',
@@ -34,7 +34,7 @@ var T1CClient = (function () {
         this.remoteConnection = new RemoteJwtConnection(this.localConfig);
         this.remoteApiKeyConnection = new RemoteApiKeyConnection(this.localConfig);
         this.localTestConnection = new LocalTestConnection(this.localConfig);
-        this.coreService = new CoreService(this.localConfig.gclUrl, this.authConnection);
+        this.coreService = new CoreService(this.localConfig.t1cApiUrl, this.authConnection);
         if (!automatic) {
         }
     }

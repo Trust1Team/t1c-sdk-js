@@ -22,6 +22,6 @@ export declare class CoreService implements AbstractCore {
     readersCardsUnavailable(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
     infoBrowserSync(): BrowserInfoResponse;
     getUrl(): string;
-    checkGclVersion(client: T1CClient, gclVersion?: string): Promise<CheckGclVersionResponse>;
+    checkT1cApiVersion(client: T1CClient, gclVersion?: string): Promise<CheckGclVersionResponse>;
     version(): Promise<string>;
 }

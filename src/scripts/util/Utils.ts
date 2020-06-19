@@ -1,5 +1,3 @@
-import {isNumber} from "util";
-
 export class Util {
 
     public static includes(array: any[], searchElement: any, fromIndex?: number) {

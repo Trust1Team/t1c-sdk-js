@@ -80,7 +80,7 @@ var GenericConnection = (function () {
             if (securityConfig.sendApiKey) {
                 config_1.headers.apikey = gclConfig.apiKey;
             }
-            if (securityConfig.sendGclJwt) {
+            if (securityConfig.sendT1CJwt) {
                 config_1.headers.Authorization = 'Bearer ' + gclConfig.gclJwt;
             }
             return new Promise(function (resolve, reject) {

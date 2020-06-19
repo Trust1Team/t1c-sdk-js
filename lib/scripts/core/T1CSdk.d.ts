@@ -13,7 +13,7 @@ export declare class T1CClient {
     private remoteConnection;
     private remoteApiKeyConnection;
     private localTestConnection;
-    constructor(cfg: T1CConfig, automatic: boolean);
+    constructor(cfg: T1CConfig);
     static checkPolyfills(): void;
     static initialize(cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient>;
     core: () => CoreService;
