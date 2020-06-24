@@ -1,8 +1,8 @@
-export declare class GCLConfigOptions {
+export declare class T1CConfigOptions {
     t1cApiUrl?: string | undefined;
     t1cApiPort?: string | undefined;
     t1cRpcPort?: string | undefined;
-    gwOrProxyUrl?: string | undefined;
+    dsUrl?: string | undefined;
     apiKey?: string | undefined;
     gwJwt?: string | undefined;
     dsContextPath?: string | undefined;
@@ -13,17 +13,19 @@ export declare class GCLConfigOptions {
     consentTimeout?: number | undefined;
     osPinDialog?: boolean | undefined;
     lang?: string | undefined;
-    gclDownloadLink?: string | undefined;
-    gclVersion?: string | undefined;
-    constructor(t1cApiUrl?: string | undefined, t1cApiPort?: string | undefined, t1cRpcPort?: string | undefined, gwOrProxyUrl?: string | undefined, apiKey?: string | undefined, gwJwt?: string | undefined, dsContextPath?: string | undefined, agentPort?: number | undefined, forceHardwarePinpad?: boolean | undefined, sessionTimeout?: number | undefined, consentDuration?: number | undefined, consentTimeout?: number | undefined, osPinDialog?: boolean | undefined, lang?: string | undefined, gclDownloadLink?: string | undefined, gclVersion?: string | undefined);
+    t1cDownloadLink?: string | undefined;
+    t1cVersion?: string | undefined;
+    constructor(t1cApiUrl?: string | undefined, t1cApiPort?: string | undefined, t1cRpcPort?: string | undefined, dsUrl?: string | undefined, apiKey?: string | undefined, gwJwt?: string | undefined, dsContextPath?: string | undefined, agentPort?: number | undefined, forceHardwarePinpad?: boolean | undefined, sessionTimeout?: number | undefined, consentDuration?: number | undefined, consentTimeout?: number | undefined, osPinDialog?: boolean | undefined, lang?: string | undefined, t1cDownloadLink?: string | undefined, t1cVersion?: string | undefined);
 }
 export declare class T1CConfig {
-    private _gwUrl;
+    private _dsUrl;
     private _t1cApiUrl;
+    private _t1cApiPort;
+    private _t1cRpcPort;
     private _dsContextPath;
     private _apiKey;
     private _gwJwt;
-    private _gclJwt;
+    private _t1cJwt;
     private _citrix;
     private _agentPort;
     private _forceHardwarePinpad;
@@ -34,9 +36,9 @@ export declare class T1CConfig {
     private _osPinDialog;
     private _contextToken;
     private _lang;
-    private _gclDownloadLink;
-    private _gclVersion;
-    constructor(options: GCLConfigOptions);
+    private _t1cDownloadLink;
+    private _t1cVersion;
+    constructor(options: T1CConfigOptions);
     get t1cApiUrl(): string;
     set t1cApiUrl(value: string);
     get dsUrl(): string;
@@ -48,8 +50,7 @@ export declare class T1CConfig {
     set citrix(value: boolean);
     get agentPort(): number;
     set agentPort(value: number);
-    get gwUrl(): string;
-    set gwUrl(value: string);
+    set dsUrl(value: string);
     get forceHardwarePinpad(): boolean;
     set forceHardwarePinpad(value: boolean);
     get tokenCompatible(): boolean;
@@ -62,12 +63,12 @@ export declare class T1CConfig {
     set osPinDialog(value: boolean);
     get contextToken(): string;
     set contextToken(value: string);
-    get gclJwt(): string;
-    set gclJwt(value: string);
+    get t1cJwt(): string;
+    set t1cJwt(value: string);
     get lang(): string;
     set lang(value: string);
-    get gclDownloadLink(): string;
-    set gclDownloadLink(value: string);
-    get gclVersion(): string;
-    set gclVersion(value: string);
+    get t1cDownloadLink(): string;
+    set t1cDownloadLink(value: string);
+    get t1cVersion(): string;
+    set t1cVersion(value: string);
 }

@@ -63,16 +63,66 @@ var DataObjectResponse = (function (_super) {
     return DataObjectResponse;
 }(T1CResponse));
 export { DataObjectResponse };
-var InfoResponse = (function (_super) {
-    __extends(InfoResponse, _super);
-    function InfoResponse(data, success) {
-        var _this = _super.call(this, success, data) || this;
-        _this.data = data;
-        _this.success = success;
-        return _this;
+var InfoOS = (function () {
+    function InfoOS(architecture, os, version) {
+        this.architecture = architecture;
+        this.os = os;
+        this.version = version;
+    }
+    return InfoOS;
+}());
+export { InfoOS };
+var InfoJava = (function () {
+    function InfoJava(runtime, spec, java) {
+        this.runtime = runtime;
+        this.spec = spec;
+        this.java = java;
+    }
+    return InfoJava;
+}());
+export { InfoJava };
+var InfoUser = (function () {
+    function InfoUser(timezone, country, language, home, tempDir) {
+        this.timezone = timezone;
+        this.country = country;
+        this.language = language;
+        this.home = home;
+        this.tempDir = tempDir;
+    }
+    return InfoUser;
+}());
+export { InfoUser };
+var InfoService = (function () {
+    function InfoService(url, apiPort, gRpcPort) {
+        this.url = url;
+        this.apiPort = apiPort;
+        this.gRpcPort = gRpcPort;
+    }
+    return InfoService;
+}());
+export { InfoService };
+var InfoApi = (function () {
+    function InfoApi(service, activated, citrix, uid, modules, version, logLevel) {
+        this.service = service;
+        this.activated = activated;
+        this.citrix = citrix;
+        this.uid = uid;
+        this.modules = modules;
+        this.version = version;
+        this.logLevel = logLevel;
+    }
+    return InfoApi;
+}());
+export { InfoApi };
+var InfoResponse = (function () {
+    function InfoResponse(t1CinfoOS, t1CInfoJava, t1CInfoUser, t1CInfoAPI) {
+        this.t1CinfoOS = t1CinfoOS;
+        this.t1CInfoJava = t1CInfoJava;
+        this.t1CInfoUser = t1CInfoUser;
+        this.t1CInfoAPI = t1CInfoAPI;
     }
     return InfoResponse;
-}(T1CResponse));
+}());
 export { InfoResponse };
 var T1CInfo = (function () {
     function T1CInfo(activated, citrix, managed, arch, os, uid, containers, version) {
@@ -177,10 +227,9 @@ var CertificatesResponse = (function (_super) {
 }(T1CResponse));
 export { CertificatesResponse };
 var T1CCertificate = (function () {
-    function T1CCertificate(base64, id, parsed) {
+    function T1CCertificate(base64, id) {
         this.base64 = base64;
         this.id = id;
-        this.parsed = parsed;
     }
     return T1CCertificate;
 }());
@@ -196,23 +245,23 @@ var SingleReaderResponse = (function (_super) {
     return SingleReaderResponse;
 }(T1CResponse));
 export { SingleReaderResponse };
-var CheckGclVersion = (function () {
-    function CheckGclVersion(outDated, downloadLink) {
+var CheckT1CVersion = (function () {
+    function CheckT1CVersion(outDated, downloadLink) {
         this.outDated = outDated;
         this.downloadLink = downloadLink;
     }
-    return CheckGclVersion;
+    return CheckT1CVersion;
 }());
-export { CheckGclVersion };
-var CheckGclVersionResponse = (function (_super) {
-    __extends(CheckGclVersionResponse, _super);
-    function CheckGclVersionResponse(data, success) {
+export { CheckT1CVersion };
+var CheckT1CVersionResponse = (function (_super) {
+    __extends(CheckT1CVersionResponse, _super);
+    function CheckT1CVersionResponse(data, success) {
         var _this = _super.call(this, success, data) || this;
         _this.data = data;
         _this.success = success;
         return _this;
     }
-    return CheckGclVersionResponse;
+    return CheckT1CVersionResponse;
 }(T1CResponse));
-export { CheckGclVersionResponse };
+export { CheckT1CVersionResponse };
 //# sourceMappingURL=CoreModel.js.map

@@ -1,4 +1,4 @@
-import { T1CClient } from '../T1CSdk';
+import { T1CClient } from "../T1CSdk";
 export declare class T1CLibException {
     status: number;
     code: string;

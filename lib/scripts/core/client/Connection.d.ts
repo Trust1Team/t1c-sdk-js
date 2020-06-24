@@ -1,6 +1,6 @@
 import { T1CConfig } from '../T1CConfig';
 import { T1CLibException } from '../exceptions/CoreExceptions';
-import { DataArrayResponse, SingleReaderResponse } from '../../..';
+import { DataArrayResponse } from '../../..';
 export interface Connection {
     get(basePath: string, suffix: string, queryParams?: any[], headers?: undefined, callback?: ((error: T1CLibException, data: DataArrayResponse) => void) | undefined): Promise<any>;
     post(basePath: string, suffix: string, body: RequestBody, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any>;
@@ -21,7 +21,7 @@ export interface RequestCallback {
 }
 export interface SecurityConfig {
     sendGwJwt: boolean;
-    sendGclJwt: boolean;
+    sendT1CJwt: boolean;
     sendApiKey: boolean;
     sendToken: boolean;
     skipCitrixCheck: boolean;
@@ -35,13 +35,13 @@ export declare abstract class GenericConnection implements Connection {
     constructor(cfg: T1CConfig);
     private static disabledWithoutApiKey;
     private static extractAccessToken;
-    get(basePath: string, suffix: string, queryParams?: any[], headers?: any, callback?: ((error: T1CLibException, data: DataArrayResponse) => void) | ((error: T1CLibException, data: SingleReaderResponse) => void) | undefined): Promise<any>;
+    get(basePath: string, suffix: string, queryParams?: QueryParams, headers?: any, callback?: RequestCallback): Promise<any>;
     post(basePath: string, suffix: string, body: RequestBody, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any>;
     put(basePath: string, suffix: string, body: RequestBody, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any>;
     delete(basePath: string, suffix: string, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any>;
     getRequestHeaders(headers?: RequestHeaders): RequestHeaders;
     getSecurityConfig(): SecurityConfig;
-    protected handleRequest(basePath: string, suffix: string, method: string, gclConfig: T1CConfig, securityConfig: SecurityConfig, body?: RequestBody, params?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any>;
+    protected handleRequest(basePath: string, suffix: string, method: string, t1cConfig: T1CConfig, securityConfig: SecurityConfig, body?: RequestBody, params?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any>;
 }
 export declare class LocalAdminConnection extends GenericConnection implements Connection {
     cfg: T1CConfig;

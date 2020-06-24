@@ -112,7 +112,7 @@ export class T1CConfig {
   }
 
   get t1cApiUrl(): string {
-    return this._t1cApiUrl;
+    return this._t1cApiUrl + ":" + this._t1cApiPort;
   }
   set t1cApiUrl(value: string) {
     this._t1cApiUrl = value;

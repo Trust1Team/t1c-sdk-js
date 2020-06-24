@@ -23,7 +23,7 @@ var GenericConnection = (function () {
     };
     GenericConnection.extractAccessToken = function (headers, config) {
         if (headers && headers.access_token) {
-            config.gclJwt = headers.access_token;
+            config.t1cJwt = headers.access_token;
         }
     };
     GenericConnection.prototype.get = function (basePath, suffix, queryParams, headers, callback) {
@@ -51,20 +51,19 @@ var GenericConnection = (function () {
     GenericConnection.prototype.getSecurityConfig = function () {
         return {
             sendGwJwt: true,
-            sendGclJwt: false,
-            sendApiKey: true,
+            sendT1CJwt: true,
+            sendApiKey: false,
             sendToken: true,
-            skipCitrixCheck: false,
+            skipCitrixCheck: true,
         };
     };
-    GenericConnection.prototype.handleRequest = function (basePath, suffix, method, gclConfig, securityConfig, body, params, headers, callback) {
+    GenericConnection.prototype.handleRequest = function (basePath, suffix, method, t1cConfig, securityConfig, body, params, headers, callback) {
         if (!callback || typeof callback !== 'function') {
             callback = function () {
             };
         }
         if (securityConfig.skipCitrixCheck ||
-            !gclConfig.citrix ||
-            gclConfig.agentPort !== -1) {
+            !t1cConfig.citrix) {
             var config_1 = {
                 url: UrlUtil.create(basePath, suffix, securityConfig.skipCitrixCheck),
                 method: method,
@@ -78,15 +77,15 @@ var GenericConnection = (function () {
                 config_1.params = params;
             }
             if (securityConfig.sendApiKey) {
-                config_1.headers.apikey = gclConfig.apiKey;
+                config_1.headers.apikey = t1cConfig.apiKey;
             }
             if (securityConfig.sendT1CJwt) {
-                config_1.headers.Authorization = 'Bearer ' + gclConfig.gclJwt;
+                config_1.headers.Authorization = 'Bearer ' + t1cConfig.t1cJwt;
             }
             return new Promise(function (resolve, reject) {
                 var securityPromise;
                 if (securityConfig.sendGwJwt) {
-                    securityPromise = gclConfig.gclJwt;
+                    securityPromise = t1cConfig.t1cJwt;
                 }
                 else {
                     securityPromise = Promise.resolve('');
@@ -98,7 +97,7 @@ var GenericConnection = (function () {
                     axios
                         .request(config_1)
                         .then(function (response) {
-                        GenericConnection.extractAccessToken(response.headers, gclConfig);
+                        GenericConnection.extractAccessToken(response.headers, t1cConfig);
                         callback(undefined, response.data);
                         return resolve(response.data);
                     })
@@ -173,7 +172,7 @@ var LocalAdminConnection = (function (_super) {
     LocalAdminConnection.prototype.getSecurityConfig = function () {
         return {
             sendGwJwt: false,
-            sendGclJwt: false,
+            sendT1CJwt: false,
             sendApiKey: false,
             sendToken: true,
             skipCitrixCheck: true,
@@ -191,13 +190,13 @@ var LocalAuthAdminConnection = (function (_super) {
     }
     LocalAuthAdminConnection.prototype.getRequestHeaders = function (headers) {
         var reqHeaders = _super.prototype.getRequestHeaders.call(this, headers);
-        reqHeaders.Authorization = 'Bearer ' + this.cfg.gclJwt;
+        reqHeaders.Authorization = 'Bearer ' + this.cfg.t1cJwt;
         return reqHeaders;
     };
     LocalAuthAdminConnection.prototype.getSecurityConfig = function () {
         return {
             sendGwJwt: false,
-            sendGclJwt: true,
+            sendT1CJwt: true,
             sendApiKey: false,
             sendToken: true,
             skipCitrixCheck: true,
@@ -248,13 +247,13 @@ var LocalAuthConnection = (function (_super) {
     }
     LocalAuthConnection.prototype.getRequestHeaders = function (headers) {
         var reqHeaders = _super.prototype.getRequestHeaders.call(this, headers);
-        reqHeaders.Authorization = 'Bearer ' + this.cfg.gclJwt;
+        reqHeaders.Authorization = 'Bearer ' + this.cfg.t1cJwt;
         return reqHeaders;
     };
     LocalAuthConnection.prototype.getSecurityConfig = function () {
         return {
             sendGwJwt: false,
-            sendGclJwt: true,
+            sendT1CJwt: true,
             sendApiKey: false,
             sendToken: true,
             skipCitrixCheck: false,
@@ -322,7 +321,7 @@ var LocalConnection = (function (_super) {
     LocalConnection.prototype.getSecurityConfig = function () {
         return {
             sendGwJwt: false,
-            sendGclJwt: false,
+            sendT1CJwt: false,
             sendApiKey: false,
             sendToken: true,
             skipCitrixCheck: false,
@@ -346,7 +345,7 @@ var RemoteApiKeyConnection = (function (_super) {
     RemoteApiKeyConnection.prototype.getSecurityConfig = function () {
         return {
             sendGwJwt: false,
-            sendGclJwt: false,
+            sendT1CJwt: false,
             sendApiKey: true,
             sendToken: false,
             skipCitrixCheck: true,
@@ -365,7 +364,7 @@ var RemoteJwtConnection = (function (_super) {
     RemoteJwtConnection.prototype.getSecurityConfig = function () {
         return {
             sendGwJwt: true,
-            sendGclJwt: false,
+            sendT1CJwt: false,
             sendApiKey: false,
             sendToken: false,
             skipCitrixCheck: true,
@@ -427,8 +426,8 @@ var LocalTestConnection = (function (_super) {
             if (params) {
                 config_2.params = params;
             }
-            if (gclConfig.gclJwt) {
-                config_2.headers.Authorization = 'Bearer ' + gclConfig.gclJwt;
+            if (gclConfig.t1cJwt) {
+                config_2.headers.Authorization = 'Bearer ' + gclConfig.t1cJwt;
             }
             return new Promise(function (resolve, reject) {
                 axios

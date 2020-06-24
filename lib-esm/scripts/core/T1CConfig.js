@@ -1,9 +1,9 @@
-var GCLConfigOptions = (function () {
-    function GCLConfigOptions(t1cApiUrl, t1cApiPort, t1cRpcPort, gwOrProxyUrl, apiKey, gwJwt, dsContextPath, agentPort, forceHardwarePinpad, sessionTimeout, consentDuration, consentTimeout, osPinDialog, lang, gclDownloadLink, gclVersion) {
+var T1CConfigOptions = (function () {
+    function T1CConfigOptions(t1cApiUrl, t1cApiPort, t1cRpcPort, dsUrl, apiKey, gwJwt, dsContextPath, agentPort, forceHardwarePinpad, sessionTimeout, consentDuration, consentTimeout, osPinDialog, lang, t1cDownloadLink, t1cVersion) {
         this.t1cApiUrl = t1cApiUrl;
         this.t1cApiPort = t1cApiPort;
         this.t1cRpcPort = t1cRpcPort;
-        this.gwOrProxyUrl = gwOrProxyUrl;
+        this.dsUrl = dsUrl;
         this.apiKey = apiKey;
         this.gwJwt = gwJwt;
         this.dsContextPath = dsContextPath;
@@ -14,20 +14,22 @@ var GCLConfigOptions = (function () {
         this.consentTimeout = consentTimeout;
         this.osPinDialog = osPinDialog;
         this.lang = lang;
-        this.t1cDownloadLink = gclDownloadLink;
-        this.t1cVersion = gclVersion;
+        this.t1cDownloadLink = t1cDownloadLink;
+        this.t1cVersion = t1cVersion;
     }
-    return GCLConfigOptions;
+    return T1CConfigOptions;
 }());
-export { GCLConfigOptions };
+export { T1CConfigOptions };
 var T1CConfig = (function () {
     function T1CConfig(options) {
-        this._gwUrl = 'https://apim.t1t.be';
-        this._t1cApiUrl = 'https://t1c.t1t.io:51983';
+        this._dsUrl = 'https://apim.t1t.be';
+        this._t1cApiUrl = 'https://t1c.t1t.io';
+        this._t1cApiPort = '51983';
+        this._t1cRpcPort = '50051';
         this._dsContextPath = '';
         this._apiKey = 'PROVIDE APIKEY';
         this._gwJwt = 'PROVIDE DS JWT';
-        this._gclJwt = 'PROVIDE GCL JWT';
+        this._t1cJwt = 'PROVIDE GCL JWT';
         this._citrix = false;
         this._agentPort = -1;
         this._forceHardwarePinpad = false;
@@ -38,20 +40,26 @@ var T1CConfig = (function () {
         this._osPinDialog = false;
         this._contextToken = '';
         this._lang = 'en';
-        this._gclDownloadLink = '';
-        this._gclVersion = 'NOT SPECIFIED';
+        this._t1cDownloadLink = '';
+        this._t1cVersion = 'NOT SPECIFIED';
         if (options) {
             if (options.t1cVersion) {
-                this.t1cVersion = options.t1cVersion;
+                this._t1cVersion = options.t1cVersion;
             }
             if (options.t1cApiUrl) {
                 this._t1cApiUrl = options.t1cApiUrl;
             }
-            if (options.t1cDownloadLink) {
-                this._gclDownloadLink = options.t1cDownloadLink;
+            if (options.t1cApiPort) {
+                this._t1cApiPort = options.t1cApiPort;
             }
-            if (options.gwOrProxyUrl) {
-                this._gwUrl = options.gwOrProxyUrl;
+            if (options.t1cRpcPort) {
+                this._t1cRpcPort = options.t1cRpcPort;
+            }
+            if (options.t1cDownloadLink) {
+                this._t1cDownloadLink = options.t1cDownloadLink;
+            }
+            if (options.dsUrl) {
+                this._dsUrl = options.dsUrl;
             }
             if (options.apiKey) {
                 this._apiKey = options.apiKey;
@@ -89,7 +97,7 @@ var T1CConfig = (function () {
     }
     Object.defineProperty(T1CConfig.prototype, "t1cApiUrl", {
         get: function () {
-            return this._t1cApiUrl;
+            return this._t1cApiUrl + ":" + this._t1cApiPort;
         },
         set: function (value) {
             this._t1cApiUrl = value;
@@ -99,7 +107,10 @@ var T1CConfig = (function () {
     });
     Object.defineProperty(T1CConfig.prototype, "dsUrl", {
         get: function () {
-            return this.dsUrl + this.dsContextPath;
+            return this._dsUrl + this._dsContextPath;
+        },
+        set: function (value) {
+            this._dsUrl = value;
         },
         enumerable: true,
         configurable: true
@@ -140,16 +151,6 @@ var T1CConfig = (function () {
         },
         set: function (value) {
             this._agentPort = value;
-        },
-        enumerable: true,
-        configurable: true
-    });
-    Object.defineProperty(T1CConfig.prototype, "gwUrl", {
-        get: function () {
-            return this._gwUrl;
-        },
-        set: function (value) {
-            this._gwUrl = value;
         },
         enumerable: true,
         configurable: true
@@ -214,12 +215,12 @@ var T1CConfig = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(T1CConfig.prototype, "gclJwt", {
+    Object.defineProperty(T1CConfig.prototype, "t1cJwt", {
         get: function () {
-            return this._gclJwt;
+            return this._t1cJwt;
         },
         set: function (value) {
-            this._gclJwt = value;
+            this._t1cJwt = value;
         },
         enumerable: true,
         configurable: true
@@ -234,22 +235,22 @@ var T1CConfig = (function () {
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(T1CConfig.prototype, "gclDownloadLink", {
+    Object.defineProperty(T1CConfig.prototype, "t1cDownloadLink", {
         get: function () {
-            return this._gclDownloadLink;
+            return this._t1cDownloadLink;
         },
         set: function (value) {
-            this._gclDownloadLink = value;
+            this._t1cDownloadLink = value;
         },
         enumerable: true,
         configurable: true
     });
-    Object.defineProperty(T1CConfig.prototype, "gclVersion", {
+    Object.defineProperty(T1CConfig.prototype, "t1cVersion", {
         get: function () {
-            return this._gclVersion;
+            return this._t1cVersion;
         },
         set: function (value) {
-            this._gclVersion = value;
+            this._t1cVersion = value;
         },
         enumerable: true,
         configurable: true

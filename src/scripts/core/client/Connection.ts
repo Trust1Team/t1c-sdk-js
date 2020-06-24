@@ -122,28 +122,9 @@ export abstract class GenericConnection implements Connection {
    * @param {RequestCallback} callback???
    * @returns {Promise<any>}
    */
-  public get(
-    basePath: string,
-    suffix: string,
-    queryParams?: any[],
-    headers?: any,
-    callback?:
-      | ((error: T1CLibException, data: DataArrayResponse) => void)
-      | ((error: T1CLibException, data: SingleReaderResponse) => void)
-      | undefined
-  ): Promise<any> {
+  public get(basePath: string, suffix: string, queryParams?: QueryParams, headers?: any, callback?: RequestCallback): Promise<any> {
     const securityConfig = this.getSecurityConfig();
-    return this.handleRequest(
-      basePath,
-      suffix,
-      'GET',
-      this.cfg,
-      securityConfig,
-      undefined,
-      queryParams,
-      headers,
-      callback
-    );
+    return this.handleRequest(basePath, suffix, 'GET', this.cfg, securityConfig, undefined, queryParams, headers, callback);
   }
 
   /**
@@ -156,26 +137,9 @@ export abstract class GenericConnection implements Connection {
    * @param {RequestCallback} callback
    * @returns {Promise<any>}
    */
-  public post(
-    basePath: string,
-    suffix: string,
-    body: RequestBody,
-    queryParams?: QueryParams,
-    headers?: RequestHeaders,
-    callback?: RequestCallback
-  ): Promise<any> {
+  public post(basePath: string, suffix: string, body: RequestBody, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any> {
     const securityConfig = this.getSecurityConfig();
-    return this.handleRequest(
-      basePath,
-      suffix,
-      'POST',
-      this.cfg,
-      securityConfig,
-      body,
-      queryParams,
-      headers,
-      callback
-    );
+    return this.handleRequest(basePath, suffix, 'POST', this.cfg, securityConfig, body, queryParams, headers, callback);
   }
 
   /**
@@ -260,10 +224,10 @@ export abstract class GenericConnection implements Connection {
   getSecurityConfig(): SecurityConfig {
     return {
       sendGwJwt: true,
-      sendT1CJwt: false,
-      sendApiKey: true,
+      sendT1CJwt: true,
+      sendApiKey: false,
       sendToken: true,
-      skipCitrixCheck: false,
+      skipCitrixCheck: true,
     };
   }
 
@@ -272,7 +236,7 @@ export abstract class GenericConnection implements Connection {
    * @param {string} basePath: base URL path of the request
    * @param {string} suffix: path suffix of the request
    * @param {string} method: HTTP method to be used
-   * @param {T1CConfig} gclConfig: T1CConfig to be used
+   * @param {T1CConfig} t1cConfig: T1CConfig to be used
    * @param {SecurityConfig} securityConfig: Security configuration, varies with connection subtype
    * @param {RequestBody} body: Body to be sent, for POST/PUT/...
    * @param {QueryParams} params: Query parameters to be sent with request
@@ -280,17 +244,7 @@ export abstract class GenericConnection implements Connection {
    * @param {RequestCallback} callback: Optional callback function if not using Promises
    * @returns {Promise<any>}
    */
-  protected handleRequest(
-    basePath: string,
-    suffix: string,
-    method: string,
-    gclConfig: T1CConfig,
-    securityConfig: SecurityConfig,
-    body?: RequestBody,
-    params?: QueryParams,
-    headers?: RequestHeaders,
-    callback?: RequestCallback
-  ): Promise<any> {
+  protected handleRequest(basePath: string, suffix: string, method: string, t1cConfig: T1CConfig, securityConfig: SecurityConfig, body?: RequestBody, params?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any> {
     // init callback if necessary
     if (!callback || typeof callback !== 'function') {
       callback = function () {
@@ -301,8 +255,7 @@ export abstract class GenericConnection implements Connection {
     // if Citrix environment, check that agentPort was defined in config
     if (
       securityConfig.skipCitrixCheck ||
-      !gclConfig.citrix ||
-      gclConfig.agentPort !== -1
+      !t1cConfig.citrix  //|| t1cConfig.agentPort !== -1
     ) {
       const config: AxiosRequestConfig = {
         // use UrlUtil to create correct URL based on config
@@ -321,10 +274,10 @@ export abstract class GenericConnection implements Connection {
 
       // set security tokens/keys based on securityConfig settings
       if (securityConfig.sendApiKey) {
-        config.headers.apikey = gclConfig.apiKey;
+        config.headers.apikey = t1cConfig.apiKey;
       }
       if (securityConfig.sendT1CJwt) {
-        config.headers.Authorization = 'Bearer ' + gclConfig.t1cJwt;
+        config.headers.Authorization = 'Bearer ' + t1cConfig.t1cJwt;
       }
       // browser fingerprinting
       /*            if (gclConfig.tokenCompatible && securityConfig.sendToken) {
@@ -335,7 +288,7 @@ export abstract class GenericConnection implements Connection {
       return new Promise((resolve, reject) => {
         let securityPromise;
         if (securityConfig.sendGwJwt) {
-          securityPromise = gclConfig.t1cJwt;
+          securityPromise = t1cConfig.t1cJwt;
         } else {
           securityPromise = Promise.resolve('');
         }
@@ -351,7 +304,7 @@ export abstract class GenericConnection implements Connection {
                 // check if access-token included in headers
                 GenericConnection.extractAccessToken(
                   response.headers,
-                  gclConfig
+                  t1cConfig
                 );
 
                 // call callback function
@@ -635,13 +588,7 @@ export class LocalAuthConnection extends GenericConnection
    * @param {RequestCallback} callback
    * @returns {Promise<any>}
    */
-  public getSkipCitrix(
-    basePath: string,
-    suffix: string,
-    queryParams?: QueryParams,
-    headers?: RequestHeaders,
-    callback?: RequestCallback
-  ): Promise<any> {
+  public getSkipCitrix(basePath: string, suffix: string, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any> {
     const securityConfig = this.getSecurityConfig();
     securityConfig.skipCitrixCheck = true;
     return this.handleRequest(
