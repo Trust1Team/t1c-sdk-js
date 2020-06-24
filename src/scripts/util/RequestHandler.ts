@@ -1,7 +1,5 @@
+import {Options} from "../modules/smartcards/Card";
 
-export class Options {
-    constructor(public parseCerts: boolean, public filters?: string[]) {}
-}
 
 export class RequestOptions {
     constructor(public params?: { [key: string]: string}, public callback?: () => void) {}

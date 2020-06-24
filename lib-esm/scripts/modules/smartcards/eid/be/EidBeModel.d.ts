@@ -1,5 +1,6 @@
 import { T1CLibException } from '../../../../core/exceptions/CoreExceptions';
 import { CertificateResponse, DataObjectResponse, DataResponse, T1CCertificate, T1CResponse } from '../../../../core/service/CoreModel';
+import { AuthenticateOrSignData, OptionalPin, Options } from "../../Card";
 export interface AbstractEidBE {
     allData(filters: string[] | Options, callback?: (error: T1CLibException, data: BeidAllDataResponse) => void): Promise<BeidAllDataResponse>;
     allCerts(filters: string[] | Options, callback?: (error: T1CLibException, data: BeidAllCertsResponse) => void): Promise<BeidAllCertsResponse>;
@@ -14,7 +15,6 @@ export interface AbstractEidBE {
     rrnCertificate(options: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
     verifyPin(body: OptionalPin, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse>;
     verifyPinWithEncryptedPin(body: OptionalPin, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse>;
-    tokenData(callback?: (error: T1CLibException, data: BeidTokenDataResponse) => void): Promise<BeidTokenDataResponse>;
     authenticate: (body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: DataResponse) => void) => Promise<DataResponse>;
     authenticateWithEncryptedPin: (body: any, callback?: () => void) => Promise<DataResponse>;
     signData: (body: any, callback?: () => void) => Promise<DataResponse>;
@@ -109,20 +109,4 @@ export declare class BeidRnDataResponse extends DataObjectResponse {
     data: BeidRnData;
     success: boolean;
     constructor(data: BeidRnData, success: boolean);
-}
-export declare class OptionalPin {
-    pin?: string | undefined;
-    pace?: string | undefined;
-    constructor(pin?: string | undefined, pace?: string | undefined, private_key_reference?: string);
-}
-export declare class Options {
-    filters?: string[] | undefined;
-    constructor(filters?: string[] | undefined);
-}
-export declare class AuthenticateOrSignData extends OptionalPin {
-    algorithm_reference: string;
-    data: string;
-    pin?: string | undefined;
-    pace?: string | undefined;
-    constructor(algorithm_reference: string, data: string, pin?: string | undefined, pace?: string | undefined);
 }

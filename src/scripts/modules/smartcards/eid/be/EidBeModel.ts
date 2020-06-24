@@ -1,11 +1,12 @@
 import {T1CLibException} from '../../../../core/exceptions/CoreExceptions';
 import {
-  CertificateResponse,
+  CertificateResponse, DataArrayResponse,
   DataObjectResponse,
   DataResponse,
   T1CCertificate,
   T1CResponse,
 } from '../../../../core/service/CoreModel';
+import {AuthenticateOrSignData, OptionalPin, Options} from "../../Card";
 
 export interface AbstractEidBE {
   allData(filters: string[] | Options, callback?: (error: T1CLibException, data: BeidAllDataResponse) => void): Promise<BeidAllDataResponse>;
@@ -25,6 +26,8 @@ export interface AbstractEidBE {
   authenticateWithEncryptedPin: (body: any, callback?: () => void) => Promise<DataResponse>;
   signData: (body: any, callback?: () => void) => Promise<DataResponse>;
   signDataWithEncryptedPin: (body: any, callback?: () => void) => Promise<DataResponse>;
+  allAlgoRefsForSigning(callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse>
+  allAlgoRefsForAuthentication(callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse>
 }
 
 export class BeidAddressResponse extends DataObjectResponse {
@@ -132,18 +135,4 @@ export class BeidRnDataResponse extends DataObjectResponse {
   }
 }
 
-// shared
-export class OptionalPin {
-  constructor(public pin?: string, public pace?: string, private_key_reference?: string ) {
-  }
-}
 
-export class Options {
-  constructor(public filters?: string[]) {}
-}
-
-export class AuthenticateOrSignData extends OptionalPin {
-  constructor(public algorithm_reference: string, public data: string, public pin?: string, public pace?: string) {
-    super(pin, pace);
-  }
-}

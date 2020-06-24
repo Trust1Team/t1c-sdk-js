@@ -1,21 +1,19 @@
 import {LocalConnection} from '../../../../core/client/Connection';
 import {T1CLibException} from "../../../../core/exceptions/CoreExceptions";
 import {
-  AbstractEidBE, AuthenticateOrSignData,
+  AbstractEidBE,
   BeidAddressResponse,
   BeidRnDataResponse,
-  BeidTokenDataResponse,
-  OptionalPin,
-  Options
+  BeidTokenDataResponse
 } from "./EidBeModel";
 import {
   CertificateResponse,
   DataArrayResponse,
   DataObjectResponse,
-  DataResponse, T1CResponse
+  DataResponse, T1CResponse,
 } from "../../../../core/service/CoreModel";
 import {RequestHandler, RequestOptions} from "../../../../util/RequestHandler";
-import {ResponseHandler} from "../../../../util/ResponseHandler";
+import {Options, OptionalPin, AuthenticateOrSignData} from "../../Card";
 
 export class EidBe implements AbstractEidBE{
   static PATH_TOKEN_APP = '/apps/token';
@@ -33,14 +31,15 @@ export class EidBe implements AbstractEidBE{
   static CERT_CITIZEN = '/citizen';
   static CERT_RRN = '/rrn';
   static SIGN_DATA = '/sign';
-  static RN_DATA = '/biometric';
+  static RN_DATA = '/rn';
   static ADDRESS = '/address';
   static PHOTO = '/picture';
   static TOKEN = '/token';
   static VERIFY_PIN = '/verify-pin';
   static VERIFY_PRIV_KEY_REF = 'non-repudiation';
+  static SUPPORTED_ALGOS = '/supported-algoritms'
 
-  constructor(protected baseUrl: string, protected containerUrl: string,protected connection: LocalConnection,protected reader_id: string) {}
+  constructor(protected baseUrl: string, protected containerUrl: string,protected connection: LocalConnection, protected reader_id: string) {}
 
   public allData(options: string[] | Options, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
     // @ts-ignore
@@ -90,11 +89,11 @@ export class EidBe implements AbstractEidBE{
   }
 
   public allAlgoRefsForAuthentication(callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse> {
-    return this.connection.get(this.baseUrl, this.tokenApp(EidBe.AUTHENTICATE), undefined, undefined, callback);
+    return this.connection.get(this.baseUrl, this.tokenApp(EidBe.SUPPORTED_ALGOS), undefined, undefined, callback);
   }
 
   public allAlgoRefsForSigning(callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse> {
-    return this.connection.get(this.baseUrl, this.tokenApp(EidBe.SIGN_DATA), undefined, undefined, callback);
+    return this.connection.get(this.baseUrl, this.tokenApp(EidBe.SUPPORTED_ALGOS), undefined, undefined, callback);
   }
 
   public allCerts(options: string[] | Options, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
@@ -112,24 +111,24 @@ export class EidBe implements AbstractEidBE{
   }
 
   public authenticate(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
-    if (body.algorithm_reference) body.algorithm_reference = body.algorithm_reference.toLocaleLowerCase();
+    if (body.algorithm) body.algorithm = body.algorithm.toLocaleLowerCase();
     return this.connection.post(this.baseUrl, this.tokenApp(EidBe.AUTHENTICATE), body, undefined, undefined, callback);
   }
 
   public authenticateWithEncryptedPin(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
-    body.algorithm_reference = body.algorithm_reference.toLocaleLowerCase();
+    body.algorithm = body.algorithm.toLocaleLowerCase();
     return this.connection.post(this.baseUrl, this.tokenApp(EidBe.AUTHENTICATE), body, undefined, undefined, callback);
   }
 
   public signData(body: AuthenticateOrSignData,
                   callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
-    body.algorithm_reference = body.algorithm_reference.toLocaleLowerCase();
+    body.algorithm = body.algorithm.toLocaleLowerCase();
     return this.connection.post(this.baseUrl, this.tokenApp(EidBe.SIGN_DATA), body, undefined, undefined, callback);
   }
 
   public signDataWithEncryptedPin(body: AuthenticateOrSignData,
                                   callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
-    body.algorithm_reference = body.algorithm_reference.toLocaleLowerCase();
+    body.algorithm = body.algorithm.toLocaleLowerCase();
     return this.connection.post(this.baseUrl, this.tokenApp(EidBe.SIGN_DATA), body, undefined, undefined, callback);
   }
 

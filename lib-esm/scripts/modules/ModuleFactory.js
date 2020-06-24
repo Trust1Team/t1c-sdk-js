@@ -1,4 +1,5 @@
 import { EidBe } from './smartcards/eid/be/EidBe';
+import { Aventra } from './smartcards/pki/aventra4/Aventra';
 var CONTAINER_NEW_CONTEXT_PATH = '/modules/';
 var CONTAINER_BEID = CONTAINER_NEW_CONTEXT_PATH + 'beid';
 var CONTAINER_BELAWYER = CONTAINER_NEW_CONTEXT_PATH + 'diplad';
@@ -11,7 +12,7 @@ var CONTAINER_FILE_EXCHANGE = CONTAINER_NEW_CONTEXT_PATH + 'file-exchange';
 var CONTAINER_LUXTRUST = CONTAINER_NEW_CONTEXT_PATH + 'luxtrust';
 var CONTAINER_MOBIB = CONTAINER_NEW_CONTEXT_PATH + 'mobib';
 var CONTAINER_OCRA = CONTAINER_NEW_CONTEXT_PATH + 'ocra';
-var CONTAINER_AVENTRA = CONTAINER_NEW_CONTEXT_PATH + 'aventra';
+var CONTAINER_AVENTRA = CONTAINER_NEW_CONTEXT_PATH + 'aventra4';
 var CONTAINER_OBERTHUR = CONTAINER_NEW_CONTEXT_PATH + 'oberthur';
 var CONTAINER_PIV = CONTAINER_NEW_CONTEXT_PATH + 'piv';
 var CONTAINER_PTEID = CONTAINER_NEW_CONTEXT_PATH + 'pteid';
@@ -27,6 +28,9 @@ var ModuleFactory = (function () {
     }
     ModuleFactory.prototype.createEidBE = function (reader_id) {
         return new EidBe(this.url, CONTAINER_BEID, this.connection, reader_id);
+    };
+    ModuleFactory.prototype.createAventra4 = function (reader_id) {
+        return new Aventra(this.url, CONTAINER_AVENTRA, this.connection, reader_id);
     };
     return ModuleFactory;
 }());

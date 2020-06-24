@@ -1,8 +1,9 @@
 import { LocalConnection } from '../../../../core/client/Connection';
 import { T1CLibException } from "../../../../core/exceptions/CoreExceptions";
-import { AbstractEidBE, AuthenticateOrSignData, BeidAddressResponse, BeidRnDataResponse, BeidTokenDataResponse, OptionalPin, Options } from "./EidBeModel";
+import { AbstractEidBE, BeidAddressResponse, BeidRnDataResponse, BeidTokenDataResponse } from "./EidBeModel";
 import { CertificateResponse, DataArrayResponse, DataObjectResponse, DataResponse, T1CResponse } from "../../../../core/service/CoreModel";
 import { RequestOptions } from "../../../../util/RequestHandler";
+import { Options, OptionalPin, AuthenticateOrSignData } from "../../Card";
 export declare class EidBe implements AbstractEidBE {
     protected baseUrl: string;
     protected containerUrl: string;
@@ -29,6 +30,7 @@ export declare class EidBe implements AbstractEidBE {
     static TOKEN: string;
     static VERIFY_PIN: string;
     static VERIFY_PRIV_KEY_REF: string;
+    static SUPPORTED_ALGOS: string;
     constructor(baseUrl: string, containerUrl: string, connection: LocalConnection, reader_id: string);
     allData(options: string[] | Options, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse>;
     rnData(callback?: (error: T1CLibException, data: BeidRnDataResponse) => void): Promise<BeidRnDataResponse>;

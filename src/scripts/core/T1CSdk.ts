@@ -11,10 +11,12 @@ import {
 import {DataResponse,} from './service/CoreModel';
 import {T1CLibException} from './exceptions/CoreExceptions';
 import {AbstractEidBE} from '../modules/smartcards/eid/be/EidBeModel';
-import {EidBe} from '../modules/smartcards/eid/be/EidBe';
+import {AbstractAventra} from '../modules/smartcards/pki/aventra4/AventraModel';
+import {AbstractOberthur73} from "../modules/smartcards/pki/oberthur73/OberthurModel";
 import {T1CConfig} from './T1CConfig';
 import {Polyfills} from "../util/Polyfills";
 import {ModuleFactory} from "../modules/ModuleFactory";
+import {AbstractIdemia} from "../modules/smartcards/pki/idemia82/IdemiaModel";
 
 const urlVersion = "/v3";
 
@@ -148,6 +150,20 @@ export class T1CClient {
     public beid = (reader_id: string): AbstractEidBE => {
         return this.moduleFactory.createEidBE(reader_id)
     };
+    // get instance for Aventra
+    public aventra = (reader_id: string): AbstractAventra => {
+        return this.moduleFactory.createAventra4(reader_id);
+    }
+
+    // get instance for Oberthur
+    public oberthur = (reader_id: string): AbstractOberthur73 => {
+        return this.moduleFactory.createOberthur(reader_id);
+    }
+
+    // get instance for Oberthur
+    public idemia = (reader_id: string): AbstractIdemia => {
+        return this.moduleFactory.createIdemia(reader_id);
+    }
 
     // get instance for Remote Loading
 /*    public readerapi = (reader_id: string): AbstractRemoteLoading => {

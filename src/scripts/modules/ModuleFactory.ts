@@ -3,15 +3,21 @@
  * @since 2020
  */
 /*import { EMV } from './smartcards/emv/EMV';*/
-import { EidBe } from './smartcards/eid/be/EidBe';
 import {LocalConnection} from "../core/client/Connection";
+import { EidBe } from './smartcards/eid/be/EidBe';
 import {AbstractEidBE} from "./smartcards/eid/be/EidBeModel";
+import { Aventra } from './smartcards/pki/aventra4/Aventra';
+import { AbstractAventra } from './smartcards/pki/aventra4/AventraModel';
+import {AbstractOberthur73} from "./smartcards/pki/oberthur73/OberthurModel";
+import {Oberthur} from "./smartcards/pki/oberthur73/Oberthur";
+import {AbstractIdemia} from "./smartcards/pki/idemia82/IdemiaModel";
+import {Idemia} from "./smartcards/pki/idemia82/Idemia";
 /*import { EidLux } from './smartcards/eid/lux/EidLux';
 import { LocalConnection } from '../core/client/Connection';
 import { Mobib } from './smartcards/mobib/mobib';
 import { LuxTrust } from './smartcards/pki/luxtrust/LuxTrust';
 import { Ocra } from './smartcards/ocra/ocra';
-import { Aventra } from './smartcards/pki/aventra/Aventra';
+
 import { Oberthur } from './smartcards/pki/oberthur/Oberthur';
 import { PIV } from './smartcards/piv/piv';
 import { AbstractEidBE } from './smartcards/eid/be/EidBeModel';
@@ -81,8 +87,9 @@ const CONTAINER_FILE_EXCHANGE = CONTAINER_NEW_CONTEXT_PATH + 'file-exchange';
 const CONTAINER_LUXTRUST = CONTAINER_NEW_CONTEXT_PATH + 'luxtrust';
 const CONTAINER_MOBIB = CONTAINER_NEW_CONTEXT_PATH + 'mobib';
 const CONTAINER_OCRA = CONTAINER_NEW_CONTEXT_PATH + 'ocra';
-const CONTAINER_AVENTRA = CONTAINER_NEW_CONTEXT_PATH + 'aventra';
-const CONTAINER_OBERTHUR = CONTAINER_NEW_CONTEXT_PATH + 'oberthur';
+const CONTAINER_AVENTRA = CONTAINER_NEW_CONTEXT_PATH + 'aventra4';
+const CONTAINER_OBERTHUR = CONTAINER_NEW_CONTEXT_PATH + 'oberthur_73';
+const CONTAINER_IDEMIA = CONTAINER_NEW_CONTEXT_PATH + 'idemia_cosmo_81R2';
 const CONTAINER_PIV = CONTAINER_NEW_CONTEXT_PATH + 'piv';
 const CONTAINER_PTEID = CONTAINER_NEW_CONTEXT_PATH + 'pteid';
 const CONTAINER_PKCS11 = CONTAINER_NEW_CONTEXT_PATH + 'pkcs11';
@@ -98,6 +105,18 @@ export class ModuleFactory implements AbstractFactory {
     public createEidBE(reader_id: string): AbstractEidBE {
         //t1cApiUrl is passed
         return new EidBe(this.url, CONTAINER_BEID, this.connection, reader_id);
+    }
+
+    public createAventra4(reader_id: string): AbstractAventra {
+        return new Aventra(this.url, CONTAINER_AVENTRA, this.connection, reader_id);
+    }
+
+    public createOberthur(reader_id: string): AbstractOberthur73 {
+        return new Oberthur(this.url, CONTAINER_OBERTHUR, this.connection, reader_id);
+    }
+
+    public createIdemia(reader_id: string): AbstractIdemia {
+        return new Idemia(this.url, CONTAINER_IDEMIA, this.connection, reader_id);
     }
 
 /*    public createDNIe(reader_id?: string): AbstractDNIe {
@@ -140,9 +159,7 @@ export class ModuleFactory implements AbstractFactory {
         return new Ocra(this.url, CONTAINER_OCRA, this.connection, reader_id);
     }
 
-    public createAventraNO(reader_id?: string): AbstractAventra {
-        return new Aventra(this.url, CONTAINER_AVENTRA, this.connection, reader_id);
-    }
+
 
     public createOberthurNO(reader_id?: string): AbstractOberthur {
         return new Oberthur(this.url, CONTAINER_OBERTHUR, this.connection, reader_id);

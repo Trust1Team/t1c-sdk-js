@@ -1,11 +1,3 @@
-var Options = (function () {
-    function Options(parseCerts, filters) {
-        this.parseCerts = parseCerts;
-        this.filters = filters;
-    }
-    return Options;
-}());
-export { Options };
 var RequestOptions = (function () {
     function RequestOptions(params, callback) {
         this.params = params;

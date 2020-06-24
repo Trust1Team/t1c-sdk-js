@@ -1,12 +1,7 @@
-import {T1CLibException} from '../../core/exceptions/CoreExceptions';
-import {
-    CertificateResponse, CertificatesResponse, DataArrayResponse, DataObjectResponse, DataResponse,
-    T1CResponse
-} from '../../core/service/CoreModel';
-import {LocalConnection} from '../../core/client/Connection';
-
 /**
  * @author Michallis Pashidis
+ *
+ * Share models
  */
 
 // classes
@@ -15,7 +10,7 @@ export class OptionalPin {
 }
 
 export class AuthenticateOrSignData extends OptionalPin {
-    constructor(public algorithm_reference: string, public data: string, public pin?: string, public pace?: string) {
+    constructor(public algorithm: string, public data: string, public pin?: string, public pace?: string) {
         super(pin, pace);
     }
 }
@@ -34,4 +29,8 @@ export class ResetPinData {
 export class PinTryCounterData {
     constructor(public pin_reference: string) {
     }
+}
+
+export class Options {
+    constructor(public filters?: string[]) {}
 }

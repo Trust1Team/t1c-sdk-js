@@ -147,32 +147,4 @@ var BeidRnDataResponse = (function (_super) {
     return BeidRnDataResponse;
 }(DataObjectResponse));
 export { BeidRnDataResponse };
-var OptionalPin = (function () {
-    function OptionalPin(pin, pace, private_key_reference) {
-        this.pin = pin;
-        this.pace = pace;
-    }
-    return OptionalPin;
-}());
-export { OptionalPin };
-var Options = (function () {
-    function Options(filters) {
-        this.filters = filters;
-    }
-    return Options;
-}());
-export { Options };
-var AuthenticateOrSignData = (function (_super) {
-    __extends(AuthenticateOrSignData, _super);
-    function AuthenticateOrSignData(algorithm_reference, data, pin, pace) {
-        var _this = _super.call(this, pin, pace) || this;
-        _this.algorithm_reference = algorithm_reference;
-        _this.data = data;
-        _this.pin = pin;
-        _this.pace = pace;
-        return _this;
-    }
-    return AuthenticateOrSignData;
-}(OptionalPin));
-export { AuthenticateOrSignData };
 //# sourceMappingURL=EidBeModel.js.map

@@ -35,6 +35,9 @@ var T1CClient = (function () {
         this.beid = function (reader_id) {
             return _this.moduleFactory.createEidBE(reader_id);
         };
+        this.aventra = function (reader_id) {
+            return _this.moduleFactory.createAventra4(reader_id);
+        };
         this.localConfig = cfg;
         this.connection = new LocalConnection(this.localConfig);
         this.authConnection = new LocalAuthConnection(this.localConfig);

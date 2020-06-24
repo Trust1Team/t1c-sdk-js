@@ -1,5 +1,4 @@
 import { RequestHandler } from "../../../../util/RequestHandler";
-import { ResponseHandler } from "../../../../util/ResponseHandler";
 var EidBe = (function () {
     function EidBe(baseUrl, containerUrl, connection, reader_id) {
         this.baseUrl = baseUrl;
@@ -9,11 +8,7 @@ var EidBe = (function () {
     }
     EidBe.prototype.allData = function (options, callback) {
         var requestOptions = RequestHandler.determineOptionsWithFilter(options);
-        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.ALL_DATA), requestOptions.params).then(function (data) {
-            return data;
-        }, function (err) {
-            return ResponseHandler.error(err, callback);
-        });
+        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.ALL_DATA), requestOptions.params);
     };
     EidBe.prototype.rnData = function (callback) {
         return this.connection.get(this.baseUrl, this.tokenApp(EidBe.RN_DATA), undefined, undefined, callback);

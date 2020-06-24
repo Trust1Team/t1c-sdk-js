@@ -2,8 +2,11 @@ import { CoreService } from './service/CoreService';
 import { DataResponse } from './service/CoreModel';
 import { T1CLibException } from './exceptions/CoreExceptions';
 import { AbstractEidBE } from '../modules/smartcards/eid/be/EidBeModel';
+import { AbstractAventra } from '../modules/smartcards/pki/aventra4/AventraModel';
+import { AbstractOberthur73 } from "../modules/smartcards/pki/oberthur73/OberthurModel";
 import { T1CConfig } from './T1CConfig';
 import { ModuleFactory } from "../modules/ModuleFactory";
+import { AbstractIdemia } from "../modules/smartcards/pki/idemia82/IdemiaModel";
 export declare class T1CClient {
     private _t1cInstalled;
     private localConfig;
@@ -23,6 +26,9 @@ export declare class T1CClient {
     config: () => T1CConfig;
     mf: () => ModuleFactory;
     beid: (reader_id: string) => AbstractEidBE;
+    aventra: (reader_id: string) => AbstractAventra;
+    oberthur: (reader_id: string) => AbstractOberthur73;
+    idemia: (reader_id: string) => AbstractIdemia;
     set t1cInstalled(value: boolean);
     retrieveEncryptedUserPin(callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse>;
 }

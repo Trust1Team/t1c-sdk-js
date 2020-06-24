@@ -1,8 +1,4 @@
-export declare class Options {
-    parseCerts: boolean;
-    filters?: string[] | undefined;
-    constructor(parseCerts: boolean, filters?: string[] | undefined);
-}
+import { Options } from "../modules/smartcards/Card";
 export declare class RequestOptions {
     params?: {
         [key: string]: string;
