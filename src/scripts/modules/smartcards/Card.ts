@@ -10,13 +10,13 @@ export class OptionalPin {
 }
 
 export class AuthenticateOrSignData extends OptionalPin {
-    constructor(public algorithm: string, public data: string, public pin?: string, public pace?: string) {
+    constructor(public algorithm: string, public data: string, public pin?: string, public pace?: string, public osDialog? :boolean) {
         super(pin, pace);
     }
 }
 
 export class VerifyPinData extends OptionalPin {
-    constructor(public private_key_reference?: string, public pin?: string, public pace?: string) {
+    constructor(public private_key_reference?: string, public pin?: string, public pace?: string, public osDialog? :boolean) {
         super(pin, pace);
     }
 }

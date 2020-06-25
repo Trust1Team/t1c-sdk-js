@@ -3,10 +3,10 @@
  * @since 2020
  */
 import {T1CLibException} from '../../../../core/exceptions/CoreExceptions';
-import {ResetPinData, VerifyPinData, Options, OptionalPin, AuthenticateOrSignData} from '../../Card';
+import {ResetPinData, VerifyPinData, OptionalPin, AuthenticateOrSignData} from '../../Card';
 import {AbstractOberthur73} from './OberthurModel';
 import {RequestHandler, RequestOptions} from '../../../../util/RequestHandler';
-import {LocalConnection, RequestBody} from '../../../../core/client/Connection';
+import {LocalConnection, QueryParams, RequestBody} from '../../../../core/client/Connection';
 import {
     CertificateResponse,
     DataArrayResponse,
@@ -46,24 +46,24 @@ export class Oberthur implements AbstractOberthur73 {
         return ['authenticate', 'sign', 'encrypt'];
     }
 
-    public rootCertificate(options?: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Oberthur.CERT_ROOT, RequestHandler.determineOptions(options, callback));
+    public rootCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+        return this.getCertificate(Oberthur.CERT_ROOT,callback);
     }
 
-    public issuerCertificate(options?: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Oberthur.CERT_ISSUER, RequestHandler.determineOptions(options, callback));
+    public issuerCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+        return this.getCertificate(Oberthur.CERT_ISSUER, callback);
     }
 
-    public authenticationCertificate(options?: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Oberthur.CERT_AUTHENTICATION, RequestHandler.determineOptions(options, callback));
+    public authenticationCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+        return this.getCertificate(Oberthur.CERT_AUTHENTICATION, callback);
     }
 
-    public signingCertificate(options?: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Oberthur.CERT_NON_REPUDIATION, RequestHandler.determineOptions(options, callback));
+    public signingCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+        return this.getCertificate(Oberthur.CERT_NON_REPUDIATION, callback);
     }
 
-    public encryptionCertificate(options?: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Oberthur.CERT_ENCRYPTION, RequestHandler.determineOptions(options, callback));
+    public encryptionCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+        return this.getCertificate(Oberthur.CERT_ENCRYPTION, callback);
     }
 
     public verifyPin(body: VerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
@@ -87,10 +87,8 @@ export class Oberthur implements AbstractOberthur73 {
         return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.SUPPORTED_ALGOS), undefined, undefined, callback);
     }
 
-    public allCerts(options: string[] | Options,
-                    callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
-        const reqOptions = RequestHandler.determineOptionsWithFilter(options);
-        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.ALL_CERTIFICATES), reqOptions.params)
+    public allCerts(queryParams: QueryParams, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.ALL_CERTIFICATES), queryParams)
     }
 
     public authenticate(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
@@ -98,33 +96,19 @@ export class Oberthur implements AbstractOberthur73 {
         return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.AUTHENTICATE), body, undefined, undefined, callback);
     }
 
-    public authenticateWithEncryptedPin(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
-        body.algorithm = body.algorithm.toLowerCase();
-        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.AUTHENTICATE), body, undefined, undefined, callback);
-    }
-
-    public signData(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
+    public sign(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
         return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.SIGN_DATA), body, undefined, undefined, callback);
     }
 
-    public signDataWithEncryptedPin(body: AuthenticateOrSignData,
-                                    callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
-        if (body.algorithm) {
-            body.algorithm = body.algorithm.toLowerCase();
-        }
-        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.SIGN_DATA), body, undefined, undefined, callback);
+    protected getCertificate(certUrl: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(certUrl), undefined, callback);
     }
 
-    protected getCertificate(certUrl: string, options: RequestOptions): Promise<CertificateResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(certUrl), undefined);
-    }
-
-    public allData(options: string[] | Options, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
-        const requestOptions = RequestHandler.determineOptionsWithFilter(options);
-        return this.connection.get(this.baseUrl, this.tokenApp(), requestOptions.params);
+    public allData(queryParams: QueryParams, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(), queryParams);
     }
 
     // resolves the reader_id in the base URL

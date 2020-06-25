@@ -3,8 +3,9 @@
  * @since 2020
  */
 import { T1CLibException } from '../../../../core/exceptions/CoreExceptions';
+import {QueryParams} from '../../../../core/client/Connection';
 import {CertificateResponse, DataArrayResponse, DataObjectResponse, T1CCertificate, T1CResponse} from '../../../../core/service/CoreModel';
-import {Options, ResetPinData, VerifyPinData} from '../../Card';
+import {AuthenticateOrSignData, ResetPinData, VerifyPinData} from '../../Card';
 
 export interface AbstractOberthur73 {
     allDataFilters(): string[];
@@ -13,21 +14,19 @@ export interface AbstractOberthur73 {
 
     allAlgoRefsForAuthentication(callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse>;
     allAlgoRefsForSigning(callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse>;
-    allData(filters: string[], callback?: (error: T1CLibException, data: AventraAllDataResponse) => void): Promise<AventraAllDataResponse>;
+    allData(queryParams:QueryParams, callback?: (error: T1CLibException, data: AventraAllDataResponse) => void): Promise<AventraAllDataResponse>;
 
-    allCerts(filters: string[], callback?: (error: T1CLibException, data: AventraAllCertsResponse) => void): Promise<AventraAllCertsResponse>;
-    rootCertificate(options?: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
-    issuerCertificate(options?: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
-    authenticationCertificate(options?: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
-    signingCertificate(options?: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
-    encryptionCertificate(options?: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+    allCerts(queryParams:QueryParams, callback?: (error: T1CLibException, data: AventraAllCertsResponse) => void): Promise<AventraAllCertsResponse>;
+    rootCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+    issuerCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+    authenticationCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+    signingCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+    encryptionCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
     verifyPin(body: VerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse>;
     resetPin(body: ResetPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse>;
 
-    authenticate: (body: any, callback?: (error: T1CLibException, data: AventraTxResponse) => void) => Promise<AventraTxResponse>
-    authenticateWithEncryptedPin: (body: any, callback?: (error: T1CLibException, data: AventraTxResponse) => void) => Promise<AventraTxResponse>
-    signData: (body: any, callback?: (error: T1CLibException, data: AventraTxResponse) => void) => Promise<AventraTxResponse>
-    signDataWithEncryptedPin: (body: any, callback?: (error: T1CLibException, data: AventraTxResponse) => void) => Promise<AventraTxResponse>
+    authenticate: (body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: AventraTxResponse) => void) => Promise<AventraTxResponse>
+    sign: (body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: AventraTxResponse) => void) => Promise<AventraTxResponse>
     allAlgoRefsForSigning(callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse>
     allAlgoRefsForAuthentication(callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse>
 }
