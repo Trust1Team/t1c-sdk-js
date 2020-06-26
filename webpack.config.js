@@ -55,11 +55,12 @@ module.exports = (env, argv) => {
       rules: [
         {
           test: /\.js$/,
+          // exclude: /(node_modules|bower_components)/,
           exclude: /node_modules\/(?!(pkijs|asn1|asn1js|pvutils)\/).*/,
           use: {
             loader: 'babel-loader',
             options: {
-              presets: ['es2015'],
+              presets: ['@babel/preset-env']
             },
           },
         },

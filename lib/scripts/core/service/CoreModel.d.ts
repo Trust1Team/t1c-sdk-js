@@ -4,17 +4,12 @@ export interface AbstractCore {
     getConsent(title: string, codeWord: string, durationInDays?: number, alertLevel?: string, alertPosition?: string, type?: string, timeoutInSeconds?: number, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
     getImplicitConsent(codeWord: string, durationInDays?: number, type?: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
     info(callback?: (error: T1CLibException, data: InfoResponse) => void): void | Promise<InfoResponse>;
-    infoBrowser(callback?: (error: T1CLibException | undefined, data: BrowserInfoResponse) => void): Promise<BrowserInfoResponse> | undefined;
-    pollCardInserted(secondsToPollCard?: number, callback?: (error: T1CLibException, data: CardReader) => void, connectReader?: () => void, insertCard?: () => void, cardTimeout?: () => void): Promise<CardReader>;
-    pollReadersWithCards(secondsToPollCard?: number, callback?: (error: T1CLibException, data: CardReadersResponse) => void, connectReader?: () => void, insertCard?: () => void, cardTimeout?: () => void): Promise<CardReadersResponse>;
-    pollReaders(secondsToPollReader?: number, callback?: (error: T1CLibException, data: CardReadersResponse) => void, connectReader?: () => void, readerTimeout?: () => void): Promise<CardReadersResponse>;
     reader(reader_id: string, callback?: (error: T1CLibException, data: SingleReaderResponse) => void): Promise<SingleReaderResponse>;
     readers(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
     readersCardAvailable(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
     readersCardsUnavailable(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
     getUrl(): string;
-    infoBrowserSync(): BrowserInfoResponse;
-    checkGclVersion(client: T1CClient, gclVersion?: string): Promise<CheckGclVersionResponse>;
+    checkT1cApiVersion(client: T1CClient, t1cVersion?: string): Promise<CheckT1CVersionResponse>;
     version(): Promise<string>;
 }
 export declare class T1CResponse {
@@ -46,10 +41,48 @@ export declare class DataObjectResponse extends T1CResponse {
         [key: string]: any;
     }, success: boolean);
 }
-export declare class InfoResponse extends T1CResponse {
-    data: T1CInfo;
-    success: boolean;
-    constructor(data: T1CInfo, success: boolean);
+export declare class InfoOS {
+    architecture: String;
+    os: String;
+    version: String;
+    constructor(architecture: String, os: String, version: String);
+}
+export declare class InfoJava {
+    runtime: String;
+    spec: String;
+    java: String;
+    constructor(runtime: String, spec: String, java: String);
+}
+export declare class InfoUser {
+    timezone: String;
+    country: String;
+    language: String;
+    home: String;
+    tempDir: String;
+    constructor(timezone: String, country: String, language: String, home: String, tempDir: String);
+}
+export declare class InfoService {
+    url: String;
+    apiPort: String;
+    gRpcPort: String;
+    constructor(url: String, apiPort: String, gRpcPort: String);
+}
+export declare class InfoApi {
+    service: InfoService;
+    activated: boolean;
+    citrix: boolean;
+    uid: String;
+    modules: Array<String>;
+    version: String;
+    logLevel: String;
+    constructor(service: InfoService, activated: boolean, citrix: boolean, uid: String, modules: Array<String>, version: String, logLevel: String);
+}
+export declare class InfoResponse {
+    t1CinfoOS: InfoOS;
+    t1CInfoJava: InfoJava;
+    t1CInfoUser: InfoUser;
+    t1CInfoAPI: InfoApi;
+    constructor(t1CinfoOS: InfoOS, t1CInfoJava: InfoJava, t1CInfoUser: InfoUser, t1CInfoAPI: InfoApi);
 }
 export declare class T1CInfo {
     activated: boolean;
@@ -128,21 +161,20 @@ export declare class CertificatesResponse extends T1CResponse {
 export declare class T1CCertificate {
     base64: string;
     id?: string | undefined;
-    parsed?: any;
-    constructor(base64: string, id?: string | undefined, parsed?: any);
+    constructor(base64: string, id?: string | undefined);
 }
 export declare class SingleReaderResponse extends T1CResponse {
     data: CardReader;
     success: boolean;
     constructor(data: CardReader, success: boolean);
 }
-export declare class CheckGclVersion {
+export declare class CheckT1CVersion {
     outDated: boolean;
     downloadLink?: string | undefined;
     constructor(outDated: boolean, downloadLink?: string | undefined);
 }
-export declare class CheckGclVersionResponse extends T1CResponse {
-    data: CheckGclVersion;
+export declare class CheckT1CVersionResponse extends T1CResponse {
+    data: CheckT1CVersion;
     success: boolean;
-    constructor(data: CheckGclVersion, success: boolean);
+    constructor(data: CheckT1CVersion, success: boolean);
 }
