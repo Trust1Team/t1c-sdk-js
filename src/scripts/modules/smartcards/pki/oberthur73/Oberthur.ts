@@ -1,12 +1,11 @@
 /**
- * @author Michallis Pashidis
+ * @author Trust1Team
  * @since 2020
  */
 import {T1CLibException} from '../../../../core/exceptions/CoreExceptions';
-import {ResetPinData, VerifyPinData, OptionalPin, AuthenticateOrSignData} from '../../Card';
+import {ResetPinData, VerifyPinData, AuthenticateOrSignData} from '../../Card';
 import {AbstractOberthur73} from './OberthurModel';
-import {RequestHandler, RequestOptions} from '../../../../util/RequestHandler';
-import {LocalConnection, QueryParams, RequestBody} from '../../../../core/client/Connection';
+import {LocalConnection, QueryParams} from '../../../../core/client/Connection';
 import {
     CertificateResponse,
     DataArrayResponse,
@@ -19,6 +18,7 @@ export class Oberthur implements AbstractOberthur73 {
     static PATH_READERS = '/readers';
     static CONTAINER_PREFIX = 'oberthur_73';
     static RESET_PIN = '/reset-pin';
+    static ALL_DATA = '/all-data';
     static ALL_CERTIFICATES = '/cert-list';
     static AUTHENTICATE = '/authenticate';
     static CERT_ROOT = '/root-cert';
@@ -35,11 +35,11 @@ export class Oberthur implements AbstractOberthur73 {
 
 // filters
     public allDataFilters() {
-        return ['applet-info', 'root_certificate', 'authentication-certificate', 'encryption_certificate', 'issuer_certificate', 'signing_certificate'];
+        return ['rootCertificate', 'authenticationCertificate', 'encryptionCertificate', 'nonRepudiationCertificate', 'issuerCertificate'];
     }
 
     public allCertFilters() {
-        return ['rootCertificate', 'authenticationCertificate', 'encryption_certificate', 'issuer_certificate', 'nonRepudiationCertificate'];
+        return ['rootCertificate', 'authenticationCertificate', 'encryptionCertificate', 'nonRepudiationCertificate', 'issuerCertificate'];
     }
 
     public allKeyRefs() {
@@ -67,10 +67,6 @@ export class Oberthur implements AbstractOberthur73 {
     }
 
     public verifyPin(body: VerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
-        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.VERIFY_PIN), body, undefined, undefined, callback);
-    }
-
-    public verifyPinWithEncryptedPin(body: VerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
         return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.VERIFY_PIN), body, undefined, undefined, callback);
     }
 
@@ -108,7 +104,7 @@ export class Oberthur implements AbstractOberthur73 {
     }
 
     public allData(queryParams: QueryParams, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(), queryParams);
+        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.ALL_DATA), queryParams);
     }
 
     // resolves the reader_id in the base URL

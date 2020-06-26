@@ -12,6 +12,7 @@ export declare class Oberthur implements AbstractOberthur73 {
     static PATH_READERS: string;
     static CONTAINER_PREFIX: string;
     static RESET_PIN: string;
+    static ALL_DATA: string;
     static ALL_CERTIFICATES: string;
     static AUTHENTICATE: string;
     static CERT_ROOT: string;
@@ -33,7 +34,6 @@ export declare class Oberthur implements AbstractOberthur73 {
     signingCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
     encryptionCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
     verifyPin(body: VerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse>;
-    verifyPinWithEncryptedPin(body: VerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse>;
     resetPin(body: ResetPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse>;
     allAlgoRefsForAuthentication(callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse>;
     allAlgoRefsForSigning(callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse>;

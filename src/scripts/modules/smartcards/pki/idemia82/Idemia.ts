@@ -1,11 +1,10 @@
 /**
- * @author Michallis Pashidis
+ * @author Trust1Team
  * @since 2020
  */
 import {T1CLibException} from '../../../../core/exceptions/CoreExceptions';
-import {ResetPinData, VerifyPinData, Options, OptionalPin, AuthenticateOrSignData} from '../../Card';
-import {RequestHandler, RequestOptions} from '../../../../util/RequestHandler';
-import {LocalConnection} from '../../../../core/client/Connection';
+import {ResetPinData, VerifyPinData, AuthenticateOrSignData} from '../../Card';
+import {LocalConnection, QueryParams} from '../../../../core/client/Connection';
 import {
     CertificateResponse,
     DataArrayResponse,
@@ -15,20 +14,19 @@ import {
 import {AbstractIdemia} from "./IdemiaModel";
 
 export class Idemia implements AbstractIdemia {
+    static CONTAINER_PREFIX = 'idemia_cosmo_82';
     static PATH_TOKEN_APP = '/apps/token';
     static PATH_READERS = '/readers';
-    static CONTAINER_PREFIX = 'idemia_cosmo_82';
     static RESET_PIN = '/reset-pin';
+    static ALL_DATA = '/all-data';
     static ALL_CERTIFICATES = '/cert-list';
     static AUTHENTICATE = '/authenticate';
-    static CERT_ROOT = '/root';
-    static CERT_AUTHENTICATION = '/authentication';
-    static CERT_NON_REPUDIATION = '/non-repudiation';
-    static CERT_ISSUER = '/issuer';
-    static CERT_SIGNING = '/signing';
-    static CERT_ENCRYPTION = '/encryption';
-    static CERT_CITIZEN = '/citizen';
-    static CERT_RRN = '/enc-cert';
+    static CERT_ROOT = '/root-cert';
+    static CERT_AUTHENTICATION = '/authentication-cert';
+    static CERT_NON_REPUDIATION = '/nonrepudiation-cert';
+    static CERT_ISSUER = '/issuer-cert';
+    static CERT_ENCRYPTION = '/encryption-cert';
+    static CERT_RRN = '/encryption-cert';
     static SIGN_DATA = '/sign';
     static VERIFY_PIN = '/verify-pin';
     static SUPPORTED_ALGOS = '/supported-algoritms'
@@ -37,42 +35,38 @@ export class Idemia implements AbstractIdemia {
 
 // filters
     public allDataFilters() {
-        return ['applet-info', 'root_certificate', 'authentication-certificate', 'encryption_certificate', 'issuer_certificate', 'signing_certificate'];
+        return ['rootCertificate', 'authenticationCertificate', 'nonRepudiationCertificate', 'issuerCertificate'];
     }
 
     public allCertFilters() {
-        return ['root_certificate', 'authentication-certificate', 'encryption_certificate', 'issuer_certificate', 'signing_certificate'];
+        return ['rootCertificate', 'authenticationCertificate', 'nonRepudiationCertificate', 'issuerCertificate'];
     }
 
     public allKeyRefs() {
         return ['authenticate', 'sign', 'encrypt'];
     }
 
-    public rootCertificate(options?: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Idemia.CERT_ROOT, RequestHandler.determineOptions(options, callback));
+    public rootCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+        return this.getCertificate(Idemia.CERT_ROOT,callback);
     }
 
-    public issuerCertificate(options?: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Idemia.CERT_ISSUER, RequestHandler.determineOptions(options, callback));
+    public issuerCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+        return this.getCertificate(Idemia.CERT_ISSUER, callback);
     }
 
-    public authenticationCertificate(options?: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Idemia.CERT_AUTHENTICATION, RequestHandler.determineOptions(options, callback));
+    public authenticationCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+        return this.getCertificate(Idemia.CERT_AUTHENTICATION, callback);
     }
 
-    public signingCertificate(options?: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Idemia.CERT_SIGNING, RequestHandler.determineOptions(options, callback));
+    public signingCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+        return this.getCertificate(Idemia.CERT_NON_REPUDIATION, callback);
     }
 
-    public encryptionCertificate(options?: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Idemia.CERT_ENCRYPTION, RequestHandler.determineOptions(options, callback));
+    public encryptionCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+        return this.getCertificate(Idemia.CERT_ENCRYPTION, callback);
     }
 
     public verifyPin(body: VerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
-        return this.connection.post(this.baseUrl, this.tokenApp(Idemia.VERIFY_PIN), body, undefined, undefined, callback);
-    }
-
-    public verifyPinWithEncryptedPin(body: VerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
         return this.connection.post(this.baseUrl, this.tokenApp(Idemia.VERIFY_PIN), body, undefined, undefined, callback);
     }
 
@@ -89,10 +83,8 @@ export class Idemia implements AbstractIdemia {
         return this.connection.get(this.baseUrl, this.tokenApp(Idemia.SUPPORTED_ALGOS), undefined, undefined, callback);
     }
 
-    public allCerts(options: string[] | Options,
-                    callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
-        const reqOptions = RequestHandler.determineOptionsWithFilter(options);
-        return this.connection.get(this.baseUrl, this.tokenApp(Idemia.ALL_CERTIFICATES), reqOptions.params)
+    public allCerts(queryParams: QueryParams, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(Idemia.ALL_CERTIFICATES), queryParams)
     }
 
     public authenticate(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
@@ -100,33 +92,19 @@ export class Idemia implements AbstractIdemia {
         return this.connection.post(this.baseUrl, this.tokenApp(Idemia.AUTHENTICATE), body, undefined, undefined, callback);
     }
 
-    public authenticateWithEncryptedPin(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
-        body.algorithm = body.algorithm.toLowerCase();
-        return this.connection.post(this.baseUrl, this.tokenApp(Idemia.AUTHENTICATE), body, undefined, undefined, callback);
-    }
-
-    public signData(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
+    public sign(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
         return this.connection.post(this.baseUrl, this.tokenApp(Idemia.SIGN_DATA), body, undefined, undefined, callback);
     }
 
-    public signDataWithEncryptedPin(body: AuthenticateOrSignData,
-                                    callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
-        if (body.algorithm) {
-            body.algorithm = body.algorithm.toLowerCase();
-        }
-        return this.connection.post(this.baseUrl, this.tokenApp(Idemia.SIGN_DATA), body, undefined, undefined, callback);
+    protected getCertificate(certUrl: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(certUrl), undefined, callback);
     }
 
-    protected getCertificate(certUrl: string, options: RequestOptions): Promise<CertificateResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Idemia.ALL_CERTIFICATES + certUrl), undefined);
-    }
-
-    public allData(options: string[] | Options, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
-        const requestOptions = RequestHandler.determineOptionsWithFilter(options);
-        return this.connection.get(this.baseUrl, this.tokenApp(), requestOptions.params);
+    public allData(queryParams: QueryParams, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(Idemia.ALL_DATA), queryParams);
     }
 
     // resolves the reader_id in the base URL
