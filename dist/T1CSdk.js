@@ -3758,8 +3758,10 @@ var CertificatesResponse = (function (_super) {
 }(T1CResponse));
 exports.CertificatesResponse = CertificatesResponse;
 var T1CCertificate = (function () {
-    function T1CCertificate(base64, id) {
-        this.base64 = base64;
+    function T1CCertificate(certificate, certificates, certificateType, id) {
+        this.certificate = certificate;
+        this.certificates = certificates;
+        this.certificateType = certificateType;
         this.id = id;
     }
     return T1CCertificate;
@@ -5613,7 +5615,7 @@ var EidBe = (function () {
         var requestOptions = RequestHandler_1.RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(this.baseUrl, this.tokenApp(EidBe.ALL_DATA), requestOptions.params);
     };
-    EidBe.prototype.rnData = function (callback) {
+    EidBe.prototype.biometric = function (callback) {
         return this.connection.get(this.baseUrl, this.tokenApp(EidBe.RN_DATA), undefined, undefined, callback);
     };
     EidBe.prototype.address = function (callback) {
@@ -5626,24 +5628,21 @@ var EidBe = (function () {
         return this.connection.get(this.baseUrl, this.tokenApp(EidBe.PHOTO), undefined, undefined, callback);
     };
     EidBe.prototype.rootCertificate = function (options, callback) {
-        return this.getCertificate(EidBe.CERT_ROOT, RequestHandler_1.RequestHandler.determineOptions(options, callback));
+        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.CERT_ROOT), undefined, undefined, callback);
     };
-    EidBe.prototype.citizenCertificate = function (options, callback) {
-        return this.getCertificate(EidBe.CERT_CITIZEN, RequestHandler_1.RequestHandler.determineOptions(options, callback));
+    EidBe.prototype.intermediateCertificates = function (options, callback) {
+        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.CERT_INTERMEDIATE), undefined, undefined, callback);
     };
     EidBe.prototype.authenticationCertificate = function (options, callback) {
-        return this.getCertificate(EidBe.CERT_AUTHENTICATION, RequestHandler_1.RequestHandler.determineOptions(options, callback));
+        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.CERT_AUTHENTICATION), undefined, undefined, callback);
     };
     EidBe.prototype.nonRepudiationCertificate = function (options, callback) {
-        return this.getCertificate(EidBe.CERT_NON_REPUDIATION, RequestHandler_1.RequestHandler.determineOptions(options, callback));
+        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.CERT_NON_REPUDIATION), undefined, undefined, callback);
     };
-    EidBe.prototype.rrnCertificate = function (options, callback) {
-        return this.getCertificate(EidBe.CERT_RRN, RequestHandler_1.RequestHandler.determineOptions(options, callback));
+    EidBe.prototype.encryptionCertificate = function (options, callback) {
+        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.CERT_ENCRYPTION), undefined, undefined, callback);
     };
-    EidBe.prototype.allAlgoRefsForAuthentication = function (callback) {
-        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.SUPPORTED_ALGOS), undefined, undefined, callback);
-    };
-    EidBe.prototype.allAlgoRefsForSigning = function (callback) {
+    EidBe.prototype.allAlgoRefs = function (callback) {
         return this.connection.get(this.baseUrl, this.tokenApp(EidBe.SUPPORTED_ALGOS), undefined, undefined, callback);
     };
     EidBe.prototype.allCerts = function (options, callback) {
@@ -5653,29 +5652,11 @@ var EidBe = (function () {
     EidBe.prototype.verifyPin = function (body, callback) {
         return this.connection.post(this.baseUrl, this.tokenApp(EidBe.VERIFY_PIN), body, undefined, undefined, callback);
     };
-    EidBe.prototype.verifyPinWithEncryptedPin = function (body, callback) {
-        return this.connection.post(this.baseUrl, this.tokenApp(EidBe.VERIFY_PIN), body, undefined, undefined, callback);
-    };
     EidBe.prototype.authenticate = function (body, callback) {
-        if (body.algorithm)
-            body.algorithm = body.algorithm.toLocaleLowerCase();
         return this.connection.post(this.baseUrl, this.tokenApp(EidBe.AUTHENTICATE), body, undefined, undefined, callback);
     };
-    EidBe.prototype.authenticateWithEncryptedPin = function (body, callback) {
-        body.algorithm = body.algorithm.toLocaleLowerCase();
-        return this.connection.post(this.baseUrl, this.tokenApp(EidBe.AUTHENTICATE), body, undefined, undefined, callback);
-    };
-    EidBe.prototype.signData = function (body, callback) {
-        body.algorithm = body.algorithm.toLocaleLowerCase();
+    EidBe.prototype.sign = function (body, callback) {
         return this.connection.post(this.baseUrl, this.tokenApp(EidBe.SIGN_DATA), body, undefined, undefined, callback);
-    };
-    EidBe.prototype.signDataWithEncryptedPin = function (body, callback) {
-        body.algorithm = body.algorithm.toLocaleLowerCase();
-        return this.connection.post(this.baseUrl, this.tokenApp(EidBe.SIGN_DATA), body, undefined, undefined, callback);
-    };
-    EidBe.prototype.getCertificate = function (certUrl, options) {
-        var self = this;
-        return self.connection.get(this.baseUrl, self.tokenApp(EidBe.ALL_CERTIFICATES + certUrl));
     };
     EidBe.prototype.tokenApp = function (path) {
         var suffix = this.containerUrl;
@@ -5690,26 +5671,22 @@ var EidBe = (function () {
     };
     EidBe.PATH_TOKEN_APP = '/apps/token';
     EidBe.PATH_READERS = '/readers';
-    EidBe.CONTAINER_PREFIX = 'beid';
     EidBe.ALL_DATA = '/all-data';
-    EidBe.ALL_CERTIFICATES = '/certificates';
-    EidBe.AUTHENTICATE = '/authenticate';
-    EidBe.CERT_ROOT = '/root';
-    EidBe.CERT_AUTHENTICATION = '/authentication';
-    EidBe.CERT_NON_REPUDIATION = '/non-repudiation';
-    EidBe.CERT_ISSUER = '/issuer';
-    EidBe.CERT_SIGNING = '/signing';
-    EidBe.CERT_ENCRYPTION = '/encryption';
-    EidBe.CERT_CITIZEN = '/citizen';
-    EidBe.CERT_RRN = '/rrn';
-    EidBe.SIGN_DATA = '/sign';
-    EidBe.RN_DATA = '/rn';
+    EidBe.ALL_CERTIFICATES = '/cert-list';
+    EidBe.CERT_ROOT = '/root-cert';
+    EidBe.CERT_AUTHENTICATION = '/authentication-cert';
+    EidBe.CERT_NON_REPUDIATION = '/nonrepudiation-cert';
+    EidBe.CERT_ENCRYPTION = '/encryption-cert';
+    EidBe.CERT_INTERMEDIATE = '/intermediate-certs';
+    EidBe.RN_DATA = '/biometric';
     EidBe.ADDRESS = '/address';
     EidBe.PHOTO = '/picture';
-    EidBe.TOKEN = '/token';
+    EidBe.TOKEN = '/info';
     EidBe.VERIFY_PIN = '/verify-pin';
+    EidBe.SIGN_DATA = '/sign';
+    EidBe.AUTHENTICATE = '/authenticate';
     EidBe.VERIFY_PRIV_KEY_REF = 'non-repudiation';
-    EidBe.SUPPORTED_ALGOS = '/supported-algoritms';
+    EidBe.SUPPORTED_ALGOS = '/supported-algorithms';
     return EidBe;
 }());
 exports.EidBe = EidBe;
@@ -10593,10 +10570,10 @@ var Idemia = (function () {
         this.reader_id = reader_id;
     }
     Idemia.prototype.allDataFilters = function () {
-        return ['rootCertificate', 'authenticationCertificate', 'encryptionCertificate', 'nonRepudiationCertificate', 'issuerCertificate'];
+        return ['rootCertificate', 'authenticationCertificate', 'nonRepudiationCertificate', 'issuerCertificate'];
     };
     Idemia.prototype.allCertFilters = function () {
-        return ['rootCertificate', 'authenticationCertificate', 'encryptionCertificate', 'nonRepudiationCertificate', 'issuerCertificate'];
+        return ['rootCertificate', 'authenticationCertificate', 'nonRepudiationCertificate', 'issuerCertificate'];
     };
     Idemia.prototype.allKeyRefs = function () {
         return ['authenticate', 'sign', 'encrypt'];
@@ -10700,141 +10677,212 @@ var __extends = (this && this.__extends) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 var CoreModel_1 = __webpack_require__(60);
-var BeidAddressResponse = (function (_super) {
-    __extends(BeidAddressResponse, _super);
-    function BeidAddressResponse(data, success) {
+var AddressResponse = (function (_super) {
+    __extends(AddressResponse, _super);
+    function AddressResponse(data, success) {
         var _this = _super.call(this, data, success) || this;
         _this.data = data;
         _this.success = success;
         return _this;
     }
-    return BeidAddressResponse;
+    return AddressResponse;
 }(CoreModel_1.DataObjectResponse));
-exports.BeidAddressResponse = BeidAddressResponse;
-var BeidAddress = (function () {
-    function BeidAddress(municipality, raw_data, signature, street_and_number, version, zipcode) {
+exports.AddressResponse = AddressResponse;
+var PictureResponse = (function (_super) {
+    __extends(PictureResponse, _super);
+    function PictureResponse(data, success) {
+        var _this = _super.call(this, data, success) || this;
+        _this.data = data;
+        _this.success = success;
+        return _this;
+    }
+    return PictureResponse;
+}(CoreModel_1.DataObjectResponse));
+exports.PictureResponse = PictureResponse;
+var VerifyPinResponse = (function (_super) {
+    __extends(VerifyPinResponse, _super);
+    function VerifyPinResponse(data, success) {
+        var _this = _super.call(this, data, success) || this;
+        _this.data = data;
+        _this.success = success;
+        return _this;
+    }
+    return VerifyPinResponse;
+}(CoreModel_1.DataObjectResponse));
+exports.VerifyPinResponse = VerifyPinResponse;
+var VerifyPinResponseData = (function () {
+    function VerifyPinResponseData(verified) {
+        this.verified = verified;
+    }
+    return VerifyPinResponseData;
+}());
+exports.VerifyPinResponseData = VerifyPinResponseData;
+var SignResponse = (function (_super) {
+    __extends(SignResponse, _super);
+    function SignResponse(data, success) {
+        var _this = _super.call(this, data, success) || this;
+        _this.data = data;
+        _this.success = success;
+        return _this;
+    }
+    return SignResponse;
+}(CoreModel_1.DataObjectResponse));
+exports.SignResponse = SignResponse;
+var SignResponseData = (function () {
+    function SignResponseData(data) {
+        this.data = data;
+    }
+    return SignResponseData;
+}());
+exports.SignResponseData = SignResponseData;
+var AuthenticateResponse = (function (_super) {
+    __extends(AuthenticateResponse, _super);
+    function AuthenticateResponse(data, success) {
+        var _this = _super.call(this, data, success) || this;
+        _this.data = data;
+        _this.success = success;
+        return _this;
+    }
+    return AuthenticateResponse;
+}(CoreModel_1.DataObjectResponse));
+exports.AuthenticateResponse = AuthenticateResponse;
+var AuthenticateResponseData = (function () {
+    function AuthenticateResponseData(data) {
+        this.data = data;
+    }
+    return AuthenticateResponseData;
+}());
+exports.AuthenticateResponseData = AuthenticateResponseData;
+var AddressData = (function () {
+    function AddressData(municipality, rawData, signature, streetAndNumber, version, zipcode) {
         this.municipality = municipality;
-        this.raw_data = raw_data;
+        this.rawData = rawData;
         this.signature = signature;
-        this.street_and_number = street_and_number;
+        this.streetAndNumber = streetAndNumber;
         this.version = version;
         this.zipcode = zipcode;
     }
-    return BeidAddress;
+    return AddressData;
 }());
-exports.BeidAddress = BeidAddress;
-var BeidAllCertsResponse = (function (_super) {
-    __extends(BeidAllCertsResponse, _super);
-    function BeidAllCertsResponse(data, success) {
+exports.AddressData = AddressData;
+var AllCertsResponse = (function (_super) {
+    __extends(AllCertsResponse, _super);
+    function AllCertsResponse(data, success) {
         var _this = _super.call(this, data, success) || this;
         _this.data = data;
         _this.success = success;
         return _this;
     }
-    return BeidAllCertsResponse;
+    return AllCertsResponse;
 }(CoreModel_1.DataObjectResponse));
-exports.BeidAllCertsResponse = BeidAllCertsResponse;
-var BeidAllCerts = (function () {
-    function BeidAllCerts(authentication_certificate, citizen_certificate, non_repudiation_certificate, root_certificate, rrn_certificate) {
+exports.AllCertsResponse = AllCertsResponse;
+var AllCerts = (function () {
+    function AllCerts(authentication_certificate, citizen_certificate, non_repudiation_certificate, root_certificate, rrn_certificate) {
         this.authentication_certificate = authentication_certificate;
         this.citizen_certificate = citizen_certificate;
         this.non_repudiation_certificate = non_repudiation_certificate;
         this.root_certificate = root_certificate;
         this.rrn_certificate = rrn_certificate;
     }
-    return BeidAllCerts;
+    return AllCerts;
 }());
-exports.BeidAllCerts = BeidAllCerts;
-var BeidAllDataResponse = (function (_super) {
-    __extends(BeidAllDataResponse, _super);
-    function BeidAllDataResponse(data, success) {
+exports.AllCerts = AllCerts;
+var AllDataResponse = (function (_super) {
+    __extends(AllDataResponse, _super);
+    function AllDataResponse(data, success) {
         var _this = _super.call(this, data, success) || this;
         _this.data = data;
         _this.success = success;
         return _this;
     }
-    return BeidAllDataResponse;
-}(BeidAllCertsResponse));
-exports.BeidAllDataResponse = BeidAllDataResponse;
-var BeidAllData = (function () {
-    function BeidAllData(address, authentication_certificate, citizen_certificate, non_repudiation_certificate, picture, rn, root_certificate, rrn_certificate, token_data) {
-        this.address = address;
-        this.authentication_certificate = authentication_certificate;
-        this.citizen_certificate = citizen_certificate;
-        this.non_repudiation_certificate = non_repudiation_certificate;
+    return AllDataResponse;
+}(CoreModel_1.DataObjectResponse));
+exports.AllDataResponse = AllDataResponse;
+var AllData = (function () {
+    function AllData(picture, biometric, address) {
         this.picture = picture;
-        this.rn = rn;
-        this.root_certificate = root_certificate;
-        this.rrn_certificate = rrn_certificate;
-        this.token_data = token_data;
+        this.biometric = biometric;
+        this.address = address;
     }
-    return BeidAllData;
+    return AllData;
 }());
-exports.BeidAllData = BeidAllData;
-var BeidTokenData = (function () {
-    function BeidTokenData(eid_compliant, electrical_perso_interface_version, electrical_perso_version, graphical_perso_version, label, prn_generation, raw_data, serial_number, version, version_rfu) {
-        this.eid_compliant = eid_compliant;
-        this.electrical_perso_interface_version = electrical_perso_interface_version;
-        this.electrical_perso_version = electrical_perso_version;
-        this.graphical_perso_version = graphical_perso_version;
-        this.label = label;
-        this.prn_generation = prn_generation;
-        this.raw_data = raw_data;
-        this.serial_number = serial_number;
+exports.AllData = AllData;
+var PictureData = (function () {
+    function PictureData(picture, signature, width, height) {
+        this.picture = picture;
+        this.signature = signature;
+        this.width = width;
+        this.height = height;
+    }
+    return PictureData;
+}());
+exports.PictureData = PictureData;
+var TokenData = (function () {
+    function TokenData(rawData, version, serialNumber, label, prnGeneration, eidCompliant, graphicalPersoVersion, versionRfu, electricalPersoVersion, electricalPersoInterfaceVersion, changeCounter, activated) {
+        this.rawData = rawData;
         this.version = version;
-        this.version_rfu = version_rfu;
+        this.serialNumber = serialNumber;
+        this.label = label;
+        this.prnGeneration = prnGeneration;
+        this.eidCompliant = eidCompliant;
+        this.graphicalPersoVersion = graphicalPersoVersion;
+        this.versionRfu = versionRfu;
+        this.electricalPersoVersion = electricalPersoVersion;
+        this.electricalPersoInterfaceVersion = electricalPersoInterfaceVersion;
+        this.changeCounter = changeCounter;
+        this.activated = activated;
     }
-    return BeidTokenData;
+    return TokenData;
 }());
-exports.BeidTokenData = BeidTokenData;
-var BeidTokenDataResponse = (function (_super) {
-    __extends(BeidTokenDataResponse, _super);
-    function BeidTokenDataResponse(data, success) {
+exports.TokenData = TokenData;
+var TokenDataResponse = (function (_super) {
+    __extends(TokenDataResponse, _super);
+    function TokenDataResponse(data, success) {
         var _this = _super.call(this, data, success) || this;
         _this.data = data;
         _this.success = success;
         return _this;
     }
-    return BeidTokenDataResponse;
+    return TokenDataResponse;
 }(CoreModel_1.DataObjectResponse));
-exports.BeidTokenDataResponse = BeidTokenDataResponse;
-var BeidRnData = (function () {
-    function BeidRnData(birth_date, birth_location, card_delivery_municipality, card_number, card_validity_date_begin, card_validity_date_end, chip_number, document_type, first_names, name, national_number, nationality, noble_condition, picture_hash, raw_data, sex, signature, special_status, third_name, version) {
-        this.birth_date = birth_date;
-        this.birth_location = birth_location;
-        this.card_delivery_municipality = card_delivery_municipality;
-        this.card_number = card_number;
-        this.card_validity_date_begin = card_validity_date_begin;
-        this.card_validity_date_end = card_validity_date_end;
-        this.chip_number = chip_number;
-        this.document_type = document_type;
-        this.first_names = first_names;
+exports.TokenDataResponse = TokenDataResponse;
+var BiometricData = (function () {
+    function BiometricData(birthDate, birthLocation, cardDeliveryMunicipality, cardNumber, cardValidityDateBegin, cardValidityDateEnd, chipNumber, documentType, firstNames, name, nationalNumber, nationality, nobleCondition, pictureHash, rawData, sex, signature, specialStatus, thirdName, version) {
+        this.birthDate = birthDate;
+        this.birthLocation = birthLocation;
+        this.cardDeliveryMunicipality = cardDeliveryMunicipality;
+        this.cardNumber = cardNumber;
+        this.cardValidityDateBegin = cardValidityDateBegin;
+        this.cardValidityDateEnd = cardValidityDateEnd;
+        this.chipNumber = chipNumber;
+        this.documentType = documentType;
+        this.firstNames = firstNames;
         this.name = name;
-        this.national_number = national_number;
+        this.nationalNumber = nationalNumber;
         this.nationality = nationality;
-        this.noble_condition = noble_condition;
-        this.picture_hash = picture_hash;
-        this.raw_data = raw_data;
+        this.nobleCondition = nobleCondition;
+        this.pictureHash = pictureHash;
+        this.rawData = rawData;
         this.sex = sex;
         this.signature = signature;
-        this.special_status = special_status;
-        this.third_name = third_name;
+        this.specialStatus = specialStatus;
+        this.thirdName = thirdName;
         this.version = version;
     }
-    return BeidRnData;
+    return BiometricData;
 }());
-exports.BeidRnData = BeidRnData;
-var BeidRnDataResponse = (function (_super) {
-    __extends(BeidRnDataResponse, _super);
-    function BeidRnDataResponse(data, success) {
+exports.BiometricData = BiometricData;
+var BiometricDataResponse = (function (_super) {
+    __extends(BiometricDataResponse, _super);
+    function BiometricDataResponse(data, success) {
         var _this = _super.call(this, data, success) || this;
         _this.data = data;
         _this.success = success;
         return _this;
     }
-    return BeidRnDataResponse;
+    return BiometricDataResponse;
 }(CoreModel_1.DataObjectResponse));
-exports.BeidRnDataResponse = BeidRnDataResponse;
+exports.BiometricDataResponse = BiometricDataResponse;
 
 
 /***/ }),
