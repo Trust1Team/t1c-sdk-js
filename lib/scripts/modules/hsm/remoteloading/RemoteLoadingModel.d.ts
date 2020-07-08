@@ -3,7 +3,7 @@ export interface AbstractRemoteLoading {
     atr(sessionId?: string, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse>;
     apdu(apdu: APDU, sessionId?: string, callback?: (error: T1CLibException, data: CommandResponse) => void): Promise<CommandResponse>;
     apdus(apdu: APDU[], sessionId?: string, callback?: (error: T1CLibException, data: CommandsResponse) => void): Promise<CommandsResponse>;
-    ccid(feature: string, command: string, sessionId?: string, callback?: (error: T1CLibException, data: CommandResponse) => void): Promise<CommandResponse>;
+    ccid(feature: CCIDFeature, command: string, sessionId?: string, callback?: (error: T1CLibException, data: CommandResponse) => void): Promise<CommandResponse>;
     ccidFeatures(sessionId?: string, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse>;
     command(tx: string, sessionId?: string, callback?: (error: T1CLibException, data: CommandResponse) => void): Promise<CommandResponse>;
     commands(tx: string[], sessionId?: string, callback?: (error: T1CLibException, data: CommandsResponse) => void): Promise<CommandsResponse>;
@@ -35,4 +35,9 @@ export declare class Command {
     tx: string;
     rx?: string | undefined;
     constructor(sw: string, tx: string, rx?: string | undefined);
+}
+export declare enum CCIDFeature {
+    VERIFY_PIN_DIRECT = "VERIFY_PIN_DIRECT",
+    MODIFY_PIN_DIRECT = "MODIFY_PIN_DIRECT",
+    GET_TLV_PROPERTIES = "GET_TLV_PROPERTIES"
 }
