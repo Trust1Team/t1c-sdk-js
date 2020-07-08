@@ -92,11 +92,11 @@ export class AllCertsResponse extends DataObjectResponse {
 
 export class AllCerts {
   constructor(
-    public authentication_certificate?: T1CCertificate,
-    public citizen_certificate?: T1CCertificate,
-    public non_repudiation_certificate?: T1CCertificate,
-    public root_certificate?: T1CCertificate,
-    public rrn_certificate?: T1CCertificate
+      public authenticationCertificate?: T1CCertificate,
+      public citizenCertificate?: T1CCertificate,
+      public nonRepudiationCertificate?: T1CCertificate,
+      public rootCertificate?: T1CCertificate,
+      public encryptionCertificate?: T1CCertificate
   ) {}
 }
 

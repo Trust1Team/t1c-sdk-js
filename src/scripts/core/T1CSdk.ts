@@ -17,6 +17,7 @@ import {T1CConfig} from './T1CConfig';
 import {Polyfills} from "../util/Polyfills";
 import {ModuleFactory} from "../modules/ModuleFactory";
 import {AbstractIdemia} from "../modules/smartcards/pki/idemia82/IdemiaModel";
+import {AbstractEmv} from "../modules/payment/emv/EmvModel";
 
 const urlVersion = "/v3";
 
@@ -149,6 +150,10 @@ export class T1CClient {
     // get instance for belgian eID card
     public beid = (reader_id: string): AbstractEidBE => {
         return this.moduleFactory.createEidBE(reader_id)
+    };
+    // get instance for EMV card
+    public emv = (reader_id: string): AbstractEmv => {
+        return this.moduleFactory.createEmv(reader_id)
     };
     // get instance for Aventra
     public aventra = (reader_id: string): AbstractAventra => {

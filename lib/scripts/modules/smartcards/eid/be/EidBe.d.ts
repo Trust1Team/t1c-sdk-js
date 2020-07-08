@@ -1,6 +1,6 @@
 import { LocalConnection } from '../../../../core/client/Connection';
 import { T1CLibException } from '../../../../core/exceptions/CoreExceptions';
-import { AbstractEidBE, AddressResponse, AuthenticateResponse, BiometricDataResponse, PictureResponse, SignResponse, TokenDataResponse } from './EidBeModel';
+import { AbstractEidBE, AddressResponse, AllCertsResponse, AuthenticateResponse, BiometricDataResponse, PictureResponse, SignResponse, TokenDataResponse } from './EidBeModel';
 import { CertificateResponse, DataArrayResponse, DataObjectResponse, T1CResponse } from '../../../../core/service/CoreModel';
 import { Options, AuthenticateOrSignData, VerifyPinData } from '../../TokenCard';
 export declare class EidBe implements AbstractEidBE {
@@ -38,7 +38,7 @@ export declare class EidBe implements AbstractEidBE {
     nonRepudiationCertificate(options: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
     encryptionCertificate(options: Options, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
     allAlgoRefs(callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse>;
-    allCerts(options: string[] | Options, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse>;
+    allCerts(options: string[] | Options, callback?: (error: T1CLibException, data: AllCertsResponse) => void): Promise<AllCertsResponse>;
     verifyPin(body: VerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse>;
     authenticate(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: AuthenticateResponse) => void): Promise<AuthenticateResponse>;
     sign(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: SignResponse) => void): Promise<SignResponse>;

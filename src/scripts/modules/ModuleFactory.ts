@@ -12,6 +12,8 @@ import {AbstractOberthur73} from "./smartcards/pki/oberthur73/OberthurModel";
 import {Oberthur} from "./smartcards/pki/oberthur73/Oberthur";
 import {AbstractIdemia} from "./smartcards/pki/idemia82/IdemiaModel";
 import {Idemia} from "./smartcards/pki/idemia82/Idemia";
+import {AbstractEmv} from "./payment/emv/EmvModel";
+import {Emv} from "./payment/emv/Emv";
 /*import { EidLux } from './smartcards/eid/lux/EidLux';
 import { LocalConnection } from '../core/client/Connection';
 import { Mobib } from './smartcards/mobib/mobib';
@@ -60,7 +62,7 @@ export interface AbstractFactory {
     createEidBE(reader_id?: string): AbstractEidBE;
     // createBeLawyer(reader_id?: string): AbstractBeLawyer;
     // createEidLUX(reader_id?: string): AbstractEidLUX;
-    // createEmv(reader_id?: string): AbstractEMV;
+    createEmv(reader_id?: string): AbstractEmv;
     // createWacom(): AbstractWacom;
     // createIsabel(reader_id?: string, runInUserSpace?: boolean): AbstractIsabel;
     // createLuxTrust(reader_id?: string): AbstractLuxTrust;
@@ -103,7 +105,6 @@ export class ModuleFactory implements AbstractFactory {
     constructor(private url: string, private connection: LocalConnection) {}
 
     public createEidBE(reader_id: string): AbstractEidBE {
-        //t1cApiUrl is passed
         return new EidBe(this.url, CONTAINER_BEID, this.connection, reader_id);
     }
 
@@ -117,6 +118,10 @@ export class ModuleFactory implements AbstractFactory {
 
     public createIdemia(reader_id: string): AbstractIdemia {
         return new Idemia(this.url, CONTAINER_IDEMIA, this.connection, reader_id);
+    }
+
+    public createEmv(reader_id: string): AbstractEmv {
+        return new Emv(this.url, CONTAINER_EMV, this.connection, reader_id);
     }
 
 /*    public createDNIe(reader_id?: string): AbstractDNIe {
@@ -135,9 +140,7 @@ export class ModuleFactory implements AbstractFactory {
         return new EidPt(this.url, CONTAINER_PTEID, this.connection, reader_id);
     }
 
-    public createEmv(reader_id?: string): AbstractEMV {
-        return new EMV(this.url, CONTAINER_EMV, this.connection, reader_id);
-    }
+
 
     public createWacom(): AbstractWacom {
         return new Wacom(this.url, CONTAINER_WACOM, this.connection, 'wacom-stu');

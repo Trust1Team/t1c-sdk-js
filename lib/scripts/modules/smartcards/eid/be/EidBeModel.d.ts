@@ -71,12 +71,12 @@ export declare class AllCertsResponse extends DataObjectResponse {
     constructor(data: AllCerts, success: boolean);
 }
 export declare class AllCerts {
-    authentication_certificate?: T1CCertificate | undefined;
-    citizen_certificate?: T1CCertificate | undefined;
-    non_repudiation_certificate?: T1CCertificate | undefined;
-    root_certificate?: T1CCertificate | undefined;
-    rrn_certificate?: T1CCertificate | undefined;
-    constructor(authentication_certificate?: T1CCertificate | undefined, citizen_certificate?: T1CCertificate | undefined, non_repudiation_certificate?: T1CCertificate | undefined, root_certificate?: T1CCertificate | undefined, rrn_certificate?: T1CCertificate | undefined);
+    authenticationCertificate?: T1CCertificate | undefined;
+    citizenCertificate?: T1CCertificate | undefined;
+    nonRepudiationCertificate?: T1CCertificate | undefined;
+    rootCertificate?: T1CCertificate | undefined;
+    encryptionCertificate?: T1CCertificate | undefined;
+    constructor(authenticationCertificate?: T1CCertificate | undefined, citizenCertificate?: T1CCertificate | undefined, nonRepudiationCertificate?: T1CCertificate | undefined, rootCertificate?: T1CCertificate | undefined, encryptionCertificate?: T1CCertificate | undefined);
 }
 export declare class AllDataResponse extends DataObjectResponse {
     data: AllData;

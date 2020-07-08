@@ -7,6 +7,7 @@ import { AbstractOberthur73 } from "../modules/smartcards/pki/oberthur73/Oberthu
 import { T1CConfig } from './T1CConfig';
 import { ModuleFactory } from "../modules/ModuleFactory";
 import { AbstractIdemia } from "../modules/smartcards/pki/idemia82/IdemiaModel";
+import { AbstractEmv } from "../modules/payment/emv/EmvModel";
 export declare class T1CClient {
     private _t1cInstalled;
     private localConfig;
@@ -26,6 +27,7 @@ export declare class T1CClient {
     config: () => T1CConfig;
     mf: () => ModuleFactory;
     beid: (reader_id: string) => AbstractEidBE;
+    emv: (reader_id: string) => AbstractEmv;
     aventra: (reader_id: string) => AbstractAventra;
     oberthur: (reader_id: string) => AbstractOberthur73;
     idemia: (reader_id: string) => AbstractIdemia;

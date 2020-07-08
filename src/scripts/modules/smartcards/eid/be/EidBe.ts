@@ -2,7 +2,7 @@ import {LocalConnection} from '../../../../core/client/Connection';
 import {T1CLibException} from '../../../../core/exceptions/CoreExceptions';
 import {
     AbstractEidBE,
-    AddressResponse, AuthenticateResponse,
+    AddressResponse, AllCertsResponse, AuthenticateResponse,
     BiometricDataResponse, PictureResponse, SignResponse,
     TokenDataResponse,
 } from './EidBeModel';
@@ -183,8 +183,8 @@ export class EidBe implements AbstractEidBE {
 
     public allCerts(
         options: string[] | Options,
-        callback?: (error: T1CLibException, data: DataObjectResponse) => void
-    ): Promise<DataObjectResponse> {
+        callback?: (error: T1CLibException, data: AllCertsResponse) => void
+    ): Promise<AllCertsResponse> {
         // @ts-ignore
         const reqOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
