@@ -19,22 +19,16 @@ export interface AbstractFileExchange {
     updateType(entity: string, type: string, timeout?: number, callback?: (error: T1CLibException, data: TypeResponse) => void): Promise<TypeResponse>;
     deleteType(entity: string, type: string, callback?: (error: T1CLibException, data: boolean) => void): Promise<boolean>;
 }
-export declare class ListFilesRequest {
-    path: string;
-    extensions: string[];
-    constructor(path: string, extensions: string[]);
-}
 export declare class File {
     extension: string;
     name: string;
     path: string;
+    relPath: string[];
     size: number;
-    type: string;
-    entity: string;
-    last_modification_time: string;
-    is_dir: boolean;
-    access_mode: AccessMode;
-    constructor(extension: string, name: string, path: string, size: number, type: string, entity: string, last_modification_time: string, is_dir: boolean, access_mode: AccessMode);
+    lastModificationTime: string;
+    isDir: boolean;
+    access: string;
+    constructor(extension: string, name: string, path: string, relPath: string[], size: number, lastModificationTime: string, isDir: boolean, access: string);
 }
 export declare class FileListResponse extends T1CResponse {
     data: FileList;
@@ -65,9 +59,9 @@ export declare class Type {
     appid?: string | undefined;
     entity?: string | undefined;
     type?: string | undefined;
-    abs_path?: string | undefined;
+    path?: string | undefined;
     files?: number | undefined;
-    constructor(appid?: string | undefined, entity?: string | undefined, type?: string | undefined, abs_path?: string | undefined, access_mode?: AccessMode, status?: string, files?: number | undefined);
+    constructor(appid?: string | undefined, entity?: string | undefined, type?: string | undefined, path?: string | undefined, access?: string, status?: TypeStatus, files?: number | undefined);
 }
 export declare class TypeList {
     types: Type[];
@@ -84,26 +78,7 @@ export declare class FileSort {
     static ASC: string;
     static DESC: string;
 }
-export declare class AccessMode {
-    static READ: string;
-    static WRITE: string;
-    static EXEC: string;
-    static READ_WRITE: string;
-    static READ_EXEC: string;
-    static WRITE_EXEC: string;
-    static READ_WRITE_EXEC: string;
-}
 export declare enum TypeStatus {
-    MAPPED = 0,
-    UNMAPPED = 1
-}
-export declare enum FileAction {
-    UPLOAD = 0,
-    DOWNLOAD = 1,
-    COPY = 2,
-    MOVE = 3
-}
-export declare class ModalType {
-    static INFO: string;
-    static CHOICE: string;
+    MAPPED = "MAPPED",
+    UNMAPPED = "UNMAPPED"
 }

@@ -173,7 +173,6 @@ export class CoreService implements AbstractCore {
               } else {
                 reject(
                   new T1CLibException(
-                    412,
                     '701',
                     'No version to check against was provided',
                     client
@@ -204,7 +203,6 @@ export class CoreService implements AbstractCore {
             // failure probably because GCL is not installed
             reject(
               new T1CLibException(
-                500,
                 '700',
                 'Could not retrieve GCL information',
                 client

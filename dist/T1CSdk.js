@@ -3510,8 +3510,7 @@ exports.f = {}.propertyIsEnumerable;
 Object.defineProperty(exports, "__esModule", { value: true });
 var ObjectUtil_1 = __webpack_require__(98);
 var T1CLibException = (function () {
-    function T1CLibException(status, code, description, client) {
-        this.status = status;
+    function T1CLibException(code, description, client) {
         this.code = code;
         this.description = description;
         this.client = client;
@@ -4507,42 +4506,15 @@ var GenericConnection = (function () {
                         return resolve(response.data);
                     })
                         .catch(function (error) {
+                        var _a, _b, _c, _d;
                         if (!error.code && !error.response) {
-                            var thrownError = new CoreExceptions_1.T1CLibException(500, '999', 'Network error occurred. Request could not be completed');
+                            var thrownError = new CoreExceptions_1.T1CLibException("900", 'Internal error');
                             callback(thrownError, null);
                             return reject(thrownError);
                         }
                         else {
-                            if (error.response) {
-                                if (error.response.data) {
-                                    if (error.response.data.message) {
-                                        callback(new CoreExceptions_1.T1CLibException(500, '' +
-                                            (error.response.data.code || error.code || '998'), error.response.data.message), undefined);
-                                        return reject(new CoreExceptions_1.T1CLibException(500, '' +
-                                            (error.response.data.code || error.code || '998'), error.response.data.message));
-                                    }
-                                    else if (error.response.data.description) {
-                                        callback(new CoreExceptions_1.T1CLibException(500, '' +
-                                            (error.response.data.code || error.code || '998'), error.response.data.description), null);
-                                        return reject(new CoreExceptions_1.T1CLibException(500, '' +
-                                            (error.response.data.code || error.code || '998'), error.response.data.description));
-                                    }
-                                    else {
-                                        callback(new CoreExceptions_1.T1CLibException(500, '' +
-                                            (error.response.data.code || error.code || '998'), error.response.data), null);
-                                        return reject(new CoreExceptions_1.T1CLibException(500, '' +
-                                            (error.response.data.code || error.code || '998'), error.response.data));
-                                    }
-                                }
-                                else {
-                                    callback(new CoreExceptions_1.T1CLibException(500, '' + error.code || '998', JSON.stringify(error.response)), null);
-                                    return reject(new CoreExceptions_1.T1CLibException(500, '' + error.code || '998', JSON.stringify(error.response)));
-                                }
-                            }
-                            else {
-                                callback(new CoreExceptions_1.T1CLibException(500, '' + error.code || '998', JSON.stringify(error)), null);
-                                return reject(new CoreExceptions_1.T1CLibException(500, '' + error.code || '998', JSON.stringify(error)));
-                            }
+                            callback(new CoreExceptions_1.T1CLibException((_a = error.response) === null || _a === void 0 ? void 0 : _a.data.code, (_b = error.response) === null || _b === void 0 ? void 0 : _b.data.description), null);
+                            return reject(new CoreExceptions_1.T1CLibException((_c = error.response) === null || _c === void 0 ? void 0 : _c.data.code, (_d = error.response) === null || _d === void 0 ? void 0 : _d.data.description));
                         }
                     });
                 }, function (err) {
@@ -4553,7 +4525,6 @@ var GenericConnection = (function () {
         else {
             var agentPortError = {
                 description: 'Running in Citrix environment but no Agent port was defined in config.',
-                status: 400,
                 code: '801',
             };
             callback(agentPortError, null);
@@ -4812,7 +4783,6 @@ var LocalTestConnection = (function (_super) {
         if (gclConfig.citrix && gclConfig.agentPort === -1) {
             var agentPortError = {
                 description: 'Running in Citrix environment but no Agent port was defined in config.',
-                status: 400,
                 code: '801',
             };
             callback(agentPortError, null);
@@ -5510,7 +5480,7 @@ var CoreService = (function () {
                         outdated = semver.ltr(installedGclVersion, client.config().t1cVersion);
                     }
                     else {
-                        reject(new CoreExceptions_1.T1CLibException(412, '701', 'No version to check against was provided', client));
+                        reject(new CoreExceptions_1.T1CLibException('701', 'No version to check against was provided', client));
                     }
                 }
                 if (outdated === true) {
@@ -5521,7 +5491,7 @@ var CoreService = (function () {
                 }
             }, function (err) {
                 console.error('Could not receive info', err);
-                reject(new CoreExceptions_1.T1CLibException(500, '700', 'Could not retrieve GCL information', client));
+                reject(new CoreExceptions_1.T1CLibException('700', 'Could not retrieve GCL information', client));
             });
         });
     };
@@ -5627,19 +5597,19 @@ var EidBe = (function () {
     EidBe.prototype.picture = function (callback) {
         return this.connection.get(this.baseUrl, this.tokenApp(EidBe.PHOTO), undefined, undefined, callback);
     };
-    EidBe.prototype.rootCertificate = function (options, callback) {
+    EidBe.prototype.rootCertificate = function (callback) {
         return this.connection.get(this.baseUrl, this.tokenApp(EidBe.CERT_ROOT), undefined, undefined, callback);
     };
-    EidBe.prototype.intermediateCertificates = function (options, callback) {
+    EidBe.prototype.intermediateCertificates = function (callback) {
         return this.connection.get(this.baseUrl, this.tokenApp(EidBe.CERT_INTERMEDIATE), undefined, undefined, callback);
     };
-    EidBe.prototype.authenticationCertificate = function (options, callback) {
+    EidBe.prototype.authenticationCertificate = function (callback) {
         return this.connection.get(this.baseUrl, this.tokenApp(EidBe.CERT_AUTHENTICATION), undefined, undefined, callback);
     };
-    EidBe.prototype.nonRepudiationCertificate = function (options, callback) {
+    EidBe.prototype.nonRepudiationCertificate = function (callback) {
         return this.connection.get(this.baseUrl, this.tokenApp(EidBe.CERT_NON_REPUDIATION), undefined, undefined, callback);
     };
-    EidBe.prototype.encryptionCertificate = function (options, callback) {
+    EidBe.prototype.encryptionCertificate = function (callback) {
         return this.connection.get(this.baseUrl, this.tokenApp(EidBe.CERT_ENCRYPTION), undefined, undefined, callback);
     };
     EidBe.prototype.allAlgoRefs = function (callback) {

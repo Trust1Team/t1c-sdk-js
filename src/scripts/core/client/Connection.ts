@@ -317,111 +317,28 @@ export abstract class GenericConnection implements Connection {
                 // check for generic network error
                 if (!error.code && !error.response) {
                   const thrownError = new T1CLibException(
-                    500,
-                    '999',
-                    'Network error occurred. Request could not be completed'
+                    "900",
+                    'Internal error',
                   );
                   // @ts-ignore
                   callback(thrownError, null);
                   return reject(thrownError);
                 } else {
-                  if (error.response) {
-                    if (error.response.data) {
-                      if (error.response.data.message) {
-                        // @ts-ignore
-                        callback(
-                          new T1CLibException(
-                            500,
-                            '' +
-                              (error.response.data.code || error.code || '998'),
-                            error.response.data.message
-                          ),
-                          undefined
-                        );
-                        return reject(
-                          new T1CLibException(
-                            500,
-                            '' +
-                              (error.response.data.code || error.code || '998'),
-                            error.response.data.message
-                          )
-                        );
-                      } else if (error.response.data.description) {
-                        // @ts-ignore
-                        callback(
-                          new T1CLibException(
-                            500,
-                            '' +
-                              (error.response.data.code || error.code || '998'),
-                            error.response.data.description
-                          ),
-                          null
-                        );
-                        return reject(
-                          new T1CLibException(
-                            500,
-                            '' +
-                              (error.response.data.code || error.code || '998'),
-                            error.response.data.description
-                          )
-                        );
-                      } else {
-                        // @ts-ignore
-                        callback(
-                          new T1CLibException(
-                            500,
-                            '' +
-                              (error.response.data.code || error.code || '998'),
-                            error.response.data
-                          ),
-                          null
-                        );
-                        return reject(
-                          new T1CLibException(
-                            500,
-                            '' +
-                              (error.response.data.code || error.code || '998'),
-                            error.response.data
-                          )
-                        );
-                      }
-                    } else {
                       // @ts-ignore
                       callback(
                         new T1CLibException(
-                          500,
-                          '' + error.code || '998',
-                          JSON.stringify(error.response)
+                          error.response?.data.code,
+                            error.response?.data.description
                         ),
                         null
                       );
                       return reject(
-                        new T1CLibException(
-                          500,
-                          '' + error.code || '998',
-                          JSON.stringify(error.response)
-                        )
+                          new T1CLibException(
+                              error.response?.data.code,
+                              error.response?.data.description
+                          ),
                       );
                     }
-                  } else {
-                    // @ts-ignore
-                    callback(
-                      new T1CLibException(
-                        500,
-                        '' + error.code || '998',
-                        JSON.stringify(error)
-                      ),
-                      null
-                    );
-                    return reject(
-                      new T1CLibException(
-                        500,
-                        '' + error.code || '998',
-                        JSON.stringify(error)
-                      )
-                    );
-                  }
-                }
               });
           },
           err => {
@@ -434,7 +351,6 @@ export abstract class GenericConnection implements Connection {
       const agentPortError: T1CLibException = {
         description:
           'Running in Citrix environment but no Agent port was defined in config.',
-        status: 400,
         code: '801',
       };
       callback(agentPortError, null);
@@ -1060,7 +976,6 @@ export class LocalTestConnection extends GenericConnection
       const agentPortError: T1CLibException = {
         description:
           'Running in Citrix environment but no Agent port was defined in config.',
-        status: 400,
         code: '801',
       };
       callback(agentPortError, null);
