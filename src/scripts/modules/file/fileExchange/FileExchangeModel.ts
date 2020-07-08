@@ -22,20 +22,16 @@ export interface AbstractFileExchange {
 }
 
 /* Model */
-export class ListFilesRequest {
-    constructor(public path: string, public extensions: string[]) {}
-}
 
 export class File {
     constructor(public extension: string,
                 public name: string,
                 public path: string,
+                public relPath: string[],
                 public size: number,
-                public type: string,
-                public entity: string,
-                public last_modification_time: string,
-                public is_dir: boolean,
-                public access_mode: AccessMode) {}
+                public lastModificationTime: string,
+                public isDir: boolean,
+                public access: string) {}
 }
 
 export class FileListResponse extends T1CResponse {
@@ -67,7 +63,7 @@ export class TypeResponse extends T1CResponse {
 }
 
 export class Type {
-    constructor(public appid?: string, public entity?: string, public type?: string, public abs_path?: string, access_mode?: AccessMode, status?: string, public files?: number) {}
+    constructor(public appid?: string, public entity?: string, public type?: string, public path?: string, access?: string, status?: TypeStatus, public files?: number) {}
 }
 
 export class TypeList {
@@ -81,30 +77,11 @@ export class Page {
 /* Enumerations */
 
 export class FileSort {
-    static ASC = 'asc';
-    static DESC = 'desc';
-}
-
-export class AccessMode {
-    static READ = 'r';
-    static WRITE = 'w';
-    static EXEC = 'x';
-    static READ_WRITE = 'rw';
-    static READ_EXEC = 'rx';
-    static WRITE_EXEC = 'wx';
-    static READ_WRITE_EXEC = 'rwx';
+    static ASC = 'ASC';
+    static DESC = 'DESC';
 }
 
 export enum TypeStatus {
-    MAPPED,
-    UNMAPPED
-}
-
-export enum FileAction {
-    UPLOAD, DOWNLOAD, COPY, MOVE
-}
-
-export class ModalType {
-    static INFO = 'info';
-    static CHOICE = 'choice';
+    MAPPED = "MAPPED",
+    UNMAPPED = "UNMAPPED"
 }
