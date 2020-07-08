@@ -105,7 +105,6 @@ export class EidBe implements AbstractEidBE {
     }
 
     public rootCertificate(
-        options: Options,
         callback?: (error: T1CLibException, data: CertificateResponse) => void
     ): Promise<CertificateResponse> {
         return this.connection.get(
@@ -118,7 +117,6 @@ export class EidBe implements AbstractEidBE {
     }
 
     public intermediateCertificates(
-        options: Options,
         callback?: (error: T1CLibException, data: CertificateResponse) => void
     ): Promise<CertificateResponse> {
         return this.connection.get(
@@ -131,7 +129,6 @@ export class EidBe implements AbstractEidBE {
     }
 
     public authenticationCertificate(
-        options: Options,
         callback?: (error: T1CLibException, data: CertificateResponse) => void
     ): Promise<CertificateResponse> {
         return this.connection.get(
@@ -144,7 +141,6 @@ export class EidBe implements AbstractEidBE {
     }
 
     public nonRepudiationCertificate(
-        options: Options,
         callback?: (error: T1CLibException, data: CertificateResponse) => void
     ): Promise<CertificateResponse> {
         return this.connection.get(
@@ -157,7 +153,6 @@ export class EidBe implements AbstractEidBE {
     }
 
     public encryptionCertificate(
-        options: Options,
         callback?: (error: T1CLibException, data: CertificateResponse) => void
     ): Promise<CertificateResponse> {
         return this.connection.get(
