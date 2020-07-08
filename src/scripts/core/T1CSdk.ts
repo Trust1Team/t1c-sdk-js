@@ -18,6 +18,8 @@ import {Polyfills} from "../util/Polyfills";
 import {ModuleFactory} from "../modules/ModuleFactory";
 import {AbstractIdemia} from "../modules/smartcards/pki/idemia82/IdemiaModel";
 import {AbstractEmv} from "../modules/payment/emv/EmvModel";
+import {AbstractFileExchange} from "../modules/file/fileExchange/FileExchangeModel";
+import {AbstractRemoteLoading} from "../modules/hsm/remoteloading/RemoteLoadingModel";
 
 const urlVersion = "/v3";
 
@@ -148,8 +150,16 @@ export class T1CClient {
         return this.moduleFactory;
     }
     // get instance for belgian eID card
+    public fileex = (): AbstractFileExchange => {
+        return this.moduleFactory.createFileExchange()
+    };
+    // get instance for belgian eID card
     public beid = (reader_id: string): AbstractEidBE => {
         return this.moduleFactory.createEidBE(reader_id)
+    };
+    // get instance for remote loading
+    public remoteloading = (reader_id: string): AbstractRemoteLoading => {
+        return this.moduleFactory.createRemoteLoading(reader_id)
     };
     // get instance for EMV card
     public emv = (reader_id: string): AbstractEmv => {

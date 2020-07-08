@@ -8,6 +8,8 @@ import { T1CConfig } from './T1CConfig';
 import { ModuleFactory } from "../modules/ModuleFactory";
 import { AbstractIdemia } from "../modules/smartcards/pki/idemia82/IdemiaModel";
 import { AbstractEmv } from "../modules/payment/emv/EmvModel";
+import { AbstractFileExchange } from "../modules/file/fileExchange/FileExchangeModel";
+import { AbstractRemoteLoading } from "../modules/hsm/remoteloading/RemoteLoadingModel";
 export declare class T1CClient {
     private _t1cInstalled;
     private localConfig;
@@ -26,7 +28,9 @@ export declare class T1CClient {
     core: () => CoreService;
     config: () => T1CConfig;
     mf: () => ModuleFactory;
+    fileex: () => AbstractFileExchange;
     beid: (reader_id: string) => AbstractEidBE;
+    remoteloading: (reader_id: string) => AbstractRemoteLoading;
     emv: (reader_id: string) => AbstractEmv;
     aventra: (reader_id: string) => AbstractAventra;
     oberthur: (reader_id: string) => AbstractOberthur73;
