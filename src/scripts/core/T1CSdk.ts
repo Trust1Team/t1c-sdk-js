@@ -6,7 +6,7 @@ import {
     LocalTestConnection,
     RemoteApiKeyConnection,
     LocalAuthAdminConnection,
-    LocalAdminConnection,
+    LocalAdminConnection, RequestHeaders,
 } from './client/Connection';
 import {DataResponse,} from './service/CoreModel';
 import {T1CLibException} from './exceptions/CoreExceptions';
@@ -20,6 +20,7 @@ import {AbstractIdemia} from "../modules/smartcards/pki/idemia82/IdemiaModel";
 import {AbstractEmv} from "../modules/payment/emv/EmvModel";
 import {AbstractFileExchange} from "../modules/file/fileExchange/FileExchangeModel";
 import {AbstractRemoteLoading} from "../modules/hsm/remoteloading/RemoteLoadingModel";
+import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
 
 const urlVersion = "/v3";
 
@@ -107,14 +108,110 @@ export class T1CClient {
         Polyfills.check();
     }
 
+    private static makeid(length): string {
+        var result           = '';
+        var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        var charactersLength = characters.length;
+        for ( var i = 0; i < length; i++ ) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return result;
+    }
+
+    private static copyToClipboard(): string | undefined {
+        console.log("Copy supported: " + document.queryCommandSupported('copy'));
+        const str = T1CClient.makeid(25);
+        const textArea = document.createElement("textarea");
+        textArea.style.position = 'fixed';
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.value = str;
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            var successful = document.execCommand('copy');
+            var msg = successful ? 'successful' : 'unsuccessful';
+            console.log('Fallback: Copying text command was ' + msg);
+        } catch (err) {
+            console.error('Fallback: Oops, unable to copy', err);
+        }
+
+        document.body.removeChild(textArea);
+        return str;
+    }
+
     public static initialize(cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
         return new Promise((resolve, reject) => {
-            const client = new T1CClient(cfg);
+
             // keep reference to client in ClientService
             // ClientService.setClient(client);
             // will be set to false if init fails
-            client.t1cInstalled = true;
-            resolve(client);
+
+            axios.get( cfg.t1cApiUrl + "/info").then((res) => {
+                console.log(res)
+                if (res.status >= 200 && res.status < 300) {
+                    if (res.data.t1CInfoAPI.service.deviceType && res.data.t1CInfoAPI.service.deviceType == "PROXY") {
+                        console.info("Proxy detected")
+                        const proxyCookie = document.cookie.split(";").find(s => s.includes("t1c-agent-proxy"))
+                        if (proxyCookie) {
+                            cfg.t1cApiPort = proxyCookie.split("::").reverse()[0]
+                            const client = new T1CClient(cfg);
+                            client.t1cInstalled = true;
+                            resolve(client);
+                        } else {
+                            const rnd = T1CClient.copyToClipboard();
+                            const reqHeaders = {};
+                            reqHeaders['Authorization'] = "Bearer " + cfg.t1cJwt;
+                            axios.get( cfg.t1cApiUrl + "/agents/consent/" + rnd, {headers: reqHeaders}).then(res => {
+                                cfg.t1cApiPort = res.data.data.apiPort;
+                                cfg.t1cRpcPort = res.data.data.sandboxPort;
+                                const client = new T1CClient(cfg);
+                                client.t1cInstalled = true;
+                                resolve(client);
+                            }, err => {
+                                reject(new T1CLibException(
+                                    err.response?.data.code,
+                                    err.response?.data.description
+                                ))
+                                console.error(err);
+                            });
+                        }
+                    } else {
+                        const client = new T1CClient(cfg);
+                        client.t1cInstalled = true;
+                        resolve(client);
+                    }
+                } else {
+                    console.error(res.data)
+                    reject(new T1CLibException(
+                        "100",
+                        res.statusText,
+                    ))
+                }
+            }, err => {
+                reject(new T1CLibException(
+                    err.response?.data.code,
+                    err.response?.data.description
+                ))
+                console.error(err);
+            })
+            // TODO implement shitrix flow
+            /**
+             * in Init:
+             1. nagaan of info endpoint van client een proxy draait (op default poort 51…)
+                1. zoniet is init gedaan
+                2. zowel:
+                    1. kijken als cookie met die naam (t1c-agent-proxy=gilles:65033;) bestaat
+                        1. parsen en poort uithalen voor de init verder te doen van de clientmalakia (apipoort overriden) —> KLAAR :D
+                        2. cookie niet —> consent flow (random van client copy naar clipboard impliciet of expliciet naar clipboard pasten) (methode moet optional die RND token verwachten)
+                            1. token copyen naar clipboard ( optional explicit consent )
+                            2. krijg de poorten terug van die consent flow
+
+             in bootstrap applicatie de Init steken en testen
+             */
+
+
         });
     }
 

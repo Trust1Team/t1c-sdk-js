@@ -111,6 +111,14 @@ export class T1CConfig {
     }
   }
 
+  set t1cRpcPort(value: string) {
+    this._t1cRpcPort = value;
+  }
+
+  set t1cApiPort(value: string) {
+    this._t1cApiPort = value
+  }
+
   get t1cApiUrl(): string {
     return this._t1cApiUrl + ":" + this._t1cApiPort;
   }

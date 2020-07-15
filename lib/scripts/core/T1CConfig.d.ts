@@ -39,6 +39,8 @@ export declare class T1CConfig {
     private _t1cDownloadLink;
     private _t1cVersion;
     constructor(options: T1CConfigOptions);
+    set t1cRpcPort(value: string);
+    set t1cApiPort(value: string);
     get t1cApiUrl(): string;
     set t1cApiUrl(value: string);
     get dsUrl(): string;
