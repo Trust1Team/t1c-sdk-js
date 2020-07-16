@@ -117,7 +117,7 @@ export class T1CClient {
             axios.get(cfg.t1cApiUrl + "/info").then((res) => {
                 if (res.status >= 200 && res.status < 300) {
                     if (res.data.t1CInfoAPI.service.deviceType && res.data.t1CInfoAPI.service.deviceType == "PROXY") {
-                        console.info("Proxy detected")
+                        console.info("Proxy detected");
                         if (document.cookie) {
                             const proxyCookie = document.cookie.split(";").find(s => s.includes("t1c-agent-proxy"))
                             if (proxyCookie) {
@@ -139,7 +139,7 @@ export class T1CClient {
                                         reject(new T1CLibException(
                                             err.response?.data.code,
                                             err.response?.data.description
-                                        ))
+                                        ));
                                         console.error(err);
                                     });
                                 } else {
