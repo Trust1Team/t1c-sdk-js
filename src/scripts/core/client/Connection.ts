@@ -213,7 +213,7 @@ export abstract class GenericConnection implements Connection {
   getRequestHeaders(headers?: RequestHeaders): RequestHeaders {
     const reqHeaders = headers || {};
     reqHeaders['Accept-Language'] = 'en-US';
-    reqHeaders['T1C-CSRF-Token'] = 'client';
+    reqHeaders['t1c-csrf'] = 'client';
     return reqHeaders;
   }
 

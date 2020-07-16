@@ -10271,38 +10271,7 @@ var T1CClient = (function () {
     T1CClient.checkPolyfills = function () {
         Polyfills_1.Polyfills.check();
     };
-    T1CClient.makeid = function (length) {
-        var result = '';
-        var characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-        var charactersLength = characters.length;
-        for (var i = 0; i < length; i++) {
-            result += characters.charAt(Math.floor(Math.random() * charactersLength));
-        }
-        return result;
-    };
-    T1CClient.copyToClipboard = function () {
-        console.log("Copy supported: " + document.queryCommandSupported('copy'));
-        var str = T1CClient.makeid(25);
-        var textArea = document.createElement("textarea");
-        textArea.style.position = 'fixed';
-        textArea.style.top = "0";
-        textArea.style.left = "0";
-        textArea.value = str;
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        try {
-            var successful = document.execCommand('copy');
-            var msg = successful ? 'successful' : 'unsuccessful';
-            console.log('Fallback: Copying text command was ' + msg);
-        }
-        catch (err) {
-            console.error('Fallback: Oops, unable to copy', err);
-        }
-        document.body.removeChild(textArea);
-        return str;
-    };
-    T1CClient.initialize = function (cfg, callback) {
+    T1CClient.initialize = function (cfg, consentToken, callback) {
         return new Promise(function (resolve, reject) {
             axios_1.default.get(cfg.t1cApiUrl + "/info").then(function (res) {
                 console.log(res);
@@ -10317,20 +10286,24 @@ var T1CClient = (function () {
                             resolve(client);
                         }
                         else {
-                            var rnd = T1CClient.copyToClipboard();
-                            var reqHeaders = {};
-                            reqHeaders['Authorization'] = "Bearer " + cfg.t1cJwt;
-                            axios_1.default.get(cfg.t1cApiUrl + "/agents/consent/" + rnd, { headers: reqHeaders }).then(function (res) {
-                                cfg.t1cApiPort = res.data.data.apiPort;
-                                cfg.t1cRpcPort = res.data.data.sandboxPort;
-                                var client = new T1CClient(cfg);
-                                client.t1cInstalled = true;
-                                resolve(client);
-                            }, function (err) {
-                                var _a, _b;
-                                reject(new CoreExceptions_1.T1CLibException((_a = err.response) === null || _a === void 0 ? void 0 : _a.data.code, (_b = err.response) === null || _b === void 0 ? void 0 : _b.data.description));
-                                console.error(err);
-                            });
+                            if (consentToken) {
+                                var reqHeaders = {};
+                                reqHeaders['Authorization'] = "Bearer " + cfg.t1cJwt;
+                                axios_1.default.get(cfg.t1cApiUrl + "/agents/consent/" + consentToken, { headers: reqHeaders }).then(function (res) {
+                                    cfg.t1cApiPort = res.data.data.apiPort;
+                                    cfg.t1cRpcPort = res.data.data.sandboxPort;
+                                    var client = new T1CClient(cfg);
+                                    client.t1cInstalled = true;
+                                    resolve(client);
+                                }, function (err) {
+                                    var _a, _b;
+                                    reject(new CoreExceptions_1.T1CLibException((_a = err.response) === null || _a === void 0 ? void 0 : _a.data.code, (_b = err.response) === null || _b === void 0 ? void 0 : _b.data.description));
+                                    console.error(err);
+                                });
+                            }
+                            else {
+                                reject(new CoreExceptions_1.T1CLibException("500", "No valid consent found."));
+                            }
                         }
                     }
                     else {
