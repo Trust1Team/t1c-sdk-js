@@ -259,6 +259,7 @@ export abstract class GenericConnection implements Connection {
     ) {
       const config: AxiosRequestConfig = {
         // use UrlUtil to create correct URL based on config
+        withCredentials: true,
         url: UrlUtil.create(basePath, suffix, securityConfig.skipCitrixCheck),
         // @ts-ignore
         method,

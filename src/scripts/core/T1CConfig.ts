@@ -3,6 +3,7 @@ import * as jwtDecode from 'jwt-decode';
 import * as moment from 'moment';
 import {T1CLibException} from './exceptions/CoreExceptions';
 import {T1CContainerid} from './service/CoreModel';
+import {Pkcs11ModuleConfig} from "../modules/pkcs11/generic/GenericPkcs11Model";
 
 export class T1CConfigOptions {
   constructor(
@@ -21,7 +22,8 @@ export class T1CConfigOptions {
     public osPinDialog?: boolean,
     public lang?: string,
     public t1cDownloadLink?: string,
-    public t1cVersion?: string
+    public t1cVersion?: string,
+    public pkcs11Config?: Pkcs11ModuleConfig,
   ) {}
 }
 
@@ -50,6 +52,7 @@ export class T1CConfig {
   private _lang = 'en';
   private _t1cDownloadLink = '';
   private _t1cVersion = 'NOT SPECIFIED';
+  private _pkcs11Config: Pkcs11ModuleConfig | undefined;
 
   // constructor for DTO
   public constructor(options: T1CConfigOptions) {
@@ -81,6 +84,11 @@ export class T1CConfig {
       if (options.agentPort) {
         this._agentPort = options.agentPort;
       }
+      if (options.pkcs11Config) {
+        this._pkcs11Config = options.pkcs11Config;
+      } else {
+        this._pkcs11Config = undefined;
+      }
 
       if (options.forceHardwarePinpad) {
         this._forceHardwarePinpad = options.forceHardwarePinpad;
@@ -109,6 +117,15 @@ export class T1CConfig {
         }
       }
     }
+  }
+
+
+  get pkcs11Config(): Pkcs11ModuleConfig | undefined {
+    return this._pkcs11Config;
+  }
+
+  set pkcs11Config(value: Pkcs11ModuleConfig | undefined) {
+    this._pkcs11Config = value;
   }
 
   set t1cRpcPort(value: string) {

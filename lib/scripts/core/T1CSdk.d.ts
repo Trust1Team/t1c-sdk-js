@@ -24,6 +24,7 @@ export declare class T1CClient {
     private localTestConnection;
     constructor(cfg: T1CConfig);
     static checkPolyfills(): void;
+    private static getConsent;
     static initialize(cfg: T1CConfig, consentToken?: string, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient>;
     core: () => CoreService;
     config: () => T1CConfig;

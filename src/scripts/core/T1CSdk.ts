@@ -108,12 +108,30 @@ export class T1CClient {
         Polyfills.check();
     }
 
+    private static getConsent(cfg: T1CConfig, consentToken: string): Promise<T1CClient> {
+        return new Promise((resolve, reject) => {
+            const reqHeaders = {};
+            reqHeaders['Authorization'] = "Bearer " + cfg.t1cJwt;
+            axios.get(cfg.t1cApiUrl + "/agents/consent/" + consentToken, {headers: reqHeaders}).then(res => {
+                cfg.t1cApiPort = res.data.data.apiPort;
+                cfg.t1cRpcPort = res.data.data.sandboxPort;
+                const client = new T1CClient(cfg);
+                client.t1cInstalled = true;
+                resolve(client);
+            }, err => {
+                const client = new T1CClient(cfg);
+                reject(new T1CLibException(
+                    err.response?.data.code,
+                    err.response?.data.description,
+                    client
+                ));
+                console.error(err);
+            });
+        });
+    }
+
     public static initialize(cfg: T1CConfig, consentToken?: string, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
         return new Promise((resolve, reject) => {
-
-            // TODO move copy to clipboard to the client applications, only check if cookie is present, when cookie is not present then throw
-            // TODO an appropriate error for shared environment
-
             axios.get(cfg.t1cApiUrl + "/info").then((res) => {
                 if (res.status >= 200 && res.status < 300) {
                     if (res.data.t1CInfoAPI.service.deviceType && res.data.t1CInfoAPI.service.deviceType == "PROXY") {
@@ -127,49 +145,45 @@ export class T1CClient {
                                 resolve(client);
                             } else {
                                 if (consentToken) {
-                                    const reqHeaders = {};
-                                    reqHeaders['Authorization'] = "Bearer " + cfg.t1cJwt;
-                                    axios.get(cfg.t1cApiUrl + "/agents/consent/" + consentToken, {headers: reqHeaders}).then(res => {
-                                        cfg.t1cApiPort = res.data.data.apiPort;
-                                        cfg.t1cRpcPort = res.data.data.sandboxPort;
-                                        const client = new T1CClient(cfg);
-                                        client.t1cInstalled = true;
-                                        resolve(client);
+                                    this.getConsent(cfg, consentToken).then((res: T1CClient) => {
+                                        resolve(res);
                                     }, err => {
+                                        const client = new T1CClient(cfg);
                                         reject(new T1CLibException(
                                             err.response?.data.code,
-                                            err.response?.data.description
+                                            err.response?.data.description,
+                                            client
                                         ));
                                         console.error(err);
                                     });
                                 } else {
+                                    const client = new T1CClient(cfg);
                                     reject(new T1CLibException(
                                         "500",
                                         "No valid consent found.",
+                                        client
                                     ));
                                 }
                             }
                         } else {
                             if (consentToken) {
-                                const reqHeaders = {};
-                                reqHeaders['Authorization'] = "Bearer " + cfg.t1cJwt;
-                                axios.get(cfg.t1cApiUrl + "/agents/consent/" + consentToken, {headers: reqHeaders}).then(res => {
-                                    cfg.t1cApiPort = res.data.data.apiPort;
-                                    cfg.t1cRpcPort = res.data.data.sandboxPort;
-                                    const client = new T1CClient(cfg);
-                                    client.t1cInstalled = true;
-                                    resolve(client);
+                                this.getConsent(cfg, consentToken).then((res: T1CClient) => {
+                                    resolve(res);
                                 }, err => {
+                                    const client = new T1CClient(cfg);
                                     reject(new T1CLibException(
                                         err.response?.data.code,
-                                        err.response?.data.description
-                                    ))
+                                        err.response?.data.description,
+                                        client
+                                    ));
                                     console.error(err);
                                 });
                             } else {
+                                const client = new T1CClient(cfg);
                                 reject(new T1CLibException(
                                     "500",
                                     "No valid consent found.",
+                                    client
                                 ));
                             }
                         }
@@ -180,15 +194,19 @@ export class T1CClient {
                     }
                 } else {
                     console.error(res.data)
+                    const client = new T1CClient(cfg);
                     reject(new T1CLibException(
                         "100",
                         res.statusText,
+                        client
                     ))
                 }
             }, err => {
+                const client = new T1CClient(cfg);
                 reject(new T1CLibException(
                     err.response?.data.code,
-                    err.response?.data.description
+                    err.response?.data.description,
+                    client
                 ))
                 console.error(err);
             })
@@ -316,13 +334,12 @@ export class T1CClient {
     /**
      * Utility methods
      */
-    /*  public updateAuthConnection(cfg: T1CConfig) {
-      this.authConnection = new LocalAuthConnection(cfg);
-      this.adminService = new AdminService(
-        cfg.t1cApiUrl,
-        this.authConnection,
-        this.adminConnection
-      ); // TODO check if authConnection or LocalAuthAdminConnection should be passed
-      this.coreService = new CoreService(cfg.t1cApiUrl, this.authConnection);
-    }*/
+    // public updateAuthConnection(cfg: T1CConfig) {
+    //   this.authConnection = new LocalAuthConnection(cfg);
+    //     cfg.t1cApiUrl,
+    //     this.authConnection,
+    //     this.adminConnection
+    //   ); // TODO check if authConnection or LocalAuthAdminConnection should be passed
+    //   this.coreService = new CoreService(cfg.t1cApiUrl, this.authConnection);
+    // }
 }
