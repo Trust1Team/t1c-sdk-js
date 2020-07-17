@@ -12,6 +12,12 @@ import {AbstractOberthur73} from "./smartcards/pki/oberthur73/OberthurModel";
 import {Oberthur} from "./smartcards/pki/oberthur73/Oberthur";
 import {AbstractIdemia} from "./smartcards/pki/idemia82/IdemiaModel";
 import {Idemia} from "./smartcards/pki/idemia82/Idemia";
+import {AbstractEmv} from "./payment/emv/EmvModel";
+import {Emv} from "./payment/emv/Emv";
+import {AbstractFileExchange} from "./file/fileExchange/FileExchangeModel";
+import {FileExchange} from "./file/fileExchange/FileExchange";
+import {AbstractRemoteLoading} from "./hsm/remoteloading/RemoteLoadingModel";
+import {RemoteLoading} from "./hsm/remoteloading/RemoteLoading";
 /*import { EidLux } from './smartcards/eid/lux/EidLux';
 import { LocalConnection } from '../core/client/Connection';
 import { Mobib } from './smartcards/mobib/mobib';
@@ -39,7 +45,7 @@ import { RemoteLoading } from './remote-loading/RemoteLoading';
 import { AbstractBelfius } from './remote-loading/belfius/BelfiusModel';
 import { Belfius } from './remote-loading/belfius/Belfius';
 import { AbstractFileExchange } from './file/FileExchangeModel';
-import { FileExchange } from './file/FileExchange';
+import { RemoteLoading } from './file/RemoteLoading';
 import { AbstractPkcs11 } from './smartcards/pkcs11/pkcs11Model';
 import { PKCS11 } from './smartcards/pkcs11/pkcs11';
 import { AbstractDataContainer } from './data-container/DataContainerModel';
@@ -60,7 +66,8 @@ export interface AbstractFactory {
     createEidBE(reader_id?: string): AbstractEidBE;
     // createBeLawyer(reader_id?: string): AbstractBeLawyer;
     // createEidLUX(reader_id?: string): AbstractEidLUX;
-    // createEmv(reader_id?: string): AbstractEMV;
+    createEmv(reader_id?: string): AbstractEmv;
+    createFileExchange(): AbstractFileExchange;
     // createWacom(): AbstractWacom;
     // createIsabel(reader_id?: string, runInUserSpace?: boolean): AbstractIsabel;
     // createLuxTrust(reader_id?: string): AbstractLuxTrust;
@@ -83,7 +90,7 @@ const CONTAINER_DNIE = CONTAINER_NEW_CONTEXT_PATH + 'dnie';
 const CONTAINER_EMV = CONTAINER_NEW_CONTEXT_PATH + 'emv';
 const CONTAINER_WACOM = CONTAINER_NEW_CONTEXT_PATH + 'wacom-stu';
 const CONTAINER_ISABEL = CONTAINER_NEW_CONTEXT_PATH + 'isabel';
-const CONTAINER_FILE_EXCHANGE = CONTAINER_NEW_CONTEXT_PATH + 'file-exchange';
+const CONTAINER_FILE_EXCHANGE = CONTAINER_NEW_CONTEXT_PATH + 'fileexchange';
 const CONTAINER_LUXTRUST = CONTAINER_NEW_CONTEXT_PATH + 'luxtrust';
 const CONTAINER_MOBIB = CONTAINER_NEW_CONTEXT_PATH + 'mobib';
 const CONTAINER_OCRA = CONTAINER_NEW_CONTEXT_PATH + 'ocra';
@@ -93,7 +100,7 @@ const CONTAINER_IDEMIA = CONTAINER_NEW_CONTEXT_PATH + 'idemia_cosmo_82';
 const CONTAINER_PIV = CONTAINER_NEW_CONTEXT_PATH + 'piv';
 const CONTAINER_PTEID = CONTAINER_NEW_CONTEXT_PATH + 'pteid';
 const CONTAINER_PKCS11 = CONTAINER_NEW_CONTEXT_PATH + 'pkcs11';
-const CONTAINER_REMOTE_LOADING = CONTAINER_NEW_CONTEXT_PATH + 'readerapi';
+const CONTAINER_REMOTE_LOADING = CONTAINER_NEW_CONTEXT_PATH + 'remoteloading';
 const CONTAINER_JAVA_KEY_TOOL = CONTAINER_NEW_CONTEXT_PATH + 'java-keytool';
 const CONTAINER_SSH = CONTAINER_NEW_CONTEXT_PATH + 'ssh';
 const CONTAINER_RAW_PRINT = CONTAINER_NEW_CONTEXT_PATH + 'rawprint';
@@ -103,7 +110,6 @@ export class ModuleFactory implements AbstractFactory {
     constructor(private url: string, private connection: LocalConnection) {}
 
     public createEidBE(reader_id: string): AbstractEidBE {
-        //t1cApiUrl is passed
         return new EidBe(this.url, CONTAINER_BEID, this.connection, reader_id);
     }
 
@@ -117,6 +123,18 @@ export class ModuleFactory implements AbstractFactory {
 
     public createIdemia(reader_id: string): AbstractIdemia {
         return new Idemia(this.url, CONTAINER_IDEMIA, this.connection, reader_id);
+    }
+
+    public createEmv(reader_id: string): AbstractEmv {
+        return new Emv(this.url, CONTAINER_EMV, this.connection, reader_id);
+    }
+
+    public createFileExchange(): AbstractFileExchange {
+        return new FileExchange(this.url, CONTAINER_FILE_EXCHANGE, this.connection);
+    }
+
+    public createRemoteLoading(reader_id: string): AbstractRemoteLoading {
+        return new RemoteLoading(this.url, CONTAINER_REMOTE_LOADING, this.connection, reader_id);
     }
 
 /*    public createDNIe(reader_id?: string): AbstractDNIe {
@@ -135,9 +153,7 @@ export class ModuleFactory implements AbstractFactory {
         return new EidPt(this.url, CONTAINER_PTEID, this.connection, reader_id);
     }
 
-    public createEmv(reader_id?: string): AbstractEMV {
-        return new EMV(this.url, CONTAINER_EMV, this.connection, reader_id);
-    }
+
 
     public createWacom(): AbstractWacom {
         return new Wacom(this.url, CONTAINER_WACOM, this.connection, 'wacom-stu');
@@ -182,7 +198,7 @@ export class ModuleFactory implements AbstractFactory {
     }
 
     public createFileExchange(): AbstractFileExchange {
-        return new FileExchange(this.url, CONTAINER_FILE_EXCHANGE, this.connection);
+        return new RemoteLoading(this.url, CONTAINER_FILE_EXCHANGE, this.connection);
     }
 
     public createDataContainer(containerPath: string): () => AbstractDataContainer {

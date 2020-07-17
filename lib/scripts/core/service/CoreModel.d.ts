@@ -159,9 +159,11 @@ export declare class CertificatesResponse extends T1CResponse {
     constructor(data: T1CCertificate[], success: boolean);
 }
 export declare class T1CCertificate {
-    base64: string;
+    certificate?: string | undefined;
+    certificates?: string[] | undefined;
+    certificateType?: string | undefined;
     id?: string | undefined;
-    constructor(base64: string, id?: string | undefined);
+    constructor(certificate?: string | undefined, certificates?: string[] | undefined, certificateType?: string | undefined, id?: string | undefined);
 }
 export declare class SingleReaderResponse extends T1CResponse {
     data: CardReader;

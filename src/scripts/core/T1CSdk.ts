@@ -6,7 +6,7 @@ import {
     LocalTestConnection,
     RemoteApiKeyConnection,
     LocalAuthAdminConnection,
-    LocalAdminConnection,
+    LocalAdminConnection, RequestHeaders,
 } from './client/Connection';
 import {DataResponse,} from './service/CoreModel';
 import {T1CLibException} from './exceptions/CoreExceptions';
@@ -17,6 +17,10 @@ import {T1CConfig} from './T1CConfig';
 import {Polyfills} from "../util/Polyfills";
 import {ModuleFactory} from "../modules/ModuleFactory";
 import {AbstractIdemia} from "../modules/smartcards/pki/idemia82/IdemiaModel";
+import {AbstractEmv} from "../modules/payment/emv/EmvModel";
+import {AbstractFileExchange} from "../modules/file/fileExchange/FileExchangeModel";
+import {AbstractRemoteLoading} from "../modules/hsm/remoteloading/RemoteLoadingModel";
+import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
 
 const urlVersion = "/v3";
 
@@ -104,14 +108,108 @@ export class T1CClient {
         Polyfills.check();
     }
 
-    public static initialize(cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
+    private static getConsent(cfg: T1CConfig, consentToken: string): Promise<T1CClient> {
         return new Promise((resolve, reject) => {
-            const client = new T1CClient(cfg);
-            // keep reference to client in ClientService
-            // ClientService.setClient(client);
-            // will be set to false if init fails
-            client.t1cInstalled = true;
-            resolve(client);
+            const reqHeaders = {};
+            reqHeaders['Authorization'] = "Bearer " + cfg.t1cJwt;
+            axios.get(cfg.t1cApiUrl + "/agents/consent/" + consentToken, {headers: reqHeaders}).then(res => {
+                cfg.t1cApiPort = res.data.data.apiPort;
+                cfg.t1cRpcPort = res.data.data.sandboxPort;
+                const client = new T1CClient(cfg);
+                client.t1cInstalled = true;
+                resolve(client);
+            }, err => {
+                const client = new T1CClient(cfg);
+                reject(new T1CLibException(
+                    err.response?.data.code,
+                    err.response?.data.description,
+                    client
+                ));
+                console.error(err);
+            });
+        });
+    }
+
+    public static initialize(cfg: T1CConfig, consentToken?: string, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
+        return new Promise((resolve, reject) => {
+            axios.get(cfg.t1cApiUrl + "/info").then((res) => {
+                if (res.status >= 200 && res.status < 300) {
+                    if (res.data.t1CInfoAPI.service.deviceType && res.data.t1CInfoAPI.service.deviceType == "PROXY") {
+                        console.info("Proxy detected");
+                        if (document.cookie) {
+                            const proxyCookie = document.cookie.split(";").find(s => s.includes("t1c-agent-proxy"))
+                            if (proxyCookie) {
+                                cfg.t1cApiPort = proxyCookie.split("::").reverse()[0]
+                                const client = new T1CClient(cfg);
+                                client.t1cInstalled = true;
+                                resolve(client);
+                            } else {
+                                if (consentToken) {
+                                    this.getConsent(cfg, consentToken).then((res: T1CClient) => {
+                                        resolve(res);
+                                    }, err => {
+                                        const client = new T1CClient(cfg);
+                                        reject(new T1CLibException(
+                                            err.response?.data.code,
+                                            err.response?.data.description,
+                                            client
+                                        ));
+                                        console.error(err);
+                                    });
+                                } else {
+                                    const client = new T1CClient(cfg);
+                                    reject(new T1CLibException(
+                                        "500",
+                                        "No valid consent found.",
+                                        client
+                                    ));
+                                }
+                            }
+                        } else {
+                            if (consentToken) {
+                                this.getConsent(cfg, consentToken).then((res: T1CClient) => {
+                                    resolve(res);
+                                }, err => {
+                                    const client = new T1CClient(cfg);
+                                    reject(new T1CLibException(
+                                        err.response?.data.code,
+                                        err.response?.data.description,
+                                        client
+                                    ));
+                                    console.error(err);
+                                });
+                            } else {
+                                const client = new T1CClient(cfg);
+                                reject(new T1CLibException(
+                                    "500",
+                                    "No valid consent found.",
+                                    client
+                                ));
+                            }
+                        }
+                    } else {
+                        const client = new T1CClient(cfg);
+                        client.t1cInstalled = true;
+                        resolve(client);
+                    }
+                } else {
+                    console.error(res.data)
+                    const client = new T1CClient(cfg);
+                    reject(new T1CLibException(
+                        "100",
+                        res.statusText,
+                        client
+                    ))
+                }
+            }, err => {
+                const client = new T1CClient(cfg);
+                reject(new T1CLibException(
+                    err.response?.data.code,
+                    err.response?.data.description,
+                    client
+                ))
+                console.error(err);
+            })
         });
     }
 
@@ -119,9 +217,9 @@ export class T1CClient {
      * Init security context
      */
     // get auth service
-/*    public auth = (): AuthClient => {
-      return this.authClient;
-    };*/
+    /*    public auth = (): AuthClient => {
+          return this.authClient;
+        };*/
     // get core services
     public core = (): CoreService => {
         return this.coreService;
@@ -147,8 +245,20 @@ export class T1CClient {
         return this.moduleFactory;
     }
     // get instance for belgian eID card
+    public fileex = (): AbstractFileExchange => {
+        return this.moduleFactory.createFileExchange()
+    };
+    // get instance for belgian eID card
     public beid = (reader_id: string): AbstractEidBE => {
         return this.moduleFactory.createEidBE(reader_id)
+    };
+    // get instance for remote loading
+    public remoteloading = (reader_id: string): AbstractRemoteLoading => {
+        return this.moduleFactory.createRemoteLoading(reader_id)
+    };
+    // get instance for EMV card
+    public emv = (reader_id: string): AbstractEmv => {
+        return this.moduleFactory.createEmv(reader_id)
     };
     // get instance for Aventra
     public aventra = (reader_id: string): AbstractAventra => {
@@ -166,19 +276,19 @@ export class T1CClient {
     }
 
     // get instance for Remote Loading
-/*    public readerapi = (reader_id: string): AbstractRemoteLoading => {
-      return this.pluginFactory.createRemoteLoading(reader_id);
-    };
+    /*    public readerapi = (reader_id: string): AbstractRemoteLoading => {
+          return this.pluginFactory.createRemoteLoading(reader_id);
+        };
 
-    // get instance for Belfius
-    public belfius = (reader_id: string): AbstractBelfius => {
-      return this.pluginFactory.createBelfius(reader_id);
-    };
+        // get instance for Belfius
+        public belfius = (reader_id: string): AbstractBelfius => {
+          return this.pluginFactory.createBelfius(reader_id);
+        };
 
-    // get instance for File Exchange
-    public filex = (): AbstractFileExchange => {
-      return this.pluginFactory.createFileExchange();
-    };*/
+        // get instance for File Exchange
+        public filex = (): AbstractFileExchange => {
+          return this.pluginFactory.createFileExchange();
+        };*/
 
     set t1cInstalled(value: boolean) {
         this._t1cInstalled = value;
@@ -224,13 +334,12 @@ export class T1CClient {
     /**
      * Utility methods
      */
-    /*  public updateAuthConnection(cfg: T1CConfig) {
-      this.authConnection = new LocalAuthConnection(cfg);
-      this.adminService = new AdminService(
-        cfg.t1cApiUrl,
-        this.authConnection,
-        this.adminConnection
-      ); // TODO check if authConnection or LocalAuthAdminConnection should be passed
-      this.coreService = new CoreService(cfg.t1cApiUrl, this.authConnection);
-    }*/
+    // public updateAuthConnection(cfg: T1CConfig) {
+    //   this.authConnection = new LocalAuthConnection(cfg);
+    //     cfg.t1cApiUrl,
+    //     this.authConnection,
+    //     this.adminConnection
+    //   ); // TODO check if authConnection or LocalAuthAdminConnection should be passed
+    //   this.coreService = new CoreService(cfg.t1cApiUrl, this.authConnection);
+    // }
 }

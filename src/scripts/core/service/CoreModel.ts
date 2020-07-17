@@ -136,9 +136,13 @@ export class CertificatesResponse extends T1CResponse {
   }
 }
 
+
+// certificate: Option[String], certificates: Option[Seq[String]] = None, certificateType: Option[String] = None, id: Option[String] = None
 export class T1CCertificate {
   constructor(
-    public base64: string,
+    public certificate?: string,
+    public certificates?: Array<string>,
+    public certificateType?: string,
     public id?: string
   ) {}
 }
