@@ -1,6 +1,7 @@
 import { CoreService } from './service/CoreService';
 import { DataResponse } from './service/CoreModel';
 import { T1CLibException } from './exceptions/CoreExceptions';
+import { AbstractEidGeneric } from "../modules/smartcards/eid/generic/EidGenericModel";
 import { AbstractEidBE } from '../modules/smartcards/eid/be/EidBeModel';
 import { AbstractAventra } from '../modules/smartcards/pki/aventra4/AventraModel';
 import { AbstractOberthur73 } from "../modules/smartcards/pki/oberthur73/OberthurModel";
@@ -29,6 +30,7 @@ export declare class T1CClient {
     core: () => CoreService;
     config: () => T1CConfig;
     mf: () => ModuleFactory;
+    generic: (reader_id: string) => AbstractEidGeneric;
     fileex: () => AbstractFileExchange;
     beid: (reader_id: string) => AbstractEidBE;
     remoteloading: (reader_id: string) => AbstractRemoteLoading;

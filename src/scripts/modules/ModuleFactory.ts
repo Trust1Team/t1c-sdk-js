@@ -1,8 +1,7 @@
 /**
- * @author Michallis Pashidis
+ * @author Trust1Team
  * @since 2020
  */
-/*import { EMV } from './smartcards/emv/EMV';*/
 import {LocalConnection} from "../core/client/Connection";
 import { EidBe } from './smartcards/eid/be/EidBe';
 import {AbstractEidBE} from "./smartcards/eid/be/EidBeModel";
@@ -18,51 +17,11 @@ import {AbstractFileExchange} from "./file/fileExchange/FileExchangeModel";
 import {FileExchange} from "./file/fileExchange/FileExchange";
 import {AbstractRemoteLoading} from "./hsm/remoteloading/RemoteLoadingModel";
 import {RemoteLoading} from "./hsm/remoteloading/RemoteLoading";
-/*import { EidLux } from './smartcards/eid/lux/EidLux';
-import { LocalConnection } from '../core/client/Connection';
-import { Mobib } from './smartcards/mobib/mobib';
-import { LuxTrust } from './smartcards/pki/luxtrust/LuxTrust';
-import { Ocra } from './smartcards/ocra/ocra';
-
-import { Oberthur } from './smartcards/pki/oberthur/Oberthur';
-import { PIV } from './smartcards/piv/piv';
-import { AbstractEidBE } from './smartcards/eid/be/EidBeModel';
-import { AbstractEMV } from './smartcards/emv/EMVModel';
-import { AbstractIsabel } from './smartcards/isabel/IsabelModel';
-import { AbstractOcra } from './smartcards/ocra/ocraModel';
-import { AbstractAventra } from './smartcards/pki/aventra/AventraModel';
-import { AbstractLuxTrust } from './smartcards/pki/luxtrust/LuxTrustModel';
-import { AbstractOberthur } from './smartcards/pki/oberthur/OberthurModel';
-import { AbstractPiv } from './smartcards/piv/pivModel';
-import { AbstractMobib } from './smartcards/mobib/mobibModel';
-import {AbstractEidLUX, PinType} from './smartcards/eid/lux/EidLuxModel';
-import { DNIe } from './smartcards/eid/esp/dnie';
-import { AbstractDNIe } from './smartcards/eid/esp/dnieModel';
-import { AbstractEidPT } from './smartcards/eid/pt/EidPtModel';
-import { EidPt } from './smartcards/eid/pt/EidPt';
-import { AbstractRemoteLoading } from './remote-loading/RemoteLoadingModel';
-import { RemoteLoading } from './remote-loading/RemoteLoading';
-import { AbstractBelfius } from './remote-loading/belfius/BelfiusModel';
-import { Belfius } from './remote-loading/belfius/Belfius';
-import { AbstractFileExchange } from './file/FileExchangeModel';
-import { RemoteLoading } from './file/RemoteLoading';
-import { AbstractPkcs11 } from './smartcards/pkcs11/pkcs11Model';
-import { PKCS11 } from './smartcards/pkcs11/pkcs11';
-import { AbstractDataContainer } from './data-container/DataContainerModel';
-import { DataContainer } from './data-container/DataContainer';
-import {AbstractJavaKeyTool} from './java-key-tool/JavaKeyToolModel';
-import {JavaKeyTool} from './java-key-tool/JavaKeyTool';
-import {AbstractSsh} from './ssh/SshModel';
-import {Ssh} from './ssh/Ssh';
-import {Wacom} from './wacom/Wacom';
-import {AbstractWacom} from './wacom/WacomModel';
-import {AbstractBeLawyer} from './smartcards/pki/BeLawyer/BeLawyerModel';
-import {BeLawyer} from './smartcards/pki/BeLawyer/BeLawyer';
-import {AbstractRawPrint} from './raw-print/RawPrintModel';
-import {RawPrint} from './raw-print/RawPrint';
-import {Isabel} from './smartcards/isabel/Isabel';*/
+import {AbstractEidGeneric} from "./smartcards/eid/generic/EidGenericModel";
+import {EidGeneric} from "./smartcards/eid/generic/EidGeneric";
 
 export interface AbstractFactory {
+    createEidGeneric(reader_id?: string): AbstractEidGeneric;
     createEidBE(reader_id?: string): AbstractEidBE;
     // createBeLawyer(reader_id?: string): AbstractBeLawyer;
     // createEidLUX(reader_id?: string): AbstractEidLUX;
@@ -73,8 +32,8 @@ export interface AbstractFactory {
     // createLuxTrust(reader_id?: string): AbstractLuxTrust;
     // createMobib(reader_id?: string): AbstractMobib;
     // createOcra(reader_id?: string): AbstractOcra;
-    // createAventraNO(reader_id?: string): AbstractAventra;
-    // createOberthurNO(reader_id?: string): AbstractOberthur;
+    createAventra(reader_id?: string): AbstractAventra;
+    createOberthur(reader_id?: string): AbstractOberthur73;
     // createPIV(reader_id?: string): AbstractPiv;
     // createPKCS11(): AbstractPkcs11;
     // createJavaKeyTool(): AbstractJavaKeyTool
@@ -109,11 +68,15 @@ const CONTAINER_RAW_PRINT = CONTAINER_NEW_CONTEXT_PATH + 'rawprint';
 export class ModuleFactory implements AbstractFactory {
     constructor(private url: string, private connection: LocalConnection) {}
 
+    public createEidGeneric(reader_id: string): AbstractEidGeneric {
+        return new EidGeneric(this.url, CONTAINER_NEW_CONTEXT_PATH, this.connection, reader_id);
+    }
+
     public createEidBE(reader_id: string): AbstractEidBE {
         return new EidBe(this.url, CONTAINER_BEID, this.connection, reader_id);
     }
 
-    public createAventra4(reader_id: string): AbstractAventra {
+    public createAventra(reader_id: string): AbstractAventra {
         return new Aventra(this.url, CONTAINER_AVENTRA, this.connection, reader_id);
     }
 
@@ -136,6 +99,7 @@ export class ModuleFactory implements AbstractFactory {
     public createRemoteLoading(reader_id: string): AbstractRemoteLoading {
         return new RemoteLoading(this.url, CONTAINER_REMOTE_LOADING, this.connection, reader_id);
     }
+
 
 /*    public createDNIe(reader_id?: string): AbstractDNIe {
         return new DNIe(this.url, CONTAINER_DNIE, this.connection, reader_id);
@@ -174,8 +138,6 @@ export class ModuleFactory implements AbstractFactory {
     public createOcra(reader_id?: string): AbstractOcra {
         return new Ocra(this.url, CONTAINER_OCRA, this.connection, reader_id);
     }
-
-
 
     public createOberthurNO(reader_id?: string): AbstractOberthur {
         return new Oberthur(this.url, CONTAINER_OBERTHUR, this.connection, reader_id);

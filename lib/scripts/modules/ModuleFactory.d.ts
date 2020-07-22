@@ -6,17 +6,22 @@ import { AbstractIdemia } from "./smartcards/pki/idemia82/IdemiaModel";
 import { AbstractEmv } from "./payment/emv/EmvModel";
 import { AbstractFileExchange } from "./file/fileExchange/FileExchangeModel";
 import { AbstractRemoteLoading } from "./hsm/remoteloading/RemoteLoadingModel";
+import { AbstractEidGeneric } from "./smartcards/eid/generic/EidGenericModel";
 export interface AbstractFactory {
+    createEidGeneric(reader_id?: string): AbstractEidGeneric;
     createEidBE(reader_id?: string): AbstractEidBE;
     createEmv(reader_id?: string): AbstractEmv;
     createFileExchange(): AbstractFileExchange;
+    createAventra(reader_id?: string): AbstractAventra;
+    createOberthur(reader_id?: string): AbstractOberthur73;
 }
 export declare class ModuleFactory implements AbstractFactory {
     private url;
     private connection;
     constructor(url: string, connection: LocalConnection);
+    createEidGeneric(reader_id: string): AbstractEidGeneric;
     createEidBE(reader_id: string): AbstractEidBE;
-    createAventra4(reader_id: string): AbstractAventra;
+    createAventra(reader_id: string): AbstractAventra;
     createOberthur(reader_id: string): AbstractOberthur73;
     createIdemia(reader_id: string): AbstractIdemia;
     createEmv(reader_id: string): AbstractEmv;

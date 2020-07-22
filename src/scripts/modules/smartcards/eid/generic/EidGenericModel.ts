@@ -7,22 +7,22 @@ import {
 import {AuthenticateOrSignData, Options} from "../../TokenCard";
 import {VerifyPinData} from "../../TokenCard";
 
-export interface AbstractEidBE {
-  allData(filters: string[] | Options, callback?: (error: T1CLibException, data: AllDataResponse) => void): Promise<AllDataResponse>;
-  allCerts(filters: string[] | Options, callback?: (error: T1CLibException, data: AllCertsResponse) => void): Promise<AllCertsResponse>;
-  biometric(callback?: (error: T1CLibException, data: BiometricDataResponse) => void): Promise<BiometricDataResponse>;
-  tokenData(callback?: (error: T1CLibException, data: TokenDataResponse) => void): Promise<TokenDataResponse>;
-  address(callback?: (error: T1CLibException, data: AddressResponse) => void): Promise<AddressResponse>;
-  picture(callback?: (error: T1CLibException, data: PictureResponse) => void): Promise<PictureResponse>;
-  rootCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
-  intermediateCertificates(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
-  authenticationCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
-  nonRepudiationCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
-  encryptionCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
-  verifyPin(body: VerifyPinData, callback?: (error: T1CLibException, data: VerifyPinResponse) => void): Promise<VerifyPinResponse>;
-  authenticate(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: AuthenticateResponse) => void): Promise<AuthenticateResponse>;
-  sign(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: SignResponse) => void): Promise<SignResponse>;
-  allAlgoRefs(callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse>
+export interface AbstractEidGeneric {
+  allData(module: string, filters: string[] | Options, callback?: (error: T1CLibException, data: AllDataResponse) => void): Promise<AllDataResponse>;
+  allCerts(module: string, filters: string[] | Options, callback?: (error: T1CLibException, data: AllCertsResponse) => void): Promise<AllCertsResponse>;
+  biometric(module: string, callback?: (error: T1CLibException, data: BiometricDataResponse) => void): Promise<BiometricDataResponse>;
+  tokenData(module: string, callback?: (error: T1CLibException, data: TokenDataResponse) => void): Promise<TokenDataResponse>;
+  address(module: string, callback?: (error: T1CLibException, data: AddressResponse) => void): Promise<AddressResponse>;
+  picture(module: string, callback?: (error: T1CLibException, data: PictureResponse) => void): Promise<PictureResponse>;
+  rootCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+  intermediateCertificates(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+  authenticationCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+  nonRepudiationCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+  encryptionCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+  verifyPin(module: string, body: VerifyPinData, callback?: (error: T1CLibException, data: VerifyPinResponse) => void): Promise<VerifyPinResponse>;
+  authenticate(module: string, body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: AuthenticateResponse) => void): Promise<AuthenticateResponse>;
+  sign(module: string, body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: SignResponse) => void): Promise<SignResponse>;
+  allAlgoRefs(module: string, callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse>
 }
 
 export class AddressResponse extends DataObjectResponse {

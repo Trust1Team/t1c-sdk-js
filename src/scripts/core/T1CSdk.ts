@@ -10,6 +10,7 @@ import {
 } from './client/Connection';
 import {DataResponse,} from './service/CoreModel';
 import {T1CLibException} from './exceptions/CoreExceptions';
+import {AbstractEidGeneric} from "../modules/smartcards/eid/generic/EidGenericModel";
 import {AbstractEidBE} from '../modules/smartcards/eid/be/EidBeModel';
 import {AbstractAventra} from '../modules/smartcards/pki/aventra4/AventraModel';
 import {AbstractOberthur73} from "../modules/smartcards/pki/oberthur73/OberthurModel";
@@ -68,40 +69,9 @@ export class T1CClient {
         this.remoteApiKeyConnection = new RemoteApiKeyConnection(this.localConfig);
         this.moduleFactory = new ModuleFactory(this.localConfig.t1cApiUrl + urlVersion, this.connection);
         this.localTestConnection = new LocalTestConnection(this.localConfig);
-        // in citrix mode the admin endpoint should not be called through the agent
-        /*    this.adminService = new AdminService(
-          this.localConfig.t1cApiUrl,
-          this.authAdminConnection,
-          this.adminConnection
-        );*/
         this.coreService = new CoreService(this.localConfig.t1cApiUrl, this.authConnection);
         console.log("Core service initialized: " + this.localConfig.t1cApiUrl);
         this.coreService.version().then(info => console.log("Running T1C-sdk-js version: " + info))
-        // init DS if DS url is provided
-        /*    if (this.localConfig.dsUrl) {
-          if (this.localConfig.localTestMode) {
-            this.dsClient = new DSClient(
-              this.localConfig.dsUrl,
-              this.localTestConnection,
-              this.localConfig
-            );
-          } else {
-            this.dsClient = new DSClient(
-              this.localConfig.dsUrl,
-              this.remoteConnection,
-              this.localConfig
-            );
-          }
-        } else {
-          this.dsClient = {} as DSClient;
-        }
-
-        this.authClient = new AuthClient(
-          this.localConfig,
-          this.remoteApiKeyConnection
-        );
-        // keep reference to client in ClientService
-        ClientService.setClient(this);*/
     }
 
     public static checkPolyfills() {
@@ -244,6 +214,9 @@ export class T1CClient {
     public mf = (): ModuleFactory => {
         return this.moduleFactory;
     }
+    public generic = (reader_id: string): AbstractEidGeneric => {
+        return this.moduleFactory.createEidGeneric(reader_id)
+    };
     // get instance for belgian eID card
     public fileex = (): AbstractFileExchange => {
         return this.moduleFactory.createFileExchange()
@@ -262,7 +235,7 @@ export class T1CClient {
     };
     // get instance for Aventra
     public aventra = (reader_id: string): AbstractAventra => {
-        return this.moduleFactory.createAventra4(reader_id);
+        return this.moduleFactory.createAventra(reader_id);
     }
 
     // get instance for Oberthur

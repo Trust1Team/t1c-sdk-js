@@ -1,11 +1,11 @@
 import {LocalConnection} from '../../../../core/client/Connection';
 import {T1CLibException} from '../../../../core/exceptions/CoreExceptions';
 import {
-    AbstractEidBE,
+    AbstractEidGeneric,
     AddressResponse, AllCertsResponse, AuthenticateResponse,
     BiometricDataResponse, PictureResponse, SignResponse,
     TokenDataResponse,
-} from './EidBeModel';
+} from './EidGenericModel';
 import {
     CertificateResponse,
     DataArrayResponse,
@@ -15,7 +15,7 @@ import {
 import {RequestHandler} from '../../../../util/RequestHandler';
 import {Options, AuthenticateOrSignData, VerifyPinData} from '../../TokenCard';
 
-export class EidBe implements AbstractEidBE {
+export class EidGeneric implements AbstractEidGeneric {
     static PATH_TOKEN_APP = '/apps/token';
     static PATH_READERS = '/readers';
     static ALL_DATA = '/all-data';
@@ -25,7 +25,7 @@ export class EidBe implements AbstractEidBE {
     static CERT_NON_REPUDIATION = '/nonrepudiation-cert';
     static CERT_ENCRYPTION = '/encryption-cert';
     static CERT_INTERMEDIATE = '/intermediate-certs';
-    static RN_DATA = '/biometric';
+    static BIOMETRIC = '/biometric';
     static ADDRESS = '/address';
     static PHOTO = '/picture';
     static TOKEN = '/info';
@@ -43,159 +43,130 @@ export class EidBe implements AbstractEidBE {
     ) {
     }
 
-    public allData(
-        options: string[] | Options,
-        callback?: (error: T1CLibException, data: DataObjectResponse) => void
-    ): Promise<DataObjectResponse> {
+    public allData(module: string, options: string[] | Options, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
         // @ts-ignore
         const requestOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.ALL_DATA),
+            this.tokenApp(module, EidGeneric.ALL_DATA),
             requestOptions.params
         );
     }
 
-    public biometric(
-        callback?: (error: T1CLibException, data: BiometricDataResponse) => void
-    ): Promise<BiometricDataResponse> {
+    public biometric(module: string, callback?: (error: T1CLibException, data: BiometricDataResponse) => void): Promise<BiometricDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.RN_DATA),
+            this.tokenApp(module, EidGeneric.BIOMETRIC),
             undefined,
             undefined,
             callback
         );
     }
 
-    public address(
-        callback?: (error: T1CLibException, data: AddressResponse) => void
-    ): Promise<AddressResponse> {
+    public address(module: string, callback?: (error: T1CLibException, data: AddressResponse) => void): Promise<AddressResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.ADDRESS),
+            this.tokenApp(module, EidGeneric.ADDRESS),
             undefined,
             undefined,
             callback
         );
     }
 
-    public tokenData(
-        callback?: (error: T1CLibException, data: TokenDataResponse) => void
-    ): Promise<TokenDataResponse> {
+    public tokenData(module: string, callback?: (error: T1CLibException, data: TokenDataResponse) => void): Promise<TokenDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.TOKEN),
+            this.tokenApp(module, EidGeneric.TOKEN),
             undefined,
             undefined,
             callback
         );
     }
 
-    public picture(
-        callback?: (error: T1CLibException, data: PictureResponse) => void
-    ): Promise<PictureResponse> {
+    public picture(module: string, callback?: (error: T1CLibException, data: PictureResponse) => void): Promise<PictureResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.PHOTO),
+            this.tokenApp(module, EidGeneric.PHOTO),
             undefined,
             undefined,
             callback
         );
     }
 
-    public rootCertificate(
-        callback?: (error: T1CLibException, data: CertificateResponse) => void
-    ): Promise<CertificateResponse> {
+    public rootCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.CERT_ROOT),
+            this.tokenApp(module, EidGeneric.CERT_ROOT),
             undefined,
             undefined,
             callback
         );
     }
 
-    public intermediateCertificates(
-        callback?: (error: T1CLibException, data: CertificateResponse) => void
-    ): Promise<CertificateResponse> {
+    public intermediateCertificates(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.CERT_INTERMEDIATE),
+            this.tokenApp(module, EidGeneric.CERT_INTERMEDIATE),
             undefined,
             undefined,
             callback
         );
     }
 
-    public authenticationCertificate(
-        callback?: (error: T1CLibException, data: CertificateResponse) => void
-    ): Promise<CertificateResponse> {
+    public authenticationCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.CERT_AUTHENTICATION),
+            this.tokenApp(module, EidGeneric.CERT_AUTHENTICATION),
             undefined,
             undefined,
             callback
         );
     }
 
-    public nonRepudiationCertificate(
-        callback?: (error: T1CLibException, data: CertificateResponse) => void
-    ): Promise<CertificateResponse> {
+    public nonRepudiationCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.CERT_NON_REPUDIATION),
+            this.tokenApp(module, EidGeneric.CERT_NON_REPUDIATION),
             undefined,
             undefined,
             callback
         );
     }
 
-    public encryptionCertificate(
-        callback?: (error: T1CLibException, data: CertificateResponse) => void
-    ): Promise<CertificateResponse> {
+    public encryptionCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.CERT_ENCRYPTION),
+            this.tokenApp(module, EidGeneric.CERT_ENCRYPTION),
             undefined,
             undefined,
             callback
         );
     }
 
-    public allAlgoRefs(
-        callback?: (error: T1CLibException, data: DataArrayResponse) => void
-    ): Promise<DataArrayResponse> {
+    public allAlgoRefs(module: string, callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.SUPPORTED_ALGOS),
+            this.tokenApp(module, EidGeneric.SUPPORTED_ALGOS),
             undefined,
             undefined,
             callback
         );
     }
 
-    public allCerts(
-        options: string[] | Options,
-        callback?: (error: T1CLibException, data: AllCertsResponse) => void
-    ): Promise<AllCertsResponse> {
+    public allCerts(module: string, options: string[] | Options, callback?: (error: T1CLibException, data: AllCertsResponse) => void): Promise<AllCertsResponse> {
         // @ts-ignore
         const reqOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.ALL_CERTIFICATES),
+            this.tokenApp(module, EidGeneric.ALL_CERTIFICATES),
             reqOptions.params
         );
     }
 
-    public verifyPin(
-        body: VerifyPinData,
-        callback?: (error: T1CLibException, data: T1CResponse) => void
-    ): Promise<T1CResponse> {
+    public verifyPin(module: string, body: VerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(EidBe.VERIFY_PIN),
+            this.tokenApp(module, EidGeneric.VERIFY_PIN),
             body,
             undefined,
             undefined,
@@ -203,13 +174,10 @@ export class EidBe implements AbstractEidBE {
         );
     }
 
-    public authenticate(
-        body: AuthenticateOrSignData,
-        callback?: (error: T1CLibException, data: AuthenticateResponse) => void
-    ): Promise<AuthenticateResponse> {
+    public authenticate(module: string, body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: AuthenticateResponse) => void): Promise<AuthenticateResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(EidBe.AUTHENTICATE),
+            this.tokenApp(module, EidGeneric.AUTHENTICATE),
             body,
             undefined,
             undefined,
@@ -218,13 +186,10 @@ export class EidBe implements AbstractEidBE {
     }
 
 
-    public sign(
-        body: AuthenticateOrSignData,
-        callback?: (error: T1CLibException, data: SignResponse) => void
-    ): Promise<SignResponse> {
+    public sign(module: string, body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: SignResponse) => void): Promise<SignResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(EidBe.SIGN_DATA),
+            this.tokenApp(module, EidGeneric.SIGN_DATA),
             body,
             undefined,
             undefined,
@@ -233,9 +198,10 @@ export class EidBe implements AbstractEidBE {
     }
 
     // resolves the reader_id in the base URL
-    protected tokenApp(path?: string): string {
-        let suffix = this.containerUrl;
-        suffix += EidBe.PATH_TOKEN_APP + EidBe.PATH_READERS;
+    protected tokenApp(module: string, path?: string): string {
+        let suffix = this.containerUrl; // is '/modules/'
+        suffix += module; //add module name
+        suffix += EidGeneric.PATH_TOKEN_APP + EidGeneric.PATH_READERS;
         if (this.reader_id && this.reader_id.length) {
             suffix += '/' + this.reader_id;
         }
