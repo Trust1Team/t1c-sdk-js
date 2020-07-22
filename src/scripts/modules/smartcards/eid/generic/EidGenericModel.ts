@@ -8,6 +8,7 @@ import {AuthenticateOrSignData, Options} from "../../TokenCard";
 import {VerifyPinData} from "../../TokenCard";
 
 export interface AbstractEidGeneric {
+  getModuleDescription(module: string, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse>;
   allData(module: string, filters: string[] | Options, callback?: (error: T1CLibException, data: AllDataResponse) => void): Promise<AllDataResponse>;
   allCerts(module: string, filters: string[] | Options, callback?: (error: T1CLibException, data: AllCertsResponse) => void): Promise<AllCertsResponse>;
   biometric(module: string, callback?: (error: T1CLibException, data: BiometricDataResponse) => void): Promise<BiometricDataResponse>;
@@ -23,6 +24,12 @@ export interface AbstractEidGeneric {
   authenticate(module: string, body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: AuthenticateResponse) => void): Promise<AuthenticateResponse>;
   sign(module: string, body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: SignResponse) => void): Promise<SignResponse>;
   allAlgoRefs(module: string, callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse>
+}
+
+export class ModuleDescriptionResponse extends DataObjectResponse {
+  constructor(public data: ModuleDescription, public success: boolean) {
+    super(data, success);
+  }
 }
 
 export class AddressResponse extends DataObjectResponse {
@@ -70,6 +77,12 @@ export class AuthenticateResponse extends DataObjectResponse {
 export class AuthenticateResponseData {
   constructor(
       public data?: string
+  ) {}
+}
+
+export class ModuleDescription {
+  constructor(
+      public desc: string
   ) {}
 }
 

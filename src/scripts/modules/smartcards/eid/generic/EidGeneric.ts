@@ -17,6 +17,7 @@ import {Options, AuthenticateOrSignData, VerifyPinData} from '../../TokenCard';
 
 export class EidGeneric implements AbstractEidGeneric {
     static PATH_TOKEN_APP = '/apps/token';
+    static PATH_MOD_DESC = '/desc';
     static PATH_READERS = '/readers';
     static ALL_DATA = '/all-data';
     static ALL_CERTIFICATES = '/cert-list';
@@ -209,5 +210,25 @@ export class EidGeneric implements AbstractEidGeneric {
             suffix += path.startsWith('/') ? path : '/' + path;
         }
         return suffix;
+    }
+
+    // resolves the modules base bath
+    protected baseApp(module: string, path?: string): string {
+        let suffix = this.containerUrl; // is '/modules/'
+        suffix += module; //add module name
+        if (path && path.length) {
+            suffix += path.startsWith('/') ? path : '/' + path;
+        }
+        return suffix;
+    }
+
+    getModuleDescription(module: string, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
+        return this.connection.get(
+            this.baseUrl,
+            this.baseApp(module, EidGeneric.PATH_MOD_DESC),
+            undefined,
+            undefined,
+            callback
+        );
     }
 }

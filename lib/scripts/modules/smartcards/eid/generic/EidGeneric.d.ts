@@ -9,6 +9,7 @@ export declare class EidGeneric implements AbstractEidGeneric {
     protected connection: LocalConnection;
     protected reader_id: string;
     static PATH_TOKEN_APP: string;
+    static PATH_MOD_DESC: string;
     static PATH_READERS: string;
     static ALL_DATA: string;
     static ALL_CERTIFICATES: string;
@@ -43,4 +44,6 @@ export declare class EidGeneric implements AbstractEidGeneric {
     authenticate(module: string, body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: AuthenticateResponse) => void): Promise<AuthenticateResponse>;
     sign(module: string, body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: SignResponse) => void): Promise<SignResponse>;
     protected tokenApp(module: string, path?: string): string;
+    protected baseApp(module: string, path?: string): string;
+    getModuleDescription(module: string, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse>;
 }

@@ -31,6 +31,7 @@ export declare class T1CClient {
     config: () => T1CConfig;
     mf: () => ModuleFactory;
     generic: (reader_id: string) => AbstractEidGeneric;
+    genericMeta: () => AbstractEidGeneric;
     fileex: () => AbstractFileExchange;
     beid: (reader_id: string) => AbstractEidBE;
     remoteloading: (reader_id: string) => AbstractRemoteLoading;

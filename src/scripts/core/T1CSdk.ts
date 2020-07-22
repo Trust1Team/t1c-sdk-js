@@ -217,6 +217,9 @@ export class T1CClient {
     public generic = (reader_id: string): AbstractEidGeneric => {
         return this.moduleFactory.createEidGeneric(reader_id)
     };
+    public genericMeta = (): AbstractEidGeneric => {
+        return this.moduleFactory.createEidGenericMeta()
+    };
     // get instance for belgian eID card
     public fileex = (): AbstractFileExchange => {
         return this.moduleFactory.createFileExchange()

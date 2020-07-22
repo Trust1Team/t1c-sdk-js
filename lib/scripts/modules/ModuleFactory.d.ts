@@ -9,6 +9,7 @@ import { AbstractRemoteLoading } from "./hsm/remoteloading/RemoteLoadingModel";
 import { AbstractEidGeneric } from "./smartcards/eid/generic/EidGenericModel";
 export interface AbstractFactory {
     createEidGeneric(reader_id?: string): AbstractEidGeneric;
+    createEidGenericMeta(): AbstractEidGeneric;
     createEidBE(reader_id?: string): AbstractEidBE;
     createEmv(reader_id?: string): AbstractEmv;
     createFileExchange(): AbstractFileExchange;
@@ -20,6 +21,7 @@ export declare class ModuleFactory implements AbstractFactory {
     private connection;
     constructor(url: string, connection: LocalConnection);
     createEidGeneric(reader_id: string): AbstractEidGeneric;
+    createEidGenericMeta(): AbstractEidGeneric;
     createEidBE(reader_id: string): AbstractEidBE;
     createAventra(reader_id: string): AbstractAventra;
     createOberthur(reader_id: string): AbstractOberthur73;

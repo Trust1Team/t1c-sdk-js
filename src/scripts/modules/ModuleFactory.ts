@@ -22,6 +22,7 @@ import {EidGeneric} from "./smartcards/eid/generic/EidGeneric";
 
 export interface AbstractFactory {
     createEidGeneric(reader_id?: string): AbstractEidGeneric;
+    createEidGenericMeta(): AbstractEidGeneric;
     createEidBE(reader_id?: string): AbstractEidBE;
     // createBeLawyer(reader_id?: string): AbstractBeLawyer;
     // createEidLUX(reader_id?: string): AbstractEidLUX;
@@ -70,6 +71,10 @@ export class ModuleFactory implements AbstractFactory {
 
     public createEidGeneric(reader_id: string): AbstractEidGeneric {
         return new EidGeneric(this.url, CONTAINER_NEW_CONTEXT_PATH, this.connection, reader_id);
+    }
+
+    public createEidGenericMeta(): AbstractEidGeneric {
+        return new EidGeneric(this.url, CONTAINER_NEW_CONTEXT_PATH, this.connection, ""); //only used for meta service info (with no selectted reader)
     }
 
     public createEidBE(reader_id: string): AbstractEidBE {
