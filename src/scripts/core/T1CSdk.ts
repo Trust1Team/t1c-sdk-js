@@ -22,6 +22,7 @@ import {AbstractEmv} from "../modules/payment/emv/EmvModel";
 import {AbstractFileExchange} from "../modules/file/fileExchange/FileExchangeModel";
 import {AbstractRemoteLoading} from "../modules/hsm/remoteloading/RemoteLoadingModel";
 import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
+import {AbstractPkcs11Generic} from "../modules/pkcs11/generic/Pkcs11GenericModel";
 
 const urlVersion = "/v3";
 
@@ -199,17 +200,6 @@ export class T1CClient {
         return this.localConfig;
     };
 
-    // get ds client services
-    /*  public ds = (): Promise<DSClient> => {
-      // als ds niet geconfigureerd is moet je hier een exception geven
-      return new Promise((resolve, reject) => {
-        if (this.dsClient) {
-          resolve(this.dsClient);
-        } else {
-          reject(new DSException('Distribution server is not configured'));
-        }
-      });
-    };*/
     // get plugin factory
     public mf = (): ModuleFactory => {
         return this.moduleFactory;
@@ -220,19 +210,23 @@ export class T1CClient {
     public genericMeta = (): AbstractEidGeneric => {
         return this.moduleFactory.createEidGenericMeta()
     };
-    // get instance for belgian eID card
+
+    public pkcs11Generic = (): AbstractPkcs11Generic => {
+        return this.moduleFactory.createPKCS11Generic()
+    };
+
     public fileex = (): AbstractFileExchange => {
         return this.moduleFactory.createFileExchange()
     };
-    // get instance for belgian eID card
+
     public beid = (reader_id: string): AbstractEidBE => {
         return this.moduleFactory.createEidBE(reader_id)
     };
-    // get instance for remote loading
+
     public remoteloading = (reader_id: string): AbstractRemoteLoading => {
         return this.moduleFactory.createRemoteLoading(reader_id)
     };
-    // get instance for EMV card
+
     public emv = (reader_id: string): AbstractEmv => {
         return this.moduleFactory.createEmv(reader_id)
     };

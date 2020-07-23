@@ -19,12 +19,16 @@ import {AbstractRemoteLoading} from "./hsm/remoteloading/RemoteLoadingModel";
 import {RemoteLoading} from "./hsm/remoteloading/RemoteLoading";
 import {AbstractEidGeneric} from "./smartcards/eid/generic/EidGenericModel";
 import {EidGeneric} from "./smartcards/eid/generic/EidGeneric";
+import {AbstractPkcs11Generic} from "./pkcs11/generic/Pkcs11GenericModel";
+import {AbstractEidDiplad} from "./smartcards/eid/diplad/EidDipladModel";
+import {EidDiplad} from "./smartcards/eid/diplad/EidDiplad";
+import {Pkcs11Generic} from "./pkcs11/generic/Pkcs11Generic";
 
 export interface AbstractFactory {
     createEidGeneric(reader_id?: string): AbstractEidGeneric;
     createEidGenericMeta(): AbstractEidGeneric;
     createEidBE(reader_id?: string): AbstractEidBE;
-    // createBeLawyer(reader_id?: string): AbstractBeLawyer;
+    createEidDiplad(reader_id?: string): AbstractEidDiplad;
     // createEidLUX(reader_id?: string): AbstractEidLUX;
     createEmv(reader_id?: string): AbstractEmv;
     createFileExchange(): AbstractFileExchange;
@@ -36,7 +40,7 @@ export interface AbstractFactory {
     createAventra(reader_id?: string): AbstractAventra;
     createOberthur(reader_id?: string): AbstractOberthur73;
     // createPIV(reader_id?: string): AbstractPiv;
-    // createPKCS11(): AbstractPkcs11;
+    createPKCS11Generic(): AbstractPkcs11Generic;
     // createJavaKeyTool(): AbstractJavaKeyTool
     // createSsh(): AbstractSsh
     // createRawPrint(runInUserSpace: boolean): AbstractRawPrint
@@ -44,7 +48,7 @@ export interface AbstractFactory {
 
 const CONTAINER_NEW_CONTEXT_PATH = '/modules/';
 const CONTAINER_BEID = CONTAINER_NEW_CONTEXT_PATH + 'beid';
-const CONTAINER_BELAWYER = CONTAINER_NEW_CONTEXT_PATH + 'diplad';
+const CONTAINER_DIPLAD = CONTAINER_NEW_CONTEXT_PATH + 'diplad';
 const CONTAINER_LUXEID = CONTAINER_NEW_CONTEXT_PATH + 'luxeid';
 const CONTAINER_DNIE = CONTAINER_NEW_CONTEXT_PATH + 'dnie';
 const CONTAINER_EMV = CONTAINER_NEW_CONTEXT_PATH + 'emv';
@@ -77,6 +81,14 @@ export class ModuleFactory implements AbstractFactory {
         return new EidGeneric(this.url, CONTAINER_NEW_CONTEXT_PATH, this.connection, ""); //only used for meta service info (with no selectted reader)
     }
 
+    public createEidDiplad(reader_id: string): AbstractEidDiplad {
+        return new EidDiplad(this.url, CONTAINER_DIPLAD, this.connection, reader_id);
+    }
+
+    public createPKCS11Generic(): AbstractPkcs11Generic {
+        return new Pkcs11Generic(this.url, CONTAINER_NEW_CONTEXT_PATH, this.connection);
+    }
+
     public createEidBE(reader_id: string): AbstractEidBE {
         return new EidBe(this.url, CONTAINER_BEID, this.connection, reader_id);
     }
@@ -104,6 +116,8 @@ export class ModuleFactory implements AbstractFactory {
     public createRemoteLoading(reader_id: string): AbstractRemoteLoading {
         return new RemoteLoading(this.url, CONTAINER_REMOTE_LOADING, this.connection, reader_id);
     }
+
+
 
 
 /*    public createDNIe(reader_id?: string): AbstractDNIe {

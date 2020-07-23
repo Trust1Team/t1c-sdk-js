@@ -3,7 +3,7 @@ import * as jwtDecode from 'jwt-decode';
 import * as moment from 'moment';
 import {T1CLibException} from './exceptions/CoreExceptions';
 import {T1CContainerid} from './service/CoreModel';
-import {Pkcs11ModuleConfig} from "../modules/pkcs11/generic/GenericPkcs11Model";
+import {Pkcs11ModuleConfig} from "../modules/pkcs11/generic/Pkcs11GenericModel";
 
 export class T1CConfigOptions {
   constructor(

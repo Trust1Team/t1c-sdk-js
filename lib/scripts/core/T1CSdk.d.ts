@@ -11,6 +11,7 @@ import { AbstractIdemia } from "../modules/smartcards/pki/idemia82/IdemiaModel";
 import { AbstractEmv } from "../modules/payment/emv/EmvModel";
 import { AbstractFileExchange } from "../modules/file/fileExchange/FileExchangeModel";
 import { AbstractRemoteLoading } from "../modules/hsm/remoteloading/RemoteLoadingModel";
+import { AbstractPkcs11Generic } from "../modules/pkcs11/generic/Pkcs11GenericModel";
 export declare class T1CClient {
     private _t1cInstalled;
     private localConfig;
@@ -32,6 +33,7 @@ export declare class T1CClient {
     mf: () => ModuleFactory;
     generic: (reader_id: string) => AbstractEidGeneric;
     genericMeta: () => AbstractEidGeneric;
+    pkcs11Generic: () => AbstractPkcs11Generic;
     fileex: () => AbstractFileExchange;
     beid: (reader_id: string) => AbstractEidBE;
     remoteloading: (reader_id: string) => AbstractRemoteLoading;

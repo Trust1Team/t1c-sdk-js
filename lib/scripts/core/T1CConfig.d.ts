@@ -1,4 +1,4 @@
-import { Pkcs11ModuleConfig } from "../modules/pkcs11/generic/GenericPkcs11Model";
+import { Pkcs11ModuleConfig } from "../modules/pkcs11/generic/Pkcs11GenericModel";
 export declare class T1CConfigOptions {
     t1cApiUrl?: string | undefined;
     t1cApiPort?: string | undefined;
