@@ -21,12 +21,13 @@ var OptionalPin = (function () {
 export { OptionalPin };
 var AuthenticateOrSignData = (function (_super) {
     __extends(AuthenticateOrSignData, _super);
-    function AuthenticateOrSignData(algorithm_reference, data, pin, pace) {
+    function AuthenticateOrSignData(algorithm, data, pin, pace, osDialog) {
         var _this = _super.call(this, pin, pace) || this;
-        _this.algorithm_reference = algorithm_reference;
+        _this.algorithm = algorithm;
         _this.data = data;
         _this.pin = pin;
         _this.pace = pace;
+        _this.osDialog = osDialog;
         return _this;
     }
     return AuthenticateOrSignData;
@@ -34,11 +35,12 @@ var AuthenticateOrSignData = (function (_super) {
 export { AuthenticateOrSignData };
 var VerifyPinData = (function (_super) {
     __extends(VerifyPinData, _super);
-    function VerifyPinData(private_key_reference, pin, pace) {
+    function VerifyPinData(private_key_reference, pin, pace, osDialog) {
         var _this = _super.call(this, pin, pace) || this;
         _this.private_key_reference = private_key_reference;
         _this.pin = pin;
         _this.pace = pace;
+        _this.osDialog = osDialog;
         return _this;
     }
     return VerifyPinData;

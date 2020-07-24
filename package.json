@@ -1,6 +1,6 @@
 {
   "name": "t1c-sdk-js",
-  "version": "3.0.1",
+  "version": "3.1.1",
   "description": "Trust1Connector JavaScript SDK",
   "main": "dist/T1Csdk.js",
   "types": "dist/lib/index.d.ts",
@@ -17,7 +17,7 @@
     "ts": "tsc && tsc -m es6 --outDir lib-esm",
     "build-ts": "npm run clean-ts && npm run ts",
     "build-dev": "npm run clean-dist && webpack --mode development --progress",
-    "build-prod": "npm run clean-dist && webpack --mode production --progress"
+    "build-prod": "npm run clean-dist && webpack --mode production --progress && npm run ts"
   },
   "repository": {
     "type": "git",
@@ -54,6 +54,7 @@
     "jest": "^26.0.1",
     "jest-extended": "^0.11.5",
     "shx": "^0.3.2",
+    "terser-webpack-plugin": "^3.0.7",
     "ts-jest": "^25.5.1",
     "ts-loader": "^7.0.3",
     "typescript": "^3.8.3",

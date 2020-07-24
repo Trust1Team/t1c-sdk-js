@@ -10,6 +10,7 @@ import {
 } from './client/Connection';
 import {DataResponse,} from './service/CoreModel';
 import {T1CLibException} from './exceptions/CoreExceptions';
+import {AbstractEidGeneric} from "../modules/smartcards/eid/generic/EidGenericModel";
 import {AbstractEidBE} from '../modules/smartcards/eid/be/EidBeModel';
 import {AbstractAventra} from '../modules/smartcards/pki/aventra4/AventraModel';
 import {AbstractOberthur73} from "../modules/smartcards/pki/oberthur73/OberthurModel";
@@ -21,6 +22,7 @@ import {AbstractEmv} from "../modules/payment/emv/EmvModel";
 import {AbstractFileExchange} from "../modules/file/fileExchange/FileExchangeModel";
 import {AbstractRemoteLoading} from "../modules/hsm/remoteloading/RemoteLoadingModel";
 import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
+import {AbstractPkcs11Generic} from "../modules/pkcs11/generic/Pkcs11GenericModel";
 
 const urlVersion = "/v3";
 
@@ -68,40 +70,9 @@ export class T1CClient {
         this.remoteApiKeyConnection = new RemoteApiKeyConnection(this.localConfig);
         this.moduleFactory = new ModuleFactory(this.localConfig.t1cApiUrl + urlVersion, this.connection);
         this.localTestConnection = new LocalTestConnection(this.localConfig);
-        // in citrix mode the admin endpoint should not be called through the agent
-        /*    this.adminService = new AdminService(
-          this.localConfig.t1cApiUrl,
-          this.authAdminConnection,
-          this.adminConnection
-        );*/
         this.coreService = new CoreService(this.localConfig.t1cApiUrl, this.authConnection);
         console.log("Core service initialized: " + this.localConfig.t1cApiUrl);
         this.coreService.version().then(info => console.log("Running T1C-sdk-js version: " + info))
-        // init DS if DS url is provided
-        /*    if (this.localConfig.dsUrl) {
-          if (this.localConfig.localTestMode) {
-            this.dsClient = new DSClient(
-              this.localConfig.dsUrl,
-              this.localTestConnection,
-              this.localConfig
-            );
-          } else {
-            this.dsClient = new DSClient(
-              this.localConfig.dsUrl,
-              this.remoteConnection,
-              this.localConfig
-            );
-          }
-        } else {
-          this.dsClient = {} as DSClient;
-        }
-
-        this.authClient = new AuthClient(
-          this.localConfig,
-          this.remoteApiKeyConnection
-        );
-        // keep reference to client in ClientService
-        ClientService.setClient(this);*/
     }
 
     public static checkPolyfills() {
@@ -229,40 +200,39 @@ export class T1CClient {
         return this.localConfig;
     };
 
-    // get ds client services
-    /*  public ds = (): Promise<DSClient> => {
-      // als ds niet geconfigureerd is moet je hier een exception geven
-      return new Promise((resolve, reject) => {
-        if (this.dsClient) {
-          resolve(this.dsClient);
-        } else {
-          reject(new DSException('Distribution server is not configured'));
-        }
-      });
-    };*/
     // get plugin factory
     public mf = (): ModuleFactory => {
         return this.moduleFactory;
     }
-    // get instance for belgian eID card
+    public generic = (reader_id: string): AbstractEidGeneric => {
+        return this.moduleFactory.createEidGeneric(reader_id)
+    };
+    public genericMeta = (): AbstractEidGeneric => {
+        return this.moduleFactory.createEidGenericMeta()
+    };
+
+    public pkcs11Generic = (): AbstractPkcs11Generic => {
+        return this.moduleFactory.createPKCS11Generic()
+    };
+
     public fileex = (): AbstractFileExchange => {
         return this.moduleFactory.createFileExchange()
     };
-    // get instance for belgian eID card
+
     public beid = (reader_id: string): AbstractEidBE => {
         return this.moduleFactory.createEidBE(reader_id)
     };
-    // get instance for remote loading
+
     public remoteloading = (reader_id: string): AbstractRemoteLoading => {
         return this.moduleFactory.createRemoteLoading(reader_id)
     };
-    // get instance for EMV card
+
     public emv = (reader_id: string): AbstractEmv => {
         return this.moduleFactory.createEmv(reader_id)
     };
     // get instance for Aventra
     public aventra = (reader_id: string): AbstractAventra => {
-        return this.moduleFactory.createAventra4(reader_id);
+        return this.moduleFactory.createAventra(reader_id);
     }
 
     // get instance for Oberthur

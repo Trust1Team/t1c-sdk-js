@@ -227,8 +227,10 @@ var CertificatesResponse = (function (_super) {
 }(T1CResponse));
 export { CertificatesResponse };
 var T1CCertificate = (function () {
-    function T1CCertificate(base64, id) {
-        this.base64 = base64;
+    function T1CCertificate(certificate, certificates, certificateType, id) {
+        this.certificate = certificate;
+        this.certificates = certificates;
+        this.certificateType = certificateType;
         this.id = id;
     }
     return T1CCertificate;

@@ -1,3 +1,4 @@
+import { Pkcs11ModuleConfig } from "../modules/pkcs11/generic/Pkcs11GenericModel";
 export declare class T1CConfigOptions {
     t1cApiUrl?: string | undefined;
     t1cApiPort?: string | undefined;
@@ -15,7 +16,8 @@ export declare class T1CConfigOptions {
     lang?: string | undefined;
     t1cDownloadLink?: string | undefined;
     t1cVersion?: string | undefined;
-    constructor(t1cApiUrl?: string | undefined, t1cApiPort?: string | undefined, t1cRpcPort?: string | undefined, dsUrl?: string | undefined, apiKey?: string | undefined, gwJwt?: string | undefined, dsContextPath?: string | undefined, agentPort?: number | undefined, forceHardwarePinpad?: boolean | undefined, sessionTimeout?: number | undefined, consentDuration?: number | undefined, consentTimeout?: number | undefined, osPinDialog?: boolean | undefined, lang?: string | undefined, t1cDownloadLink?: string | undefined, t1cVersion?: string | undefined);
+    pkcs11Config?: Pkcs11ModuleConfig | undefined;
+    constructor(t1cApiUrl?: string | undefined, t1cApiPort?: string | undefined, t1cRpcPort?: string | undefined, dsUrl?: string | undefined, apiKey?: string | undefined, gwJwt?: string | undefined, dsContextPath?: string | undefined, agentPort?: number | undefined, forceHardwarePinpad?: boolean | undefined, sessionTimeout?: number | undefined, consentDuration?: number | undefined, consentTimeout?: number | undefined, osPinDialog?: boolean | undefined, lang?: string | undefined, t1cDownloadLink?: string | undefined, t1cVersion?: string | undefined, pkcs11Config?: Pkcs11ModuleConfig | undefined);
 }
 export declare class T1CConfig {
     private _dsUrl;
@@ -38,7 +40,12 @@ export declare class T1CConfig {
     private _lang;
     private _t1cDownloadLink;
     private _t1cVersion;
+    private _pkcs11Config;
     constructor(options: T1CConfigOptions);
+    get pkcs11Config(): Pkcs11ModuleConfig | undefined;
+    set pkcs11Config(value: Pkcs11ModuleConfig | undefined);
+    set t1cRpcPort(value: string);
+    set t1cApiPort(value: string);
     get t1cApiUrl(): string;
     set t1cApiUrl(value: string);
     get dsUrl(): string;

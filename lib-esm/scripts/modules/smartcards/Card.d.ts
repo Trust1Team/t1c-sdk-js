@@ -4,17 +4,19 @@ export declare class OptionalPin {
     constructor(pin?: string | undefined, pace?: string | undefined, private_key_reference?: string);
 }
 export declare class AuthenticateOrSignData extends OptionalPin {
-    algorithm_reference: string;
+    algorithm: string;
     data: string;
     pin?: string | undefined;
     pace?: string | undefined;
-    constructor(algorithm_reference: string, data: string, pin?: string | undefined, pace?: string | undefined);
+    osDialog?: boolean | undefined;
+    constructor(algorithm: string, data: string, pin?: string | undefined, pace?: string | undefined, osDialog?: boolean | undefined);
 }
 export declare class VerifyPinData extends OptionalPin {
     private_key_reference?: string | undefined;
     pin?: string | undefined;
     pace?: string | undefined;
-    constructor(private_key_reference?: string | undefined, pin?: string | undefined, pace?: string | undefined);
+    osDialog?: boolean | undefined;
+    constructor(private_key_reference?: string | undefined, pin?: string | undefined, pace?: string | undefined, osDialog?: boolean | undefined);
 }
 export declare class ResetPinData {
     puk: string;

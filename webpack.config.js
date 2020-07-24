@@ -1,8 +1,8 @@
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
-  .BundleAnalyzerPlugin;
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const path = require('path');
 const webpack = require('webpack');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = (env, argv) => {
   console.log(argv.mode);
@@ -39,11 +39,7 @@ module.exports = (env, argv) => {
       argv.mode === 'production'
         ? {
             minimize: true,
-            minimizer: [
-              new UglifyJsPlugin({
-                include: /\.min\.js$/,
-              }),
-            ],
+            minimizer: [new TerserPlugin({sourceMap: true })],
           }
         : {
             minimize: false,
@@ -56,7 +52,7 @@ module.exports = (env, argv) => {
         {
           test: /\.js$/,
           // exclude: /(node_modules|bower_components)/,
-          exclude: /node_modules\/(?!(pkijs|asn1|asn1js|pvutils)\/).*/,
+          // exclude: /node_modules\/(?!(pkijs|asn1|asn1js|pvutils)\/).*/,
           use: {
             loader: 'babel-loader',
             options: {

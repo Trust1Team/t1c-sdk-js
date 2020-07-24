@@ -1,0 +1,194 @@
+import {T1CLibException} from '../../../../core/exceptions/CoreExceptions';
+import {
+  CertificateResponse, DataArrayResponse,
+  DataObjectResponse,
+  T1CCertificate,
+} from '../../../../core/service/CoreModel';
+import {AuthenticateOrSignData, Options} from "../../TokenCard";
+import {VerifyPinData} from "../../TokenCard";
+
+export interface AbstractEidGeneric {
+  getModuleDescription(module: string, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse>;
+  allData(module: string, filters: string[] | Options, callback?: (error: T1CLibException, data: AllDataResponse) => void): Promise<AllDataResponse>;
+  allCerts(module: string, filters: string[] | Options, callback?: (error: T1CLibException, data: AllCertsResponse) => void): Promise<AllCertsResponse>;
+  biometric(module: string, callback?: (error: T1CLibException, data: BiometricDataResponse) => void): Promise<BiometricDataResponse>;
+  tokenData(module: string, callback?: (error: T1CLibException, data: TokenDataResponse) => void): Promise<TokenDataResponse>;
+  address(module: string, callback?: (error: T1CLibException, data: AddressResponse) => void): Promise<AddressResponse>;
+  picture(module: string, callback?: (error: T1CLibException, data: PictureResponse) => void): Promise<PictureResponse>;
+  rootCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+  intermediateCertificates(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+  authenticationCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+  nonRepudiationCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+  encryptionCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+  verifyPin(module: string, body: VerifyPinData, callback?: (error: T1CLibException, data: VerifyPinResponse) => void): Promise<VerifyPinResponse>;
+  authenticate(module: string, body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: AuthenticateResponse) => void): Promise<AuthenticateResponse>;
+  sign(module: string, body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: SignResponse) => void): Promise<SignResponse>;
+  allAlgoRefs(module: string, callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse>
+}
+
+export class ModuleDescriptionResponse extends DataObjectResponse {
+  constructor(public data: ModuleDescription, public success: boolean) {
+    super(data, success);
+  }
+}
+
+export class AddressResponse extends DataObjectResponse {
+  constructor(public data: AddressData, public success: boolean) {
+    super(data, success);
+  }
+}
+
+export class PictureResponse extends DataObjectResponse {
+  constructor(public data: PictureData, public success: boolean) {
+    super(data, success);
+  }
+}
+
+export class VerifyPinResponse extends DataObjectResponse {
+  constructor(public data: VerifyPinResponseData, public success: boolean) {
+    super(data, success);
+  }
+}
+
+export class VerifyPinResponseData {
+  constructor(
+      public verified: boolean
+  ) {}
+}
+
+export class SignResponse extends DataObjectResponse {
+  constructor(public data: SignResponseData, public success: boolean) {
+    super(data, success);
+  }
+}
+
+export class SignResponseData {
+  constructor(
+      public data?: string
+  ) {}
+}
+
+export class AuthenticateResponse extends DataObjectResponse {
+  constructor(public data: AuthenticateResponseData, public success: boolean) {
+    super(data, success);
+  }
+}
+
+export class AuthenticateResponseData {
+  constructor(
+      public data?: string
+  ) {}
+}
+
+export class ModuleDescription {
+  constructor(
+      public desc: string
+  ) {}
+}
+
+export class AddressData {
+  constructor(
+    public municipality: string,
+    public rawData: string,
+    public signature: string,
+    public streetAndNumber: string,
+    public version: number,
+    public zipcode: string
+  ) {}
+}
+
+export class AllCertsResponse extends DataObjectResponse {
+  constructor(public data: AllCerts, public success: boolean) {
+    super(data, success);
+  }
+}
+
+export class AllCerts {
+  constructor(
+      public authenticationCertificate?: T1CCertificate,
+      public citizenCertificate?: T1CCertificate,
+      public nonRepudiationCertificate?: T1CCertificate,
+      public rootCertificate?: T1CCertificate,
+      public encryptionCertificate?: T1CCertificate
+  ) {}
+}
+
+export class AllDataResponse extends DataObjectResponse {
+  constructor(public data: AllData, public success: boolean) {
+    super(data, success);
+  }
+}
+
+
+export class AllData {
+  constructor(
+    public picture?: PictureData,
+    public biometric?: BiometricData,
+    public address?: AddressData,
+  ) {}
+}
+
+export class PictureData {
+  constructor(
+      public picture?: string,
+      public signature?: string,
+      public width?: number,
+      public height?: number,
+  ) {}
+}
+
+export class TokenData {
+  constructor(
+      public rawData?: string,
+      public version?: string,
+      public serialNumber?: string,
+      public label?: string,
+      public prnGeneration?: string,
+      public eidCompliant?: string,
+      public graphicalPersoVersion?: string,
+      public versionRfu?: string,
+      public electricalPersoVersion?: string,
+      public electricalPersoInterfaceVersion?: string,
+      public changeCounter?: number,
+      public activated?: string,
+  ) {}
+}
+
+export class TokenDataResponse extends DataObjectResponse {
+  constructor(public data: TokenData, public success: boolean) {
+    super(data, success);
+  }
+}
+
+export class BiometricData {
+  constructor(
+    public birthDate: string,
+    public birthLocation: string,
+    public cardDeliveryMunicipality: string,
+    public cardNumber: string,
+    public cardValidityDateBegin: string,
+    public cardValidityDateEnd: string,
+    public chipNumber: string,
+    public documentType: string,
+    public firstNames: string,
+    public name: string,
+    public nationalNumber: string,
+    public nationality: string,
+    public nobleCondition: string,
+    public pictureHash: string,
+    public rawData: string,
+    public sex: string,
+    public signature: string,
+    public specialStatus: string,
+    public thirdName: string,
+    public version: number
+  ) {}
+}
+
+export class BiometricDataResponse extends DataObjectResponse {
+  constructor(public data: BiometricData, public success: boolean) {
+    super(data, success);
+  }
+}
+
+
