@@ -75,7 +75,7 @@ var CoreService = (function () {
                         outdated = semver.ltr(installedGclVersion, client.config().t1cVersion);
                     }
                     else {
-                        reject(new T1CLibException(412, '701', 'No version to check against was provided', client));
+                        reject(new T1CLibException('701', 'No version to check against was provided', client));
                     }
                 }
                 if (outdated === true) {
@@ -86,7 +86,7 @@ var CoreService = (function () {
                 }
             }, function (err) {
                 console.error('Could not receive info', err);
-                reject(new T1CLibException(500, '700', 'Could not retrieve GCL information', client));
+                reject(new T1CLibException('700', 'Could not retrieve GCL information', client));
             });
         });
     };

@@ -1,7 +1,6 @@
 import { ObjectUtil } from '../../util/ObjectUtil';
 var T1CLibException = (function () {
-    function T1CLibException(status, code, description, client) {
-        this.status = status;
+    function T1CLibException(code, description, client) {
         this.code = code;
         this.description = description;
         this.client = client;
