@@ -12,52 +12,52 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import { DataObjectResponse } from '../../../../core/service/CoreModel';
-var AventraAllCertsResponse = (function (_super) {
-    __extends(AventraAllCertsResponse, _super);
-    function AventraAllCertsResponse(data, success) {
+var AllCertsResponse = (function (_super) {
+    __extends(AllCertsResponse, _super);
+    function AllCertsResponse(data, success) {
         var _this = _super.call(this, data, success) || this;
         _this.data = data;
         _this.success = success;
         return _this;
     }
-    return AventraAllCertsResponse;
+    return AllCertsResponse;
 }(DataObjectResponse));
-export { AventraAllCertsResponse };
-var AventraTxResponse = (function (_super) {
-    __extends(AventraTxResponse, _super);
-    function AventraTxResponse(data, success) {
+export { AllCertsResponse };
+var TxResponse = (function (_super) {
+    __extends(TxResponse, _super);
+    function TxResponse(data, success) {
         var _this = _super.call(this, data, success) || this;
         _this.data = data;
         _this.success = success;
         return _this;
     }
-    return AventraTxResponse;
+    return TxResponse;
 }(DataObjectResponse));
-export { AventraTxResponse };
-var AventraAllCerts = (function () {
-    function AventraAllCerts(authentication_certificate, encryption_certificate, issuer_certificate, signing_certificate, root_certificate) {
+export { TxResponse };
+var AllCerts = (function () {
+    function AllCerts(authentication_certificate, encryption_certificate, issuer_certificate, signing_certificate, root_certificate) {
         this.authentication_certificate = authentication_certificate;
         this.encryption_certificate = encryption_certificate;
         this.issuer_certificate = issuer_certificate;
         this.signing_certificate = signing_certificate;
         this.root_certificate = root_certificate;
     }
-    return AventraAllCerts;
+    return AllCerts;
 }());
-export { AventraAllCerts };
-var AventraAllDataResponse = (function (_super) {
-    __extends(AventraAllDataResponse, _super);
-    function AventraAllDataResponse(data, success) {
+export { AllCerts };
+var AllDataResponse = (function (_super) {
+    __extends(AllDataResponse, _super);
+    function AllDataResponse(data, success) {
         var _this = _super.call(this, data, success) || this;
         _this.data = data;
         _this.success = success;
         return _this;
     }
-    return AventraAllDataResponse;
+    return AllDataResponse;
 }(DataObjectResponse));
-export { AventraAllDataResponse };
-var AventraAllData = (function () {
-    function AventraAllData(applet_info, authentication_certificate, encryption_certificate, issuer_certificate, signing_certificate, root_certificate) {
+export { AllDataResponse };
+var AllData = (function () {
+    function AllData(applet_info, authentication_certificate, encryption_certificate, issuer_certificate, signing_certificate, root_certificate) {
         this.applet_info = applet_info;
         this.authentication_certificate = authentication_certificate;
         this.encryption_certificate = encryption_certificate;
@@ -65,17 +65,17 @@ var AventraAllData = (function () {
         this.signing_certificate = signing_certificate;
         this.root_certificate = root_certificate;
     }
-    return AventraAllData;
+    return AllData;
 }());
-export { AventraAllData };
-var AventraAppletInfo = (function () {
-    function AventraAppletInfo(change_counter, name, serial, version) {
+export { AllData };
+var AppletInfo = (function () {
+    function AppletInfo(change_counter, name, serial, version) {
         this.change_counter = change_counter;
         this.name = name;
         this.serial = serial;
         this.version = version;
     }
-    return AventraAppletInfo;
+    return AppletInfo;
 }());
-export { AventraAppletInfo };
+export { AppletInfo };
 //# sourceMappingURL=AventraModel.js.map

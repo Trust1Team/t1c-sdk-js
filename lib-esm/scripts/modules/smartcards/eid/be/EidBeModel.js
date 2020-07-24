@@ -12,139 +12,210 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 import { DataObjectResponse, } from '../../../../core/service/CoreModel';
-var BeidAddressResponse = (function (_super) {
-    __extends(BeidAddressResponse, _super);
-    function BeidAddressResponse(data, success) {
+var AddressResponse = (function (_super) {
+    __extends(AddressResponse, _super);
+    function AddressResponse(data, success) {
         var _this = _super.call(this, data, success) || this;
         _this.data = data;
         _this.success = success;
         return _this;
     }
-    return BeidAddressResponse;
+    return AddressResponse;
 }(DataObjectResponse));
-export { BeidAddressResponse };
-var BeidAddress = (function () {
-    function BeidAddress(municipality, raw_data, signature, street_and_number, version, zipcode) {
+export { AddressResponse };
+var PictureResponse = (function (_super) {
+    __extends(PictureResponse, _super);
+    function PictureResponse(data, success) {
+        var _this = _super.call(this, data, success) || this;
+        _this.data = data;
+        _this.success = success;
+        return _this;
+    }
+    return PictureResponse;
+}(DataObjectResponse));
+export { PictureResponse };
+var VerifyPinResponse = (function (_super) {
+    __extends(VerifyPinResponse, _super);
+    function VerifyPinResponse(data, success) {
+        var _this = _super.call(this, data, success) || this;
+        _this.data = data;
+        _this.success = success;
+        return _this;
+    }
+    return VerifyPinResponse;
+}(DataObjectResponse));
+export { VerifyPinResponse };
+var VerifyPinResponseData = (function () {
+    function VerifyPinResponseData(verified) {
+        this.verified = verified;
+    }
+    return VerifyPinResponseData;
+}());
+export { VerifyPinResponseData };
+var SignResponse = (function (_super) {
+    __extends(SignResponse, _super);
+    function SignResponse(data, success) {
+        var _this = _super.call(this, data, success) || this;
+        _this.data = data;
+        _this.success = success;
+        return _this;
+    }
+    return SignResponse;
+}(DataObjectResponse));
+export { SignResponse };
+var SignResponseData = (function () {
+    function SignResponseData(data) {
+        this.data = data;
+    }
+    return SignResponseData;
+}());
+export { SignResponseData };
+var AuthenticateResponse = (function (_super) {
+    __extends(AuthenticateResponse, _super);
+    function AuthenticateResponse(data, success) {
+        var _this = _super.call(this, data, success) || this;
+        _this.data = data;
+        _this.success = success;
+        return _this;
+    }
+    return AuthenticateResponse;
+}(DataObjectResponse));
+export { AuthenticateResponse };
+var AuthenticateResponseData = (function () {
+    function AuthenticateResponseData(data) {
+        this.data = data;
+    }
+    return AuthenticateResponseData;
+}());
+export { AuthenticateResponseData };
+var AddressData = (function () {
+    function AddressData(municipality, rawData, signature, streetAndNumber, version, zipcode) {
         this.municipality = municipality;
-        this.raw_data = raw_data;
+        this.rawData = rawData;
         this.signature = signature;
-        this.street_and_number = street_and_number;
+        this.streetAndNumber = streetAndNumber;
         this.version = version;
         this.zipcode = zipcode;
     }
-    return BeidAddress;
+    return AddressData;
 }());
-export { BeidAddress };
-var BeidAllCertsResponse = (function (_super) {
-    __extends(BeidAllCertsResponse, _super);
-    function BeidAllCertsResponse(data, success) {
+export { AddressData };
+var AllCertsResponse = (function (_super) {
+    __extends(AllCertsResponse, _super);
+    function AllCertsResponse(data, success) {
         var _this = _super.call(this, data, success) || this;
         _this.data = data;
         _this.success = success;
         return _this;
     }
-    return BeidAllCertsResponse;
+    return AllCertsResponse;
 }(DataObjectResponse));
-export { BeidAllCertsResponse };
-var BeidAllCerts = (function () {
-    function BeidAllCerts(authentication_certificate, citizen_certificate, non_repudiation_certificate, root_certificate, rrn_certificate) {
-        this.authentication_certificate = authentication_certificate;
-        this.citizen_certificate = citizen_certificate;
-        this.non_repudiation_certificate = non_repudiation_certificate;
-        this.root_certificate = root_certificate;
-        this.rrn_certificate = rrn_certificate;
+export { AllCertsResponse };
+var AllCerts = (function () {
+    function AllCerts(authenticationCertificate, citizenCertificate, nonRepudiationCertificate, rootCertificate, encryptionCertificate) {
+        this.authenticationCertificate = authenticationCertificate;
+        this.citizenCertificate = citizenCertificate;
+        this.nonRepudiationCertificate = nonRepudiationCertificate;
+        this.rootCertificate = rootCertificate;
+        this.encryptionCertificate = encryptionCertificate;
     }
-    return BeidAllCerts;
+    return AllCerts;
 }());
-export { BeidAllCerts };
-var BeidAllDataResponse = (function (_super) {
-    __extends(BeidAllDataResponse, _super);
-    function BeidAllDataResponse(data, success) {
+export { AllCerts };
+var AllDataResponse = (function (_super) {
+    __extends(AllDataResponse, _super);
+    function AllDataResponse(data, success) {
         var _this = _super.call(this, data, success) || this;
         _this.data = data;
         _this.success = success;
         return _this;
     }
-    return BeidAllDataResponse;
-}(BeidAllCertsResponse));
-export { BeidAllDataResponse };
-var BeidAllData = (function () {
-    function BeidAllData(address, authentication_certificate, citizen_certificate, non_repudiation_certificate, picture, rn, root_certificate, rrn_certificate, token_data) {
-        this.address = address;
-        this.authentication_certificate = authentication_certificate;
-        this.citizen_certificate = citizen_certificate;
-        this.non_repudiation_certificate = non_repudiation_certificate;
+    return AllDataResponse;
+}(DataObjectResponse));
+export { AllDataResponse };
+var AllData = (function () {
+    function AllData(picture, biometric, address) {
         this.picture = picture;
-        this.rn = rn;
-        this.root_certificate = root_certificate;
-        this.rrn_certificate = rrn_certificate;
-        this.token_data = token_data;
+        this.biometric = biometric;
+        this.address = address;
     }
-    return BeidAllData;
+    return AllData;
 }());
-export { BeidAllData };
-var BeidTokenData = (function () {
-    function BeidTokenData(eid_compliant, electrical_perso_interface_version, electrical_perso_version, graphical_perso_version, label, prn_generation, raw_data, serial_number, version, version_rfu) {
-        this.eid_compliant = eid_compliant;
-        this.electrical_perso_interface_version = electrical_perso_interface_version;
-        this.electrical_perso_version = electrical_perso_version;
-        this.graphical_perso_version = graphical_perso_version;
-        this.label = label;
-        this.prn_generation = prn_generation;
-        this.raw_data = raw_data;
-        this.serial_number = serial_number;
+export { AllData };
+var PictureData = (function () {
+    function PictureData(picture, signature, width, height) {
+        this.picture = picture;
+        this.signature = signature;
+        this.width = width;
+        this.height = height;
+    }
+    return PictureData;
+}());
+export { PictureData };
+var TokenData = (function () {
+    function TokenData(rawData, version, serialNumber, label, prnGeneration, eidCompliant, graphicalPersoVersion, versionRfu, electricalPersoVersion, electricalPersoInterfaceVersion, changeCounter, activated) {
+        this.rawData = rawData;
         this.version = version;
-        this.version_rfu = version_rfu;
+        this.serialNumber = serialNumber;
+        this.label = label;
+        this.prnGeneration = prnGeneration;
+        this.eidCompliant = eidCompliant;
+        this.graphicalPersoVersion = graphicalPersoVersion;
+        this.versionRfu = versionRfu;
+        this.electricalPersoVersion = electricalPersoVersion;
+        this.electricalPersoInterfaceVersion = electricalPersoInterfaceVersion;
+        this.changeCounter = changeCounter;
+        this.activated = activated;
     }
-    return BeidTokenData;
+    return TokenData;
 }());
-export { BeidTokenData };
-var BeidTokenDataResponse = (function (_super) {
-    __extends(BeidTokenDataResponse, _super);
-    function BeidTokenDataResponse(data, success) {
+export { TokenData };
+var TokenDataResponse = (function (_super) {
+    __extends(TokenDataResponse, _super);
+    function TokenDataResponse(data, success) {
         var _this = _super.call(this, data, success) || this;
         _this.data = data;
         _this.success = success;
         return _this;
     }
-    return BeidTokenDataResponse;
+    return TokenDataResponse;
 }(DataObjectResponse));
-export { BeidTokenDataResponse };
-var BeidRnData = (function () {
-    function BeidRnData(birth_date, birth_location, card_delivery_municipality, card_number, card_validity_date_begin, card_validity_date_end, chip_number, document_type, first_names, name, national_number, nationality, noble_condition, picture_hash, raw_data, sex, signature, special_status, third_name, version) {
-        this.birth_date = birth_date;
-        this.birth_location = birth_location;
-        this.card_delivery_municipality = card_delivery_municipality;
-        this.card_number = card_number;
-        this.card_validity_date_begin = card_validity_date_begin;
-        this.card_validity_date_end = card_validity_date_end;
-        this.chip_number = chip_number;
-        this.document_type = document_type;
-        this.first_names = first_names;
+export { TokenDataResponse };
+var BiometricData = (function () {
+    function BiometricData(birthDate, birthLocation, cardDeliveryMunicipality, cardNumber, cardValidityDateBegin, cardValidityDateEnd, chipNumber, documentType, firstNames, name, nationalNumber, nationality, nobleCondition, pictureHash, rawData, sex, signature, specialStatus, thirdName, version) {
+        this.birthDate = birthDate;
+        this.birthLocation = birthLocation;
+        this.cardDeliveryMunicipality = cardDeliveryMunicipality;
+        this.cardNumber = cardNumber;
+        this.cardValidityDateBegin = cardValidityDateBegin;
+        this.cardValidityDateEnd = cardValidityDateEnd;
+        this.chipNumber = chipNumber;
+        this.documentType = documentType;
+        this.firstNames = firstNames;
         this.name = name;
-        this.national_number = national_number;
+        this.nationalNumber = nationalNumber;
         this.nationality = nationality;
-        this.noble_condition = noble_condition;
-        this.picture_hash = picture_hash;
-        this.raw_data = raw_data;
+        this.nobleCondition = nobleCondition;
+        this.pictureHash = pictureHash;
+        this.rawData = rawData;
         this.sex = sex;
         this.signature = signature;
-        this.special_status = special_status;
-        this.third_name = third_name;
+        this.specialStatus = specialStatus;
+        this.thirdName = thirdName;
         this.version = version;
     }
-    return BeidRnData;
+    return BiometricData;
 }());
-export { BeidRnData };
-var BeidRnDataResponse = (function (_super) {
-    __extends(BeidRnDataResponse, _super);
-    function BeidRnDataResponse(data, success) {
+export { BiometricData };
+var BiometricDataResponse = (function (_super) {
+    __extends(BiometricDataResponse, _super);
+    function BiometricDataResponse(data, success) {
         var _this = _super.call(this, data, success) || this;
         _this.data = data;
         _this.success = success;
         return _this;
     }
-    return BeidRnDataResponse;
+    return BiometricDataResponse;
 }(DataObjectResponse));
-export { BeidRnDataResponse };
+export { BiometricDataResponse };
 //# sourceMappingURL=EidBeModel.js.map

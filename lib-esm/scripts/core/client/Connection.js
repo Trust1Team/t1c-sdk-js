@@ -45,7 +45,7 @@ var GenericConnection = (function () {
     GenericConnection.prototype.getRequestHeaders = function (headers) {
         var reqHeaders = headers || {};
         reqHeaders['Accept-Language'] = 'en-US';
-        reqHeaders['T1C-CSRF-Token'] = 'client';
+        reqHeaders['t1c-csrf'] = 'client';
         return reqHeaders;
     };
     GenericConnection.prototype.getSecurityConfig = function () {
@@ -65,6 +65,7 @@ var GenericConnection = (function () {
         if (securityConfig.skipCitrixCheck ||
             !t1cConfig.citrix) {
             var config_1 = {
+                withCredentials: true,
                 url: UrlUtil.create(basePath, suffix, securityConfig.skipCitrixCheck),
                 method: method,
                 headers: this.getRequestHeaders(headers),
@@ -102,42 +103,15 @@ var GenericConnection = (function () {
                         return resolve(response.data);
                     })
                         .catch(function (error) {
+                        var _a, _b, _c, _d;
                         if (!error.code && !error.response) {
-                            var thrownError = new T1CLibException(500, '999', 'Network error occurred. Request could not be completed');
+                            var thrownError = new T1CLibException("900", 'Internal error');
                             callback(thrownError, null);
                             return reject(thrownError);
                         }
                         else {
-                            if (error.response) {
-                                if (error.response.data) {
-                                    if (error.response.data.message) {
-                                        callback(new T1CLibException(500, '' +
-                                            (error.response.data.code || error.code || '998'), error.response.data.message), undefined);
-                                        return reject(new T1CLibException(500, '' +
-                                            (error.response.data.code || error.code || '998'), error.response.data.message));
-                                    }
-                                    else if (error.response.data.description) {
-                                        callback(new T1CLibException(500, '' +
-                                            (error.response.data.code || error.code || '998'), error.response.data.description), null);
-                                        return reject(new T1CLibException(500, '' +
-                                            (error.response.data.code || error.code || '998'), error.response.data.description));
-                                    }
-                                    else {
-                                        callback(new T1CLibException(500, '' +
-                                            (error.response.data.code || error.code || '998'), error.response.data), null);
-                                        return reject(new T1CLibException(500, '' +
-                                            (error.response.data.code || error.code || '998'), error.response.data));
-                                    }
-                                }
-                                else {
-                                    callback(new T1CLibException(500, '' + error.code || '998', JSON.stringify(error.response)), null);
-                                    return reject(new T1CLibException(500, '' + error.code || '998', JSON.stringify(error.response)));
-                                }
-                            }
-                            else {
-                                callback(new T1CLibException(500, '' + error.code || '998', JSON.stringify(error)), null);
-                                return reject(new T1CLibException(500, '' + error.code || '998', JSON.stringify(error)));
-                            }
+                            callback(new T1CLibException((_a = error.response) === null || _a === void 0 ? void 0 : _a.data.code, (_b = error.response) === null || _b === void 0 ? void 0 : _b.data.description), null);
+                            return reject(new T1CLibException((_c = error.response) === null || _c === void 0 ? void 0 : _c.data.code, (_d = error.response) === null || _d === void 0 ? void 0 : _d.data.description));
                         }
                     });
                 }, function (err) {
@@ -148,7 +122,6 @@ var GenericConnection = (function () {
         else {
             var agentPortError = {
                 description: 'Running in Citrix environment but no Agent port was defined in config.',
-                status: 400,
                 code: '801',
             };
             callback(agentPortError, null);
@@ -407,7 +380,6 @@ var LocalTestConnection = (function (_super) {
         if (gclConfig.citrix && gclConfig.agentPort === -1) {
             var agentPortError = {
                 description: 'Running in Citrix environment but no Agent port was defined in config.',
-                status: 400,
                 code: '801',
             };
             callback(agentPortError, null);

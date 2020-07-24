@@ -1,4 +1,4 @@
-import { RequestHandler } from "../../../../util/RequestHandler";
+import { RequestHandler } from '../../../../util/RequestHandler';
 var EidBe = (function () {
     function EidBe(baseUrl, containerUrl, connection, reader_id) {
         this.baseUrl = baseUrl;
@@ -10,7 +10,7 @@ var EidBe = (function () {
         var requestOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(this.baseUrl, this.tokenApp(EidBe.ALL_DATA), requestOptions.params);
     };
-    EidBe.prototype.rnData = function (callback) {
+    EidBe.prototype.biometric = function (callback) {
         return this.connection.get(this.baseUrl, this.tokenApp(EidBe.RN_DATA), undefined, undefined, callback);
     };
     EidBe.prototype.address = function (callback) {
@@ -22,26 +22,23 @@ var EidBe = (function () {
     EidBe.prototype.picture = function (callback) {
         return this.connection.get(this.baseUrl, this.tokenApp(EidBe.PHOTO), undefined, undefined, callback);
     };
-    EidBe.prototype.rootCertificate = function (options, callback) {
-        return this.getCertificate(EidBe.CERT_ROOT, RequestHandler.determineOptions(options, callback));
+    EidBe.prototype.rootCertificate = function (callback) {
+        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.CERT_ROOT), undefined, undefined, callback);
     };
-    EidBe.prototype.citizenCertificate = function (options, callback) {
-        return this.getCertificate(EidBe.CERT_CITIZEN, RequestHandler.determineOptions(options, callback));
+    EidBe.prototype.intermediateCertificates = function (callback) {
+        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.CERT_INTERMEDIATE), undefined, undefined, callback);
     };
-    EidBe.prototype.authenticationCertificate = function (options, callback) {
-        return this.getCertificate(EidBe.CERT_AUTHENTICATION, RequestHandler.determineOptions(options, callback));
+    EidBe.prototype.authenticationCertificate = function (callback) {
+        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.CERT_AUTHENTICATION), undefined, undefined, callback);
     };
-    EidBe.prototype.nonRepudiationCertificate = function (options, callback) {
-        return this.getCertificate(EidBe.CERT_NON_REPUDIATION, RequestHandler.determineOptions(options, callback));
+    EidBe.prototype.nonRepudiationCertificate = function (callback) {
+        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.CERT_NON_REPUDIATION), undefined, undefined, callback);
     };
-    EidBe.prototype.rrnCertificate = function (options, callback) {
-        return this.getCertificate(EidBe.CERT_RRN, RequestHandler.determineOptions(options, callback));
+    EidBe.prototype.encryptionCertificate = function (callback) {
+        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.CERT_ENCRYPTION), undefined, undefined, callback);
     };
-    EidBe.prototype.allAlgoRefsForAuthentication = function (callback) {
-        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.AUTHENTICATE), undefined, undefined, callback);
-    };
-    EidBe.prototype.allAlgoRefsForSigning = function (callback) {
-        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.SIGN_DATA), undefined, undefined, callback);
+    EidBe.prototype.allAlgoRefs = function (callback) {
+        return this.connection.get(this.baseUrl, this.tokenApp(EidBe.SUPPORTED_ALGOS), undefined, undefined, callback);
     };
     EidBe.prototype.allCerts = function (options, callback) {
         var reqOptions = RequestHandler.determineOptionsWithFilter(options);
@@ -50,29 +47,11 @@ var EidBe = (function () {
     EidBe.prototype.verifyPin = function (body, callback) {
         return this.connection.post(this.baseUrl, this.tokenApp(EidBe.VERIFY_PIN), body, undefined, undefined, callback);
     };
-    EidBe.prototype.verifyPinWithEncryptedPin = function (body, callback) {
-        return this.connection.post(this.baseUrl, this.tokenApp(EidBe.VERIFY_PIN), body, undefined, undefined, callback);
-    };
     EidBe.prototype.authenticate = function (body, callback) {
-        if (body.algorithm_reference)
-            body.algorithm_reference = body.algorithm_reference.toLocaleLowerCase();
         return this.connection.post(this.baseUrl, this.tokenApp(EidBe.AUTHENTICATE), body, undefined, undefined, callback);
     };
-    EidBe.prototype.authenticateWithEncryptedPin = function (body, callback) {
-        body.algorithm_reference = body.algorithm_reference.toLocaleLowerCase();
-        return this.connection.post(this.baseUrl, this.tokenApp(EidBe.AUTHENTICATE), body, undefined, undefined, callback);
-    };
-    EidBe.prototype.signData = function (body, callback) {
-        body.algorithm_reference = body.algorithm_reference.toLocaleLowerCase();
+    EidBe.prototype.sign = function (body, callback) {
         return this.connection.post(this.baseUrl, this.tokenApp(EidBe.SIGN_DATA), body, undefined, undefined, callback);
-    };
-    EidBe.prototype.signDataWithEncryptedPin = function (body, callback) {
-        body.algorithm_reference = body.algorithm_reference.toLocaleLowerCase();
-        return this.connection.post(this.baseUrl, this.tokenApp(EidBe.SIGN_DATA), body, undefined, undefined, callback);
-    };
-    EidBe.prototype.getCertificate = function (certUrl, options) {
-        var self = this;
-        return self.connection.get(this.baseUrl, self.tokenApp(EidBe.ALL_CERTIFICATES + certUrl));
     };
     EidBe.prototype.tokenApp = function (path) {
         var suffix = this.containerUrl;
@@ -87,25 +66,22 @@ var EidBe = (function () {
     };
     EidBe.PATH_TOKEN_APP = '/apps/token';
     EidBe.PATH_READERS = '/readers';
-    EidBe.CONTAINER_PREFIX = 'beid';
     EidBe.ALL_DATA = '/all-data';
-    EidBe.ALL_CERTIFICATES = '/certificates';
-    EidBe.AUTHENTICATE = '/authenticate';
-    EidBe.CERT_ROOT = '/root';
-    EidBe.CERT_AUTHENTICATION = '/authentication';
-    EidBe.CERT_NON_REPUDIATION = '/non-repudiation';
-    EidBe.CERT_ISSUER = '/issuer';
-    EidBe.CERT_SIGNING = '/signing';
-    EidBe.CERT_ENCRYPTION = '/encryption';
-    EidBe.CERT_CITIZEN = '/citizen';
-    EidBe.CERT_RRN = '/rrn';
-    EidBe.SIGN_DATA = '/sign';
-    EidBe.BIOMETRIC = '/rn';
+    EidBe.ALL_CERTIFICATES = '/cert-list';
+    EidBe.CERT_ROOT = '/root-cert';
+    EidBe.CERT_AUTHENTICATION = '/authentication-cert';
+    EidBe.CERT_NON_REPUDIATION = '/nonrepudiation-cert';
+    EidBe.CERT_ENCRYPTION = '/encryption-cert';
+    EidBe.CERT_INTERMEDIATE = '/intermediate-certs';
+    EidBe.RN_DATA = '/biometric';
     EidBe.ADDRESS = '/address';
     EidBe.PHOTO = '/picture';
-    EidBe.TOKEN = '/token';
+    EidBe.TOKEN = '/info';
     EidBe.VERIFY_PIN = '/verify-pin';
+    EidBe.SIGN_DATA = '/sign';
+    EidBe.AUTHENTICATE = '/authenticate';
     EidBe.VERIFY_PRIV_KEY_REF = 'non-repudiation';
+    EidBe.SUPPORTED_ALGOS = '/supported-algorithms';
     return EidBe;
 }());
 export { EidBe };
