@@ -86,7 +86,7 @@ export class ModuleFactory implements AbstractFactory {
     }
 
     public createPKCS11Generic(): AbstractPkcs11Generic {
-        return new Pkcs11Generic(this.url, CONTAINER_NEW_CONTEXT_PATH, this.connection);
+        return new Pkcs11Generic(this.url, CONTAINER_PKCS11, this.connection);
     }
 
     public createEidBE(reader_id: string): AbstractEidBE {
