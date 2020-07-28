@@ -4,31 +4,18 @@ import {BoolDataResponse, DataResponse, T1CLibException} from "../../../..";
 
 export interface AbstractPkcs11Generic {
     uploadConfig(config: string, callback?: (error: T1CLibException, data: Pkcs11UploadConfigResponse) => void): Promise<Pkcs11UploadConfigResponse>;
-
     getConfig(callback?: (error: T1CLibException, data: Pkcs11GetConfigResponse) => void): Promise<Pkcs11GetConfigResponse>;
-
     clearConfig(callback?: (error: T1CLibException, data: Pkcs11ClearConfigResponse) => void): Promise<Pkcs11ClearConfigResponse>;
-
     os(callback?: (error: T1CLibException, data: OsResponse) => void): Promise<OsResponse>;
-
     info(callback?: (error: T1CLibException, data: Pkcs11InfoResponse) => void): Promise<Pkcs11InfoResponse>;
-
     slots(callback?: (error: T1CLibException, data: Pkcs11SlotsResponse) => void): Promise<Pkcs11SlotsResponse>;
-
     slotsWithTokenPresent(callback?: (error: T1CLibException, data: Pkcs11SlotsResponse) => void): Promise<Pkcs11SlotsResponse>;
-
     slotInfo(slotId: string, callback?: (error: T1CLibException, data: Pkcs11SlotInfoResponse) => void): Promise<Pkcs11SlotInfoResponse>;
-
     token(slotId: string, callback?: (error: T1CLibException, data: Pkcs11TokenResponse) => void): Promise<Pkcs11TokenResponse>;
-
     getAliases(slotId: string, data: Pkcs11VerifyPinRequest, callback?: (error: T1CLibException, data: AliasesResponse) => void): Promise<AliasesResponse>;
-
     getPrivateKeyType(slotId: string, alias: string, data: Pkcs11VerifyPinRequest, callback?: (error: T1CLibException, data: PrivateKeyTypeResponse) => void): Promise<PrivateKeyTypeResponse>;
-
     getCertificates(slotId: string, alias: string, data: Pkcs11VerifyPinRequest, callback?: (error: T1CLibException, data: Pkcs11CertificatesResponse) => void): Promise<Pkcs11CertificatesResponse>;
-
     sign(slotId: string, alias: string, data: Pkcs11SignRequest, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse>;
-
     verifyPin(slotId: string, alias: string, data: Pkcs11VerifyPinRequest, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
 }
 

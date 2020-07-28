@@ -175,8 +175,8 @@ export class T1CClient {
             }, err => {
                 const client = new T1CClient(cfg);
                 reject(new T1CLibException(
-                    err.response?.data.code,
-                    err.response?.data.description,
+                    "199",
+                    "Failed to contact the Trust1Connector API",
                     client
                 ))
                 console.error(err);
