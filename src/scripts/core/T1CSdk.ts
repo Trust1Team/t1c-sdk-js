@@ -122,8 +122,8 @@ export class T1CClient {
                                     }, err => {
                                         const client = new T1CClient(cfg);
                                         reject(new T1CLibException(
-                                            err.response?.data.code,
-                                            err.response?.data.description,
+                                            err.code,
+                                            err.description,
                                             client
                                         ));
                                         console.error(err);
@@ -144,8 +144,8 @@ export class T1CClient {
                                 }, err => {
                                     const client = new T1CClient(cfg);
                                     reject(new T1CLibException(
-                                        err.response?.data.code,
-                                        err.response?.data.description,
+                                        err.code,
+                                        err.description,
                                         client
                                     ));
                                     console.error(err);
