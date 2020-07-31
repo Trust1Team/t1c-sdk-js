@@ -23,6 +23,8 @@ import {AbstractPkcs11Generic} from "./pkcs11/generic/Pkcs11GenericModel";
 import {AbstractEidDiplad} from "./smartcards/eid/diplad/EidDipladModel";
 import {EidDiplad} from "./smartcards/eid/diplad/EidDiplad";
 import {Pkcs11Generic} from "./pkcs11/generic/Pkcs11Generic";
+import {AbstractPaymentGeneric} from "./payment/generic/PaymentGenericModel";
+import {PaymentGeneric} from "./payment/generic/PaymentGeneric";
 
 export interface AbstractFactory {
     createEidGeneric(reader_id?: string): AbstractEidGeneric;
@@ -31,6 +33,8 @@ export interface AbstractFactory {
     createEidDiplad(reader_id?: string): AbstractEidDiplad;
     // createEidLUX(reader_id?: string): AbstractEidLUX;
     createEmv(reader_id?: string): AbstractEmv;
+    createPaymentGeneric(reader_id?: string): AbstractPaymentGeneric;
+    createPaymentGenericMeta(): AbstractPaymentGeneric;
     createFileExchange(): AbstractFileExchange;
     // createWacom(): AbstractWacom;
     // createIsabel(reader_id?: string, runInUserSpace?: boolean): AbstractIsabel;
@@ -79,6 +83,14 @@ export class ModuleFactory implements AbstractFactory {
 
     public createEidGenericMeta(): AbstractEidGeneric {
         return new EidGeneric(this.url, CONTAINER_NEW_CONTEXT_PATH, this.connection, ""); //only used for meta service info (with no selectted reader)
+    }
+
+    public createPaymentGeneric(reader_id: string): AbstractPaymentGeneric {
+        return new PaymentGeneric(this.url, CONTAINER_NEW_CONTEXT_PATH, this.connection, reader_id);
+    }
+
+    public createPaymentGenericMeta(): AbstractPaymentGeneric {
+        return new PaymentGeneric(this.url, CONTAINER_NEW_CONTEXT_PATH, this.connection, ""); //only used for meta service info (with no selectted reader)
     }
 
     public createEidDiplad(reader_id: string): AbstractEidDiplad {
