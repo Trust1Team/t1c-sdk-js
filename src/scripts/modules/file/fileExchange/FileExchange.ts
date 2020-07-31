@@ -65,8 +65,8 @@ export class FileExchange implements AbstractFileExchange {
         );
     }
 
-    createType(entity: string, type: string, iniTabsPath?: [string], modal?: boolean, timeout?: number, callback?: (error: T1CLibException, data: TypeResponse) => void): Promise<TypeResponse> {
-        let body = {entity, type, modal, timeout, iniTabsPath};
+    createType(entity: string, type: string, initPath?: [string], modal?: boolean, timeout?: number, callback?: (error: T1CLibException, data: TypeResponse) => void): Promise<TypeResponse> {
+        let body = {entity, type, modal, timeout, initPath};
         return this.connection.post(
             this.baseUrl,
             this.fileApp(FileExchange.TYPECREATE),

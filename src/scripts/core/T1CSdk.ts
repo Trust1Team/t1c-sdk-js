@@ -23,6 +23,7 @@ import {AbstractFileExchange} from "../modules/file/fileExchange/FileExchangeMod
 import {AbstractRemoteLoading} from "../modules/hsm/remoteloading/RemoteLoadingModel";
 import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
 import {AbstractPkcs11Generic} from "../modules/pkcs11/generic/Pkcs11GenericModel";
+import {AbstractPaymentGeneric} from "../modules/payment/generic/PaymentGenericModel";
 
 const urlVersion = "/v3";
 
@@ -121,8 +122,8 @@ export class T1CClient {
                                     }, err => {
                                         const client = new T1CClient(cfg);
                                         reject(new T1CLibException(
-                                            err.response?.data.code,
-                                            err.response?.data.description,
+                                            err.code,
+                                            err.description,
                                             client
                                         ));
                                         console.error(err);
@@ -143,8 +144,8 @@ export class T1CClient {
                                 }, err => {
                                     const client = new T1CClient(cfg);
                                     reject(new T1CLibException(
-                                        err.response?.data.code,
-                                        err.response?.data.description,
+                                        err.code,
+                                        err.description,
                                         client
                                     ));
                                     console.error(err);
@@ -175,8 +176,8 @@ export class T1CClient {
             }, err => {
                 const client = new T1CClient(cfg);
                 reject(new T1CLibException(
-                    err.response?.data.code,
-                    err.response?.data.description,
+                    "199",
+                    "Failed to contact the Trust1Connector API",
                     client
                 ))
                 console.error(err);
@@ -207,8 +208,17 @@ export class T1CClient {
     public generic = (reader_id: string): AbstractEidGeneric => {
         return this.moduleFactory.createEidGeneric(reader_id)
     };
+
     public genericMeta = (): AbstractEidGeneric => {
         return this.moduleFactory.createEidGenericMeta()
+    };
+
+    public paymentGeneric = (reader_id: string): AbstractPaymentGeneric => {
+        return this.moduleFactory.createPaymentGeneric(reader_id)
+    };
+
+    public paymentGenericMeta = (): AbstractPaymentGeneric => {
+        return this.moduleFactory.createPaymentGenericMeta()
     };
 
     public pkcs11Generic = (): AbstractPkcs11Generic => {

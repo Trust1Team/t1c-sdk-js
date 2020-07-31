@@ -84,3 +84,7 @@ fabric.properties
 /reports/
 dist/report.html
 .npmrc
+Release-js.zip
+lib-esm
+lib
+dist
