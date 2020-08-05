@@ -13,7 +13,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-var CoreModel_1 = require("../../../../core/service/CoreModel");
+var CoreModel_1 = require("../../../../../core/service/CoreModel");
 var BeidAddressResponse = /** @class */ (function (_super) {
     __extends(BeidAddressResponse, _super);
     function BeidAddressResponse(data, success) {

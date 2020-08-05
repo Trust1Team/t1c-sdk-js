@@ -1,24 +1,28 @@
-/**
- * @author Trust1Team
- * @since 2020
- */
-import {T1CLibException} from '../../../../core/exceptions/CoreExceptions';
-import {ResetPinData, VerifyPinData, AuthenticateOrSignData} from '../../Card';
+
+import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
+import {Options} from '../../../Card';
 import {AbstractOberthur73} from './OberthurModel';
-import {LocalConnection, QueryParams} from '../../../../core/client/Connection';
+import {LocalConnection} from '../../../../../core/client/Connection';
 import {
     CertificateResponse,
     DataArrayResponse,
     DataObjectResponse,
-    DataResponse, T1CResponse
-} from "../../../../core/service/CoreModel";
+    T1CResponse
+} from "../../../../../core/service/CoreModel";
+import {
+    TokenAlgorithmReferencesResponse,
+    TokenAllCertsResponse,
+    TokenAuthenticateResponse,
+    TokenSignResponse
+} from "../../eid/generic/EidGenericModel";
+import {TokenAuthenticateOrSignData, TokenVerifyPinData} from "../../TokenCard";
 
 export class Oberthur implements AbstractOberthur73 {
     static PATH_TOKEN_APP = '/apps/token';
     static PATH_READERS = '/readers';
     static CONTAINER_PREFIX = 'oberthur_73';
     static RESET_PIN = '/reset-pin';
-    static ALL_DATA = '/all-data';
+    static INFO = '/info';
     static ALL_CERTIFICATES = '/cert-list';
     static AUTHENTICATE = '/authenticate';
     static CERT_ROOT = '/root-cert';
@@ -29,14 +33,9 @@ export class Oberthur implements AbstractOberthur73 {
     static CERT_RRN = '/encryption-cert';
     static SIGN_DATA = '/sign';
     static VERIFY_PIN = '/verify-pin';
-    static SUPPORTED_ALGOS = '/supported-algoritms'
+    static SUPPORTED_ALGOS = '/supported-algorithms'
 
     constructor(protected baseUrl: string, protected containerUrl: string,protected connection: LocalConnection, protected reader_id: string) {}
-
-// filters
-    public allDataFilters() {
-        return ['rootCertificate', 'authenticationCertificate', 'encryptionCertificate', 'nonRepudiationCertificate', 'issuerCertificate'];
-    }
 
     public allCertFilters() {
         return ['rootCertificate', 'authenticationCertificate', 'encryptionCertificate', 'nonRepudiationCertificate', 'issuerCertificate'];
@@ -58,7 +57,7 @@ export class Oberthur implements AbstractOberthur73 {
         return this.getCertificate(Oberthur.CERT_AUTHENTICATION, callback);
     }
 
-    public signingCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+    public nonRepudiationCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
         return this.getCertificate(Oberthur.CERT_NON_REPUDIATION, callback);
     }
 
@@ -66,33 +65,24 @@ export class Oberthur implements AbstractOberthur73 {
         return this.getCertificate(Oberthur.CERT_ENCRYPTION, callback);
     }
 
-    public verifyPin(body: VerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
+    public verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
         return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.VERIFY_PIN), body, undefined, undefined, callback);
     }
 
-    public resetPin(body: ResetPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
-        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.RESET_PIN), body, undefined, undefined, callback);
-    }
-
-
-    public allAlgoRefsForAuthentication(callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse> {
+    public allAlgoRefs(callback?: (error: T1CLibException, data: TokenAlgorithmReferencesResponse) => void): Promise<TokenAlgorithmReferencesResponse> {
         return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.SUPPORTED_ALGOS), undefined, undefined, callback);
     }
 
-    public allAlgoRefsForSigning(callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.SUPPORTED_ALGOS), undefined, undefined, callback);
+    allCerts(filters: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.ALL_CERTIFICATES), filters)
     }
 
-    public allCerts(queryParams: QueryParams, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.ALL_CERTIFICATES), queryParams)
-    }
-
-    public authenticate(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
+    public authenticate(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse> {
         body.algorithm = body.algorithm.toLowerCase();
         return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.AUTHENTICATE), body, undefined, undefined, callback);
     }
 
-    public sign(body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
+    public sign(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
@@ -103,8 +93,8 @@ export class Oberthur implements AbstractOberthur73 {
         return this.connection.get(this.baseUrl, this.tokenApp(certUrl), undefined, callback);
     }
 
-    public allData(queryParams: QueryParams, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.ALL_DATA), queryParams);
+    public tokenData(callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.INFO), undefined);
     }
 
     // resolves the reader_id in the base URL

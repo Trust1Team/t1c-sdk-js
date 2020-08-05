@@ -5,7 +5,7 @@ class UrlUtil {
     constructor() {
     }
 
-    public static create(base: string, suffix: string, skipCitrixCheck: boolean) {
+    public static create(base: string, suffix: string) {
         return base + suffix;
     }
 }

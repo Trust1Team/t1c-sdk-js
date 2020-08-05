@@ -51,12 +51,12 @@ export class CoreService implements AbstractCore {
         if (!codeWord || !codeWord.length) {
             return ResponseHandler.error({status: 400, description: 'Code word is required!', code: '801'}, callback);
         }*/
-    let days: number = this.connection.cfg.defaultConsentDuration;
+    let days: number = 365;
     if (durationInDays) {
       days = durationInDays;
     }
 
-    let timeout: number = this.connection.cfg.defaultConsentTimeout;
+    let timeout: number = 240;
     if (timeoutInSeconds) {
       timeout = timeoutInSeconds;
     }
@@ -88,7 +88,7 @@ export class CoreService implements AbstractCore {
     /*        if (!codeWord || !codeWord.length) {
             return ResponseHandler.error({status: 400, description: 'Code word is required!', code: '801'}, callback);
         }*/
-    let days: number = this.connection.cfg.defaultConsentDuration;
+    let days: number = 365;
     if (durationInDays) {
       days = durationInDays;
     }
@@ -152,65 +152,6 @@ export class CoreService implements AbstractCore {
 
   public getUrl(): string {
     return this.url;
-  }
-
-  public checkT1cApiVersion(client: T1CClient, t1cVersion?: string): Promise<CheckT1CVersionResponse> {
-    return new Promise<CheckT1CVersionResponse>((resolve, reject) => {
-      client.core().info().then(
-          infoResponse => {
-            const installedGclVersion = semver.coerce(
-              infoResponse.t1CInfoAPI.version
-            );
-            let outdated = false;
-            if (t1cVersion) {
-              outdated = semver.ltr(installedGclVersion, t1cVersion);
-            } else {
-              if (client.config().t1cVersion) {
-                outdated = semver.ltr(
-                  installedGclVersion,
-                  client.config().t1cVersion
-                );
-              } else {
-                reject(
-                  new T1CLibException(
-                    '701',
-                    'No version to check against was provided',
-                    client
-                  )
-                );
-              }
-            }
-
-            if (outdated === true) {
-              resolve(
-                new CheckT1CVersionResponse(
-                  new CheckT1CVersion(
-                    outdated,
-                    client.config().t1cDownloadLink
-                  ),
-                  true
-                )
-              );
-            } else {
-              resolve(
-                new CheckT1CVersionResponse(new CheckT1CVersion(outdated), true)
-              );
-            }
-          },
-          err => {
-            console.error('Could not receive info', err);
-            // TODO check if errorcode is good
-            // failure probably because GCL is not installed
-            reject(
-              new T1CLibException(
-                '700',
-                'Could not retrieve GCL information',
-                client
-              )
-            );
-          }
-        );
-    });
   }
 
   // get Lib version
