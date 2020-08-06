@@ -1,14 +1,11 @@
-import {AbstractPaymentGeneric} from "./PaymentGenericModel";
-import {Options, VerifyPinData} from "../../smartcards/PaymentCard";
-import {DataObjectResponse, LocalConnection, T1CLibException} from "../../../..";
-import {RequestHandler} from "../../../util/RequestHandler";
 import {
-    AllCertsResponse,
-    EmvCertificateResponse,
-    ReadApplicationDataResponse,
-    ReadDataResponse,
-    VerifyPinResponse
-} from "../emv/EmvModel";
+    AbstractPaymentGeneric, PaymentAllCertsResponse,
+    PaymentCertificateResponse,
+    PaymentReadApplicationDataResponse, PaymentReadDataResponse, PaymentVerifyPinResponse
+} from "./PaymentGenericModel";
+import {DataObjectResponse, LocalConnection, PaymentVerifyPinData, T1CLibException} from "../../../../../index";
+import {RequestHandler} from "../../../../util/RequestHandler";
+import {Options} from "../../Card";
 
 
 export class PaymentGeneric implements AbstractPaymentGeneric {
@@ -31,7 +28,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     }
 
 
-    allCerts(module: string, aid: string, filters: string[] | Options, callback?: (error: T1CLibException, data: AllCertsResponse) => void): Promise<AllCertsResponse> {
+    allCerts(module: string, aid: string, filters: string[] | Options, callback?: (error: T1CLibException, data: PaymentAllCertsResponse) => void): Promise<PaymentAllCertsResponse> {
         const reqOptions = RequestHandler.determineOptionsWithFilter(filters);
         return this.connection.get(
             this.baseUrl,
@@ -40,7 +37,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
         );
     }
 
-    iccPublicCertificate(module: string, aid: string, callback?: (error: T1CLibException, data: EmvCertificateResponse) => void): Promise<EmvCertificateResponse> {
+    iccPublicCertificate(module: string, aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(module, PaymentGeneric.CERT_ICC, aid),
@@ -50,7 +47,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
         );
     }
 
-    issuerPublicCertificate(module: string, aid: string, callback?: (error: T1CLibException, data: EmvCertificateResponse) => void): Promise<EmvCertificateResponse> {
+    issuerPublicCertificate(module: string, aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(module, PaymentGeneric.CERT_ISSUER, aid),
@@ -60,7 +57,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
         );
     }
 
-    readApplicationData(module: string, callback?: (error: T1CLibException, data: ReadApplicationDataResponse) => void): Promise<ReadApplicationDataResponse> {
+    readApplicationData(module: string, callback?: (error: T1CLibException, data: PaymentReadApplicationDataResponse) => void): Promise<PaymentReadApplicationDataResponse> {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(module, PaymentGeneric.READ_APPLICATION_DATA),
@@ -70,7 +67,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
         );
     }
 
-    readData(module: string, callback?: (error: T1CLibException, data: ReadDataResponse) => void): Promise<ReadDataResponse> {
+    readData(module: string, callback?: (error: T1CLibException, data: PaymentReadDataResponse) => void): Promise<PaymentReadDataResponse> {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(module, PaymentGeneric.READ_DATA),
@@ -80,7 +77,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
         );
     }
 
-    verifyPin(module: string, body: VerifyPinData, callback?: (error: T1CLibException, data: VerifyPinResponse) => void): Promise<VerifyPinResponse> {
+    verifyPin(module: string, body: PaymentVerifyPinData, callback?: (error: T1CLibException, data: PaymentVerifyPinResponse) => void): Promise<PaymentVerifyPinResponse> {
         return this.connection.post(
             this.baseUrl,
             this.paymentApp(module, PaymentGeneric.VERIFY_PIN),

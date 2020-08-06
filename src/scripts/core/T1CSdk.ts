@@ -10,41 +10,22 @@ import {
 } from './client/Connection';
 import {DataResponse,} from './service/CoreModel';
 import {T1CLibException} from './exceptions/CoreExceptions';
-import {AbstractEidGeneric} from "../modules/smartcards/eid/generic/EidGenericModel";
-import {AbstractEidBE} from '../modules/smartcards/eid/be/EidBeModel';
-import {AbstractAventra} from '../modules/smartcards/pki/aventra4/AventraModel';
-import {AbstractOberthur73} from "../modules/smartcards/pki/oberthur73/OberthurModel";
+import {AbstractEidGeneric} from "../modules/smartcards/token/eid/generic/EidGenericModel";
+import {AbstractEidBE} from '../modules/smartcards/token/eid/be/EidBeModel';
+import {AbstractAventra} from '../modules/smartcards/token/pki/aventra4/AventraModel';
+import {AbstractOberthur73} from "../modules/smartcards/token/pki/oberthur73/OberthurModel";
 import {T1CConfig} from './T1CConfig';
 import {Polyfills} from "../util/Polyfills";
 import {ModuleFactory} from "../modules/ModuleFactory";
-import {AbstractIdemia} from "../modules/smartcards/pki/idemia82/IdemiaModel";
-import {AbstractEmv} from "../modules/payment/emv/EmvModel";
+import {AbstractIdemia} from "../modules/smartcards/token/pki/idemia82/IdemiaModel";
+import {AbstractEmv} from "../modules/smartcards/payment/emv/EmvModel";
 import {AbstractFileExchange} from "../modules/file/fileExchange/FileExchangeModel";
 import {AbstractRemoteLoading} from "../modules/hsm/remoteloading/RemoteLoadingModel";
-import axios, {AxiosError, AxiosRequestConfig, AxiosResponse} from 'axios';
+import axios from 'axios';
 import {AbstractPkcs11Generic} from "../modules/pkcs11/generic/Pkcs11GenericModel";
-import {AbstractPaymentGeneric} from "../modules/payment/generic/PaymentGenericModel";
+import {AbstractPaymentGeneric} from "../modules/smartcards/payment/generic/PaymentGenericModel";
 
 const urlVersion = "/v3";
-
-// check if any polyfills are needed
-const defaults = {
-    t1cApiUrl: 'https://t1c.t1t.io',
-    t1cApiPort: '51983',
-    t1cRpcPort: '50051',
-    gwUrl: 'https://accapim.t1t.be:443',
-    dsContextPath: '/trust1team/gclds/v3',
-    dsContextPathTestMode: '/gcl-ds-web/v3',
-    implicitDownload: false,
-    localTestMode: false,
-    forceHardwarePinpad: false,
-    sessionTimeout: 5,
-    consentDuration: 1,
-    consentTimeout: 10,
-    syncManaged: true,
-    osPinDialog: false,
-    containerDownloadTimeout: 30,
-};
 
 export class T1CClient {
     private _t1cInstalled: boolean | undefined;

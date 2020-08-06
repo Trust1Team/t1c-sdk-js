@@ -1,4 +1,3 @@
-import {Options} from "../../smartcards/PaymentCard";
 import {BoolDataResponse, DataResponse, T1CLibException} from "../../../..";
 
 

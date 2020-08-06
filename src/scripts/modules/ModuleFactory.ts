@@ -3,28 +3,28 @@
  * @since 2020
  */
 import {LocalConnection} from "../core/client/Connection";
-import { EidBe } from './smartcards/eid/be/EidBe';
-import {AbstractEidBE} from "./smartcards/eid/be/EidBeModel";
-import { Aventra } from './smartcards/pki/aventra4/Aventra';
-import { AbstractAventra } from './smartcards/pki/aventra4/AventraModel';
-import {AbstractOberthur73} from "./smartcards/pki/oberthur73/OberthurModel";
-import {Oberthur} from "./smartcards/pki/oberthur73/Oberthur";
-import {AbstractIdemia} from "./smartcards/pki/idemia82/IdemiaModel";
-import {Idemia} from "./smartcards/pki/idemia82/Idemia";
-import {AbstractEmv} from "./payment/emv/EmvModel";
-import {Emv} from "./payment/emv/Emv";
+import { EidBe } from './smartcards/token/eid/be/EidBe';
+import {AbstractEidBE} from "./smartcards/token/eid/be/EidBeModel";
+import { Aventra } from './smartcards/token/pki/aventra4/Aventra';
+import { AbstractAventra } from './smartcards/token/pki/aventra4/AventraModel';
+import {AbstractOberthur73} from "./smartcards/token/pki/oberthur73/OberthurModel";
+import {Oberthur} from "./smartcards/token/pki/oberthur73/Oberthur";
+import {AbstractIdemia} from "./smartcards/token/pki/idemia82/IdemiaModel";
+import {Idemia} from "./smartcards/token/pki/idemia82/Idemia";
+import {AbstractEmv} from "./smartcards/payment/emv/EmvModel";
+import {Emv} from "./smartcards/payment/emv/Emv";
 import {AbstractFileExchange} from "./file/fileExchange/FileExchangeModel";
 import {FileExchange} from "./file/fileExchange/FileExchange";
 import {AbstractRemoteLoading} from "./hsm/remoteloading/RemoteLoadingModel";
 import {RemoteLoading} from "./hsm/remoteloading/RemoteLoading";
-import {AbstractEidGeneric} from "./smartcards/eid/generic/EidGenericModel";
-import {EidGeneric} from "./smartcards/eid/generic/EidGeneric";
+import {AbstractEidGeneric} from "./smartcards/token/eid/generic/EidGenericModel";
+import {EidGeneric} from "./smartcards/token/eid/generic/EidGeneric";
 import {AbstractPkcs11Generic} from "./pkcs11/generic/Pkcs11GenericModel";
-import {AbstractEidDiplad} from "./smartcards/eid/diplad/EidDipladModel";
-import {EidDiplad} from "./smartcards/eid/diplad/EidDiplad";
+import {AbstractEidDiplad} from "./smartcards/token/eid/diplad/EidDipladModel";
+import {EidDiplad} from "./smartcards/token/eid/diplad/EidDiplad";
 import {Pkcs11Generic} from "./pkcs11/generic/Pkcs11Generic";
-import {AbstractPaymentGeneric} from "./payment/generic/PaymentGenericModel";
-import {PaymentGeneric} from "./payment/generic/PaymentGeneric";
+import {AbstractPaymentGeneric} from "./smartcards/payment/generic/PaymentGenericModel";
+import {PaymentGeneric} from "./smartcards/payment/generic/PaymentGeneric";
 
 export interface AbstractFactory {
     createEidGeneric(reader_id?: string): AbstractEidGeneric;

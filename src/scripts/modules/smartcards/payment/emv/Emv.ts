@@ -1,13 +1,15 @@
-import {LocalConnection, T1CLibException} from "../../../..";
+import {
+    LocalConnection, PaymentAllCertsResponse, PaymentCertificateResponse, PaymentReadApplicationDataResponse,
+    PaymentReadDataResponse,
+    PaymentVerifyPinResponse,
+    T1CLibException
+} from "../../../../../index";
 import {
     AbstractEmv,
-    AllCertsResponse,
-    EmvCertificateResponse,
-    ReadApplicationDataResponse,
-    ReadDataResponse, VerifyPinResponse
 } from "./EmvModel";
-import {Options, VerifyPinData} from "../../smartcards/PaymentCard";
-import {RequestHandler} from "../../../util/RequestHandler";
+import {PaymentVerifyPinData} from "../PaymentCard";
+import {RequestHandler} from "../../../../util/RequestHandler";
+import {Options} from "../../Card";
 
 export class Emv implements AbstractEmv {
     static PATH_PAYMENT_APP = '/apps/payment';
@@ -27,7 +29,7 @@ export class Emv implements AbstractEmv {
     ) {
     }
 
-    allCerts(aid: string, filters: string[] | Options, callback?: (error: T1CLibException, data: AllCertsResponse) => void): Promise<AllCertsResponse> {
+    allCerts(aid: string, filters: string[] | Options, callback?: (error: T1CLibException, data: PaymentAllCertsResponse) => void): Promise<PaymentAllCertsResponse> {
         const reqOptions = RequestHandler.determineOptionsWithFilter(filters);
         return this.connection.get(
             this.baseUrl,
@@ -36,7 +38,7 @@ export class Emv implements AbstractEmv {
         );
     }
 
-    iccPublicCertificate(aid: string, callback?: (error: T1CLibException, data: EmvCertificateResponse) => void): Promise<EmvCertificateResponse> {
+    iccPublicCertificate(aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(Emv.CERT_ICC, aid),
@@ -46,7 +48,7 @@ export class Emv implements AbstractEmv {
         );
     }
 
-    issuerPublicCertificate(aid: string, callback?: (error: T1CLibException, data: EmvCertificateResponse) => void): Promise<EmvCertificateResponse> {
+    issuerPublicCertificate(aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(Emv.CERT_ISSUER, aid),
@@ -56,7 +58,7 @@ export class Emv implements AbstractEmv {
         );
     }
 
-    readApplicationData(callback?: (error: T1CLibException, data: ReadApplicationDataResponse) => void): Promise<ReadApplicationDataResponse> {
+    readApplicationData(callback?: (error: T1CLibException, data: PaymentReadApplicationDataResponse) => void): Promise<PaymentReadApplicationDataResponse> {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(Emv.READ_APPLICATION_DATA),
@@ -66,7 +68,7 @@ export class Emv implements AbstractEmv {
         );
     }
 
-    readData(callback?: (error: T1CLibException, data: ReadDataResponse) => void): Promise<ReadDataResponse> {
+    readData(callback?: (error: T1CLibException, data: PaymentReadDataResponse) => void): Promise<PaymentReadDataResponse> {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(Emv.READ_DATA),
@@ -76,7 +78,7 @@ export class Emv implements AbstractEmv {
         );
     }
 
-    verifyPin(body: VerifyPinData, callback?: (error: T1CLibException, data: VerifyPinResponse) => void): Promise<VerifyPinResponse> {
+    verifyPin(body: PaymentVerifyPinData, callback?: (error: T1CLibException, data: PaymentVerifyPinResponse) => void): Promise<PaymentVerifyPinResponse> {
         return this.connection.post(
             this.baseUrl,
             this.paymentApp(Emv.VERIFY_PIN),

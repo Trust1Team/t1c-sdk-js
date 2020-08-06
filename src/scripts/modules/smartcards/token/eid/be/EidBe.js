@@ -13,9 +13,9 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 exports.__esModule = true;
-var Card_1 = require("../../Card");
+var Card_1 = require("../../../Card");
 var PinEnforcer_1 = require("../../../../util/PinEnforcer");
-var RequestHandler_1 = require("../../../../util/RequestHandler");
+var RequestHandler_1 = require("../../../../../util/RequestHandler");
 var EidBe = /** @class */ (function (_super) {
     __extends(EidBe, _super);
     function EidBe(baseUrl, containerUrl, connection, reader_id) {

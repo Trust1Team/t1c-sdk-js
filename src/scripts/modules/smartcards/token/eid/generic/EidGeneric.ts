@@ -1,19 +1,20 @@
-import {LocalConnection} from '../../../../core/client/Connection';
-import {T1CLibException} from '../../../../core/exceptions/CoreExceptions';
+import {LocalConnection} from '../../../../../core/client/Connection';
+import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {
     AbstractEidGeneric,
-    AddressResponse, AllCertsResponse, AuthenticateResponse,
-    BiometricDataResponse, PictureResponse, SignResponse,
-    TokenDataResponse,
+    TokenAddressResponse, TokenAllCertsResponse, TokenAuthenticateResponse,
+    TokenBiometricDataResponse, TokenPictureResponse, TokenSignResponse,
+    TokenDataResponse, TokenAlgorithmReferencesResponse,
 } from './EidGenericModel';
 import {
     CertificateResponse,
     DataArrayResponse,
     DataObjectResponse,
     T1CResponse,
-} from '../../../../core/service/CoreModel';
-import {RequestHandler} from '../../../../util/RequestHandler';
-import {Options, AuthenticateOrSignData, VerifyPinData} from '../../TokenCard';
+} from '../../../../../core/service/CoreModel';
+import {RequestHandler} from '../../../../../util/RequestHandler';
+import {TokenAuthenticateOrSignData, TokenVerifyPinData} from '../../TokenCard';
+import {Options} from "../../../Card";
 
 export class EidGeneric implements AbstractEidGeneric {
     static PATH_TOKEN_APP = '/apps/token';
@@ -54,7 +55,7 @@ export class EidGeneric implements AbstractEidGeneric {
         );
     }
 
-    public biometric(module: string, callback?: (error: T1CLibException, data: BiometricDataResponse) => void): Promise<BiometricDataResponse> {
+    public biometric(module: string, callback?: (error: T1CLibException, data: TokenBiometricDataResponse) => void): Promise<TokenBiometricDataResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.BIOMETRIC),
@@ -64,7 +65,7 @@ export class EidGeneric implements AbstractEidGeneric {
         );
     }
 
-    public address(module: string, callback?: (error: T1CLibException, data: AddressResponse) => void): Promise<AddressResponse> {
+    public address(module: string, callback?: (error: T1CLibException, data: TokenAddressResponse) => void): Promise<TokenAddressResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.ADDRESS),
@@ -84,7 +85,7 @@ export class EidGeneric implements AbstractEidGeneric {
         );
     }
 
-    public picture(module: string, callback?: (error: T1CLibException, data: PictureResponse) => void): Promise<PictureResponse> {
+    public picture(module: string, callback?: (error: T1CLibException, data: TokenPictureResponse) => void): Promise<TokenPictureResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.PHOTO),
@@ -144,7 +145,7 @@ export class EidGeneric implements AbstractEidGeneric {
         );
     }
 
-    public allAlgoRefs(module: string, callback?: (error: T1CLibException, data: DataArrayResponse) => void): Promise<DataArrayResponse> {
+    public allAlgoRefs(module: string, callback?: (error: T1CLibException, data: TokenAlgorithmReferencesResponse) => void): Promise<TokenAlgorithmReferencesResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.SUPPORTED_ALGOS),
@@ -154,7 +155,7 @@ export class EidGeneric implements AbstractEidGeneric {
         );
     }
 
-    public allCerts(module: string, options: string[] | Options, callback?: (error: T1CLibException, data: AllCertsResponse) => void): Promise<AllCertsResponse> {
+    public allCerts(module: string, options: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
         // @ts-ignore
         const reqOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
@@ -164,7 +165,7 @@ export class EidGeneric implements AbstractEidGeneric {
         );
     }
 
-    public verifyPin(module: string, body: VerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
+    public verifyPin(module: string, body: TokenVerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.VERIFY_PIN),
@@ -175,7 +176,7 @@ export class EidGeneric implements AbstractEidGeneric {
         );
     }
 
-    public authenticate(module: string, body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: AuthenticateResponse) => void): Promise<AuthenticateResponse> {
+    public authenticate(module: string, body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse> {
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.AUTHENTICATE),
@@ -187,7 +188,7 @@ export class EidGeneric implements AbstractEidGeneric {
     }
 
 
-    public sign(module: string, body: AuthenticateOrSignData, callback?: (error: T1CLibException, data: SignResponse) => void): Promise<SignResponse> {
+    public sign(module: string, body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.SIGN_DATA),

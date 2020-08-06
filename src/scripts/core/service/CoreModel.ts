@@ -13,7 +13,6 @@ export interface AbstractCore {
   readersCardAvailable(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
   readersCardsUnavailable(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
   getUrl(): string;
-  checkT1cApiVersion(client: T1CClient, t1cVersion?: string): Promise<CheckT1CVersionResponse>;
   version(): Promise<string>;
 }
 
@@ -61,7 +60,7 @@ export class InfoApi{
   constructor(public service: InfoService,public activated: boolean,public citrix: boolean,public uid: String, public modules: Array<String>, public version: String, public logLevel: String) {}
 }
 export class InfoResponse { //extends T1CResponse
-  constructor(public t1CinfoOS: InfoOS,public t1CInfoJava: InfoJava,public t1CInfoUser: InfoUser,public t1CInfoAPI: InfoApi) {
+  constructor(public t1CInfoOS: InfoOS, public t1CInfoJava: InfoJava, public t1CInfoUser: InfoUser, public t1CInfoAPI: InfoApi) {
   }
 }
 

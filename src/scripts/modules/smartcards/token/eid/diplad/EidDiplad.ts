@@ -1,19 +1,20 @@
-import {LocalConnection} from '../../../../core/client/Connection';
-import {T1CLibException} from '../../../../core/exceptions/CoreExceptions';
+import {LocalConnection} from '../../../../../core/client/Connection';
+import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {
-    AddressResponse, AllCertsResponse, AuthenticateResponse,
-    BiometricDataResponse, PictureResponse, SignResponse,
-    TokenDataResponse,
-} from './EidDipladModel';
+    TokenAddressResponse, TokenAllCertsResponse, TokenAuthenticateResponse,
+    TokenBiometricDataResponse, TokenPictureResponse, TokenSignResponse,
+    TokenDataResponse, TokenAlgorithmReferencesResponse,
+} from '../generic/EidGenericModel';
 import {
     CertificateResponse,
     DataArrayResponse,
     DataObjectResponse,
     T1CResponse,
-} from '../../../../core/service/CoreModel';
-import {RequestHandler} from '../../../../util/RequestHandler';
-import {Options, AuthenticateOrSignData, VerifyPinData} from '../../TokenCard';
+} from '../../../../../core/service/CoreModel';
+import {RequestHandler} from '../../../../../util/RequestHandler';
+import {TokenAuthenticateOrSignData, TokenVerifyPinData} from '../../TokenCard';
 import {AbstractEidDiplad} from "./EidDipladModel";
+import {Options} from "../../../Card";
 
 export class EidDiplad implements AbstractEidDiplad {
     static PATH_TOKEN_APP = '/apps/token';
@@ -57,8 +58,8 @@ export class EidDiplad implements AbstractEidDiplad {
     }
 
     public biometric(
-        callback?: (error: T1CLibException, data: BiometricDataResponse) => void
-    ): Promise<BiometricDataResponse> {
+        callback?: (error: T1CLibException, data: TokenBiometricDataResponse) => void
+    ): Promise<TokenBiometricDataResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(EidDiplad.RN_DATA),
@@ -69,8 +70,8 @@ export class EidDiplad implements AbstractEidDiplad {
     }
 
     public address(
-        callback?: (error: T1CLibException, data: AddressResponse) => void
-    ): Promise<AddressResponse> {
+        callback?: (error: T1CLibException, data: TokenAddressResponse) => void
+    ): Promise<TokenAddressResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(EidDiplad.ADDRESS),
@@ -93,8 +94,8 @@ export class EidDiplad implements AbstractEidDiplad {
     }
 
     public picture(
-        callback?: (error: T1CLibException, data: PictureResponse) => void
-    ): Promise<PictureResponse> {
+        callback?: (error: T1CLibException, data: TokenPictureResponse) => void
+    ): Promise<TokenPictureResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(EidDiplad.PHOTO),
@@ -165,8 +166,8 @@ export class EidDiplad implements AbstractEidDiplad {
     }
 
     public allAlgoRefs(
-        callback?: (error: T1CLibException, data: DataArrayResponse) => void
-    ): Promise<DataArrayResponse> {
+        callback?: (error: T1CLibException, data: TokenAlgorithmReferencesResponse) => void
+    ): Promise<TokenAlgorithmReferencesResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(EidDiplad.SUPPORTED_ALGOS),
@@ -178,8 +179,8 @@ export class EidDiplad implements AbstractEidDiplad {
 
     public allCerts(
         options: string[] | Options,
-        callback?: (error: T1CLibException, data: AllCertsResponse) => void
-    ): Promise<AllCertsResponse> {
+        callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void
+    ): Promise<TokenAllCertsResponse> {
         // @ts-ignore
         const reqOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
@@ -190,7 +191,7 @@ export class EidDiplad implements AbstractEidDiplad {
     }
 
     public verifyPin(
-        body: VerifyPinData,
+        body: TokenVerifyPinData,
         callback?: (error: T1CLibException, data: T1CResponse) => void
     ): Promise<T1CResponse> {
         return this.connection.post(
@@ -204,9 +205,9 @@ export class EidDiplad implements AbstractEidDiplad {
     }
 
     public authenticate(
-        body: AuthenticateOrSignData,
-        callback?: (error: T1CLibException, data: AuthenticateResponse) => void
-    ): Promise<AuthenticateResponse> {
+        body: TokenAuthenticateOrSignData,
+        callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void
+    ): Promise<TokenAuthenticateResponse> {
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidDiplad.AUTHENTICATE),
@@ -219,9 +220,9 @@ export class EidDiplad implements AbstractEidDiplad {
 
 
     public sign(
-        body: AuthenticateOrSignData,
-        callback?: (error: T1CLibException, data: SignResponse) => void
-    ): Promise<SignResponse> {
+        body: TokenAuthenticateOrSignData,
+        callback?: (error: T1CLibException, data: TokenSignResponse) => void
+    ): Promise<TokenSignResponse> {
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidDiplad.SIGN_DATA),
