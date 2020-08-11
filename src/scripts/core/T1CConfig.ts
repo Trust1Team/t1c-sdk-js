@@ -3,6 +3,8 @@ export class T1CConfigOptions {
     public t1cApiUrl?: string,
     public t1cApiPort?: string,
     public t1cRpcPort?: string,
+    public t1cProxyUrl?: string,
+    public t1cProxyPort?: string,
     public dsUrl?: string,
     public jwt?: string,
     public osPinDialog?: boolean
@@ -16,6 +18,8 @@ export class T1CConfig {
   private _dsUrl = 'https://acc-ds.t1t.io/';
   private _t1cApiUrl = 'https://t1c.t1t.io';
   private _t1cApiPort = '51983';
+  private _t1cProxyUrl = 'https://t1c.t1t.io';
+  private _t1cProxyPort = '51983';
   private _t1cRpcPort = '50051';
   private _jwt = '';
   private _osPinDialog = false;
@@ -37,6 +41,12 @@ export class T1CConfig {
       }
       if (options.osPinDialog) {
         this._osPinDialog = options.osPinDialog;
+      }
+      if (options.t1cProxyUrl) {
+        this._t1cProxyUrl = options.t1cProxyUrl;
+      }
+      if (options.t1cProxyPort) {
+        this._t1cProxyPort = options.t1cProxyPort;
       }
     }
   }
@@ -63,6 +73,10 @@ export class T1CConfig {
 
   set dsUrl(value: string) {
     this._dsUrl = value;
+  }
+
+  get t1cProxyUrl(): string {
+    return this._t1cProxyUrl + ":" + this._t1cProxyPort;
   }
 
   get osPinDialog(): boolean {

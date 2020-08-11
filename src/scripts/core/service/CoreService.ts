@@ -12,15 +12,16 @@ import {
   SingleReaderResponse,
 } from './CoreModel';
 import {T1CLibException} from '../exceptions/CoreExceptions';
-import {T1CClient} from '../../..';
+import {T1CClient, T1CConfig} from '../../..';
 
 const CORE_CONSENT = '/consent';
 const CORE_INFO = '/info';
 const CORE_VERSION = '/v3';
 const CORE_READERS = '/readers';
-const CORE_CONSENT_IMPLICIT = '/consent/implicit';
+const CORE_CONSENT_IMPLICIT = '/agents/consent';
 const CORE_RETUREVE_ENCRYPTED_PIN = '/dialog/pin';
 import * as semver from 'semver';
+import axios from "axios";
 
 declare let VERSION: string;
 
@@ -78,28 +79,34 @@ export class CoreService implements AbstractCore {
     );
   }
 
+
   /*NOTE: The application is responsible to copy the codeWord on the clipboard BEFORE calling this function*/
   public getImplicitConsent(
     codeWord: string,
     durationInDays?: number,
-    type?: string,
-    callback?: (error: T1CLibException, data: BoolDataResponse) => void
-  ): Promise<BoolDataResponse> {
-    /*        if (!codeWord || !codeWord.length) {
-            return ResponseHandler.error({status: 400, description: 'Code word is required!', code: '801'}, callback);
-        }*/
-    let days: number = 365;
-    if (durationInDays) {
-      days = durationInDays;
-    }
-    return this.connection.post(
-      this.url,
-      CORE_CONSENT_IMPLICIT,
-      {challenge: codeWord, days, type},
-      undefined,
-      undefined,
-      callback
-    );
+    callback?: (error: T1CLibException, data?: T1CClient) => void
+  ): Promise<T1CClient> {
+    return new Promise( (resolve,reject) => {
+      let days: number = 365;
+      if (durationInDays) {
+        days = durationInDays;
+      }
+      return this.connection.get(
+          this.connection.cfg.t1cProxyUrl,
+          CORE_CONSENT_IMPLICIT + "/" + codeWord,
+          {ttl: days * 24 * 60 * 60},
+          undefined,
+          callback
+      ).then(res => {
+        this.connection.cfg.t1cApiPort = res.data.apiPort;
+        this.connection.cfg.t1cRpcPort = res.data.sandboxPort;
+        const newClient = new T1CClient(this.connection.cfg)
+        resolve(newClient)
+      }, err => {
+        reject(err);
+      })
+    });
+
   }
 
   public info(callback?: (error: T1CLibException, data: InfoResponse) => void): Promise<InfoResponse> {

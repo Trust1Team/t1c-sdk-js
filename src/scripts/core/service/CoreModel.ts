@@ -6,7 +6,7 @@ export interface AbstractCore {
   //TODO
   getConsent(title: string, codeWord: string, durationInDays?: number, alertLevel?: string, alertPosition?: string, type?: string, timeoutInSeconds?: number, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
   //TODO
-  getImplicitConsent(codeWord: string, durationInDays?: number, type?: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
+  getImplicitConsent(codeWord: string, durationInDays?: number, callback?: (error: T1CLibException, data?: T1CClient) => void): Promise<T1CClient>;
   info(callback?: (error: T1CLibException, data: InfoResponse) => void): void | Promise<InfoResponse>;
   reader(reader_id: string, callback?: (error: T1CLibException, data: SingleReaderResponse) => void): Promise<SingleReaderResponse>;
   readers(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
