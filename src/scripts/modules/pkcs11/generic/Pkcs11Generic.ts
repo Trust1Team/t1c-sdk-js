@@ -46,7 +46,7 @@ export class Pkcs11Generic implements AbstractPkcs11Generic {
             callback
         );
     }
-    slotInfo(slotId: string, callback?: (error: T1CLibException, data: Pkcs11SlotInfoResponse) => void): Promise<Pkcs11SlotInfoResponse> {
+    slotInfo(slotId: number, callback?: (error: T1CLibException, data: Pkcs11SlotInfoResponse) => void): Promise<Pkcs11SlotInfoResponse> {
         return this.connection.get(
             this.baseUrl,
             this.genericPkcs11Path(Pkcs11Generic.SLOT_INFO, slotId),
@@ -55,7 +55,7 @@ export class Pkcs11Generic implements AbstractPkcs11Generic {
             callback
         );
     }
-    getAliases(slotId: string, data: Pkcs11VerifyPinRequest, callback?: (error: T1CLibException, data: AliasesResponse) => void): Promise<AliasesResponse> {
+    getAliases(slotId: number, data: Pkcs11VerifyPinRequest, callback?: (error: T1CLibException, data: AliasesResponse) => void): Promise<AliasesResponse> {
         return this.connection.post(
             this.baseUrl,
             this.genericPkcs11Path(Pkcs11Generic.ALIASES, slotId),
@@ -65,7 +65,7 @@ export class Pkcs11Generic implements AbstractPkcs11Generic {
             callback
         );
     }
-    getPrivateKeyType(slotId: string, alias: string, data: Pkcs11VerifyPinRequest, callback?: (error: T1CLibException, data: PrivateKeyTypeResponse) => void): Promise<PrivateKeyTypeResponse> {
+    getPrivateKeyType(slotId: number, alias: string, data: Pkcs11VerifyPinRequest, callback?: (error: T1CLibException, data: PrivateKeyTypeResponse) => void): Promise<PrivateKeyTypeResponse> {
         return this.connection.post(
             this.baseUrl,
             this.genericPkcs11Path(Pkcs11Generic.PRIVATE_KEY_TYPE, slotId, alias),
@@ -75,7 +75,7 @@ export class Pkcs11Generic implements AbstractPkcs11Generic {
             callback
         );
     }
-    verifyPin(slotId: string, alias: string, data: Pkcs11VerifyPinRequest, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<import("../../../..").BoolDataResponse> {
+    verifyPin(slotId: number, alias: string, data: Pkcs11VerifyPinRequest, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<import("../../../..").BoolDataResponse> {
         return this.connection.post(
             this.baseUrl,
             this.genericPkcs11Path(Pkcs11Generic.VERIFY_PIN, slotId, alias),
@@ -86,7 +86,7 @@ export class Pkcs11Generic implements AbstractPkcs11Generic {
         );
     }
 
-    getCertificates(slotId: string, alias: string, data: Pkcs11VerifyPinRequest, callback?: (error: T1CLibException, data: Pkcs11CertificatesResponse) => void): Promise<Pkcs11CertificatesResponse> {
+    getCertificates(slotId: number, alias: string, data: Pkcs11VerifyPinRequest, callback?: (error: T1CLibException, data: Pkcs11CertificatesResponse) => void): Promise<Pkcs11CertificatesResponse> {
         return this.connection.post(
             this.baseUrl,
             this.genericPkcs11Path(Pkcs11Generic.ALL_CERTIFICATES, slotId, alias),
@@ -107,7 +107,7 @@ export class Pkcs11Generic implements AbstractPkcs11Generic {
         );
     }
 
-    sign(slotId: string, alias: string, data: Pkcs11SignRequest, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
+    sign(slotId: number, alias: string, data: Pkcs11SignRequest, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse> {
         return this.connection.post(
             this.baseUrl,
             this.genericPkcs11Path(Pkcs11Generic.SIGN, slotId, alias),
@@ -140,7 +140,7 @@ export class Pkcs11Generic implements AbstractPkcs11Generic {
         );
     }
 
-    token(slotId: string, callback?: (error: T1CLibException, data: Pkcs11TokenResponse) => void): Promise<Pkcs11TokenResponse> {
+    token(slotId: number, callback?: (error: T1CLibException, data: Pkcs11TokenResponse) => void): Promise<Pkcs11TokenResponse> {
         return this.connection.get(
             this.baseUrl,
             this.genericPkcs11Path(Pkcs11Generic.TOKEN_INFO, slotId),
@@ -183,10 +183,10 @@ export class Pkcs11Generic implements AbstractPkcs11Generic {
         );
     }
 
-    protected genericPkcs11Path(path?: string, slotNumber?: string, alias?: string): string {
+    protected genericPkcs11Path(path?: string, slotNumber?: number, alias?: string): string {
         let suffix = this.containerUrl;
-        if (slotNumber) {
-            suffix += Pkcs11Generic.PATH_SLOT_ID + slotNumber;
+        if (slotNumber != null || slotNumber != undefined) {
+            suffix += Pkcs11Generic.PATH_SLOT_ID + slotNumber.toString();
         }
         if(alias) {
             suffix += Pkcs11Generic.PATH_SLOT_ALIAS + alias;

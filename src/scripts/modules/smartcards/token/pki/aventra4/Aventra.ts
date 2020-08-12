@@ -21,7 +21,7 @@ import {TokenAuthenticateOrSignData, TokenResetPinData, TokenVerifyPinData} from
 import {Options} from "../../../Card";
 
 export class Aventra implements AbstractAventra {
-    static CONTAINER_PREFIX = 'aventra4';
+    static CONTAINER_PREFIX = 'aventra_myid_4';
     static PATH_TOKEN_APP = '/apps/token';
     static PATH_READERS = '/readers';
 

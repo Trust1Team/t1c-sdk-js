@@ -6,6 +6,6 @@ class UrlUtil {
     }
 
     public static create(base: string, suffix: string) {
-        return base + suffix;
+        return encodeURI(base + suffix);
     }
 }
