@@ -7,7 +7,7 @@ This is version 3 of the library, and is intended to be used with Trust1Connecto
 When the Trust1Connector isn’t installed the library will return an uninitialised client which can be used to download a client installer.
 
 ## Backward compatibility
-The library will detect the installed version of Trust1Connector and will only function with version 2.0.0 and higher.
+The library will detect the installed version of Trust1Connector and will only function with version 3.0.0 and higher.
 
 If you have version 1/2.x.x installed you have two options:
 
@@ -15,7 +15,7 @@ If you have version 1/2.x.x installed you have two options:
   * Use an older version of the library by running:
 
 ```bash
-$ npm i trust1connector@1.8.3
+$ npm i trust1connector@2.4.3
 ```
 > __For security reasons v1 and v2 are deprecated__
 
@@ -37,24 +37,24 @@ This will create a T1CSdk.js in the dist folder
 ## Installation - OSX Only
 Make sure you have NodeJS installed on your machine. Use of Yarn is recommended but not required.
 
-#### Webpack
+### Webpack
 Webpack is needed to build the Javascript library
 ```bash
 $ npm install --global webpack
 ```
 
-#### Dependencies
+### Dependencies
 Navigate to the root directory and use Yarn to download and the necessary dependencies
 ```bash
 $ yarn
 ```
-##### OR
+### OR
 Use npm install
 ```bash
 $ npm install
 ```
 
-#### Run tests
+### Run tests
 Use npm run the test suite of the project
 ```bash
 $ npm run test
