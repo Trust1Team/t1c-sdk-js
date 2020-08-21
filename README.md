@@ -6,6 +6,9 @@ This is version 3 of the library, and is intended to be used with Trust1Connecto
 
 When the Trust1Connector isn’t installed the library will return an uninitialised client which can be used to download a client installer.
 
+## DOCUMENTATION
+Documentation is available on [gitbook](https://app.gitbook.com/@t1t/s/t1c-js-guide-v3/).
+
 ## Backward compatibility
 The library will detect the installed version of Trust1Connector and will only function with version 3.0.0 and higher.
 
