@@ -25,18 +25,22 @@ import {EidDiplad} from "./smartcards/token/eid/diplad/EidDiplad";
 import {Pkcs11Generic} from "./pkcs11/generic/Pkcs11Generic";
 import {AbstractPaymentGeneric} from "./smartcards/payment/generic/PaymentGenericModel";
 import {PaymentGeneric} from "./smartcards/payment/generic/PaymentGeneric";
+import {AbstractEidLux, PinType} from "./smartcards/token/eid/lux/EidLuxModel";
+import {EidLux} from "./smartcards/token/eid/lux/EidLux";
+import {AbstractWacom} from "./wacom/WacomModel";
+import {Wacom} from "./wacom/Wacom";
 
 export interface AbstractFactory {
-    createEidGeneric(reader_id?: string): AbstractEidGeneric;
+    createEidGeneric(reader_id: string): AbstractEidGeneric;
     createEidGenericMeta(): AbstractEidGeneric;
-    createEidBE(reader_id?: string): AbstractEidBE;
-    createEidDiplad(reader_id?: string): AbstractEidDiplad;
-    // createEidLUX(reader_id?: string): AbstractEidLUX;
-    createEmv(reader_id?: string): AbstractEmv;
+    createEidBE(reader_id: string): AbstractEidBE;
+    createEidDiplad(reader_id: string): AbstractEidDiplad;
+    createEidLUX(reader_id: string, pin: string, pinType: PinType): AbstractEidLux;
+    createEmv(reader_id: string): AbstractEmv;
     createPaymentGeneric(reader_id?: string): AbstractPaymentGeneric;
     createPaymentGenericMeta(): AbstractPaymentGeneric;
     createFileExchange(): AbstractFileExchange;
-    // createWacom(): AbstractWacom;
+    createWacom(): AbstractWacom;
     // createIsabel(reader_id?: string, runInUserSpace?: boolean): AbstractIsabel;
     // createLuxTrust(reader_id?: string): AbstractLuxTrust;
     // createMobib(reader_id?: string): AbstractMobib;
@@ -127,6 +131,14 @@ export class ModuleFactory implements AbstractFactory {
 
     public createRemoteLoading(reader_id: string): AbstractRemoteLoading {
         return new RemoteLoading(this.url, CONTAINER_REMOTE_LOADING, this.connection, reader_id);
+    }
+
+    public createEidLUX(reader_id: string, pin: string, pinType: PinType): AbstractEidLux {
+        return new EidLux(this.url, CONTAINER_LUXEID, this.connection, reader_id, pin, pinType);
+    }
+
+    public createWacom(): AbstractWacom {
+        return new Wacom(this.url, CONTAINER_WACOM, this.connection);
     }
 
 
