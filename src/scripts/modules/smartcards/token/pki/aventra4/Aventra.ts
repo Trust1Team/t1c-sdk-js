@@ -41,7 +41,8 @@ export class Aventra implements AbstractAventra {
 
     static SUPPORTED_ALGOS = '/supported-algorithms'
 
-    constructor(protected baseUrl: string, protected containerUrl: string,protected connection: LocalConnection, protected reader_id: string) {}
+    constructor(protected baseUrl: string, protected containerUrl: string, protected connection: LocalConnection, protected reader_id: string) {
+    }
 
     // filters
 
@@ -54,7 +55,7 @@ export class Aventra implements AbstractAventra {
     }
 
     public rootCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Aventra.CERT_ROOT,callback);
+        return this.getCertificate(Aventra.CERT_ROOT, callback);
     }
 
     public issuerCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
@@ -94,11 +95,11 @@ export class Aventra implements AbstractAventra {
         return this.connection.post(this.baseUrl, this.tokenApp(Aventra.AUTHENTICATE), body, undefined, undefined, callback);
     }
 
-    public sign(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
+    public sign(body: TokenAuthenticateOrSignData, bulk?: boolean, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
-        return this.connection.post(this.baseUrl, this.tokenApp(Aventra.SIGN_DATA), body, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(Aventra.SIGN_DATA), body, [this.getBulkSignQueryParams(bulk)], undefined, callback);
     }
 
     protected getCertificate(certUrl: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
@@ -120,6 +121,13 @@ export class Aventra implements AbstractAventra {
             suffix += path.startsWith('/') ? path : '/' + path;
         }
         return suffix;
+    }
+
+
+    protected getBulkSignQueryParams(bulk?: boolean): any {
+        if(bulk) {
+            return {bulk: true};
+        }
     }
 
 

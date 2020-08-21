@@ -82,11 +82,11 @@ export class Oberthur implements AbstractOberthur73 {
         return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.AUTHENTICATE), body, undefined, undefined, callback);
     }
 
-    public sign(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
+    public sign(body: TokenAuthenticateOrSignData, bulk?: boolean, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
-        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.SIGN_DATA), body, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.SIGN_DATA), body, [this.getBulkSignQueryParams(bulk)], undefined, callback);
     }
 
     protected getCertificate(certUrl: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
@@ -108,5 +108,12 @@ export class Oberthur implements AbstractOberthur73 {
             suffix += path.startsWith('/') ? path : '/' + path;
         }
         return suffix;
+    }
+
+
+    protected getBulkSignQueryParams(bulk?: boolean): any {
+        if(bulk) {
+            return {bulk: true};
+        }
     }
 }

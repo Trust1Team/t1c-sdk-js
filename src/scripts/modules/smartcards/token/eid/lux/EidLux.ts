@@ -211,13 +211,14 @@ export class EidLux implements AbstractEidLux {
 
     public sign(
         body: TokenAuthenticateOrSignData,
+        bulk?: boolean,
         callback?: (error: T1CLibException, data: TokenSignResponse) => void
     ): Promise<TokenSignResponse> {
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidLux.SIGN_DATA),
             body,
-            undefined,
+            [this.getBulkSignQueryParams(bulk)],
             EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
         );
@@ -234,5 +235,12 @@ export class EidLux implements AbstractEidLux {
             suffix += path.startsWith('/') ? path : '/' + path;
         }
         return suffix;
+    }
+
+
+    protected getBulkSignQueryParams(bulk?: boolean): any {
+        if(bulk) {
+            return {bulk: true};
+        }
     }
 }

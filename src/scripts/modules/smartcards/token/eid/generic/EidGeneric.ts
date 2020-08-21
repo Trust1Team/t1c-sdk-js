@@ -188,12 +188,12 @@ export class EidGeneric implements AbstractEidGeneric {
     }
 
 
-    public sign(module: string, body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
+    public sign(module: string, body: TokenAuthenticateOrSignData, bulk?: boolean, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.SIGN_DATA),
             body,
-            undefined,
+            [this.getBulkSignQueryParams(bulk)],
             undefined,
             callback
         );
@@ -231,5 +231,12 @@ export class EidGeneric implements AbstractEidGeneric {
             undefined,
             callback
         );
+    }
+
+
+    protected getBulkSignQueryParams(bulk?: boolean): any {
+        if(bulk) {
+            return {bulk: true};
+        }
     }
 }

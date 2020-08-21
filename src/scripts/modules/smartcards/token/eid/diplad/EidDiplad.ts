@@ -221,13 +221,14 @@ export class EidDiplad implements AbstractEidDiplad {
 
     public sign(
         body: TokenAuthenticateOrSignData,
+        bulk?: boolean,
         callback?: (error: T1CLibException, data: TokenSignResponse) => void
     ): Promise<TokenSignResponse> {
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidDiplad.SIGN_DATA),
             body,
-            undefined,
+            [this.getBulkSignQueryParams(bulk)],
             undefined,
             callback
         );
@@ -244,5 +245,12 @@ export class EidDiplad implements AbstractEidDiplad {
             suffix += path.startsWith('/') ? path : '/' + path;
         }
         return suffix;
+    }
+
+
+    protected getBulkSignQueryParams(bulk?: boolean): any {
+        if(bulk) {
+            return {bulk: true};
+        }
     }
 }
