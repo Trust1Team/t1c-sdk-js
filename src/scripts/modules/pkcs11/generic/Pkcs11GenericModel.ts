@@ -122,13 +122,18 @@ export class Pkcs11SlotsResponse {
     }
 }
 
+export class Pkcs11Certificates {
+    constructor(public certificates: Pkcs11Certificate[]) {
+    }
+}
+
 export class Pkcs11Certificate {
     constructor(public cert: string, public certSn: string, public parsed?: object) {
     }
 }
 
 export class Pkcs11CertificatesResponse {
-    constructor(public data: Pkcs11Certificate[], public success: boolean) {
+    constructor(public data: Pkcs11Certificates, public success: boolean) {
     }
 }
 
