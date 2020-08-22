@@ -1,5 +1,6 @@
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {
+  BoolDataResponse,
   CertificateResponse, DataArrayResponse
 } from '../../../../../core/service/CoreModel';
 import {TokenAuthenticateOrSignData} from "../../TokenCard";
@@ -29,6 +30,7 @@ export interface AbstractEidDiplad {
   authenticate(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse>;
   sign(body: TokenAuthenticateOrSignData, bulk?: boolean, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse>;
   allAlgoRefs(callback?: (error: T1CLibException, data: TokenAlgorithmReferencesResponse) => void): Promise<TokenAlgorithmReferencesResponse>
+  resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
 }
 
 

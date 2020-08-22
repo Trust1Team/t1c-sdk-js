@@ -6,6 +6,7 @@ import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {Options} from '../../../Card';
 import {LocalConnection} from '../../../../../core/client/Connection';
 import {
+    BoolDataResponse,
     CertificateResponse,
     DataArrayResponse,
     DataObjectResponse,
@@ -37,6 +38,7 @@ export class Idemia implements AbstractIdemia {
     static SIGN_DATA = '/sign';
     static VERIFY_PIN = '/verify-pin';
     static SUPPORTED_ALGOS = '/supported-algorithms'
+    static RESET_BULK_PIN = "/reset-bulk-pin"
 
     constructor(protected baseUrl: string, protected containerUrl: string,protected connection: LocalConnection, protected reader_id: string) {}
 
@@ -98,6 +100,16 @@ export class Idemia implements AbstractIdemia {
 
     public tokenData(callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
         return this.connection.get(this.baseUrl, this.tokenApp(Idemia.INFO), undefined);
+    }
+
+    resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
+        return this.connection.get(
+            this.baseUrl,
+            this.tokenApp(Idemia.RESET_BULK_PIN),
+            undefined,
+            undefined,
+            callback
+        );
     }
 
     // resolves the reader_id in the base URL

@@ -3,7 +3,13 @@ import {
     PaymentCertificateResponse,
     PaymentReadApplicationDataResponse, PaymentReadDataResponse, PaymentVerifyPinResponse
 } from "./PaymentGenericModel";
-import {DataObjectResponse, LocalConnection, PaymentVerifyPinData, T1CLibException} from "../../../../../index";
+import {
+    BoolDataResponse,
+    DataObjectResponse,
+    LocalConnection,
+    PaymentVerifyPinData,
+    T1CLibException
+} from "../../../../../index";
 import {RequestHandler} from "../../../../util/RequestHandler";
 import {Options} from "../../Card";
 
@@ -16,6 +22,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     static CERT_ISSUER = '/issuer-cert';
     static CERT_ICC = '/icc-cert';
     static READ_DATA = '/data';
+    static RESET_BULK_PIN = '/reset-bulk-pin';
     static READ_APPLICATION_DATA = '/application-data';
     static VERIFY_PIN = '/verify-pin';
 
@@ -82,6 +89,16 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
             this.baseUrl,
             this.paymentApp(module, PaymentGeneric.VERIFY_PIN),
             body,
+            undefined,
+            undefined,
+            callback
+        );
+    }
+
+    resetBulkPin(module: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
+        return this.connection.get(
+            this.baseUrl,
+            this.paymentApp(module, PaymentGeneric.RESET_BULK_PIN),
             undefined,
             undefined,
             callback

@@ -1,5 +1,6 @@
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {
+  BoolDataResponse,
   CertificateResponse, DataArrayResponse,
   DataObjectResponse,
   T1CCertificate,
@@ -25,6 +26,7 @@ export interface AbstractEidGeneric {
   authenticate(module: string, body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse>;
   sign(module: string, body: TokenAuthenticateOrSignData, bulk?: boolean, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse>;
   allAlgoRefs(module: string, callback?: (error: T1CLibException, data: TokenAlgorithmReferencesResponse) => void): Promise<TokenAlgorithmReferencesResponse>
+  resetBulkPin(module: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
 }
 
 export class ModuleDescriptionResponse extends DataObjectResponse {

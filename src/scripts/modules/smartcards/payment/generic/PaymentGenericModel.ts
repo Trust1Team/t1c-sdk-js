@@ -1,5 +1,5 @@
 import {PaymentVerifyPinData} from "../PaymentCard";
-import {DataObjectResponse, T1CLibException} from "../../../../../index";
+import {BoolDataResponse, DataObjectResponse, T1CLibException} from "../../../../../index";
 import {Options} from "../../Card";
 
 
@@ -11,6 +11,7 @@ export interface AbstractPaymentGeneric {
   iccPublicCertificate(module: string, aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse>;
   verifyPin(module: string, body: PaymentVerifyPinData, callback?: (error: T1CLibException, data: PaymentVerifyPinResponse) => void): Promise<PaymentVerifyPinResponse>;
   getModuleDescription(module: string, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse>;
+  resetBulkPin(module: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
 }
 
 export class PaymentModuleDescriptionResponse extends DataObjectResponse {

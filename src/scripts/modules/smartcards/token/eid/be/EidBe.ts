@@ -6,6 +6,7 @@ import {
     TokenDataResponse, TokenAlgorithmReferencesResponse,
 } from '../generic/EidGenericModel';
 import {
+    BoolDataResponse,
     CertificateResponse,
     DataArrayResponse,
     DataObjectResponse,
@@ -35,6 +36,7 @@ export class EidBe implements AbstractEidBE {
     static AUTHENTICATE = '/authenticate';
     static VERIFY_PRIV_KEY_REF = 'non-repudiation';
     static SUPPORTED_ALGOS = '/supported-algorithms';
+    static RESET_BULK_PIN = "/reset-bulk-pin"
 
     constructor(
         protected baseUrl: string,
@@ -229,6 +231,16 @@ export class EidBe implements AbstractEidBE {
             this.tokenApp(EidBe.SIGN_DATA),
             body,
             [this.getBulkSignQueryParams(bulk)],
+            undefined,
+            callback
+        );
+    }
+
+    resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
+        return this.connection.get(
+            this.baseUrl,
+            this.tokenApp(EidBe.RESET_BULK_PIN),
+            undefined,
             undefined,
             callback
         );
