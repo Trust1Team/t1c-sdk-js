@@ -24,6 +24,7 @@ import {AbstractRemoteLoading} from "../modules/hsm/remoteloading/RemoteLoadingM
 import axios from 'axios';
 import {AbstractPkcs11Generic} from "../modules/pkcs11/generic/Pkcs11GenericModel";
 import {AbstractPaymentGeneric} from "../modules/smartcards/payment/generic/PaymentGenericModel";
+import {AbstractPkcs11} from "../modules/pkcs11/pkcs11Object/pkcs11Model";
 
 const urlVersion = "/v3";
 
@@ -154,6 +155,10 @@ export class T1CClient {
 
     public pkcs11Generic = (): AbstractPkcs11Generic => {
         return this.moduleFactory.createPKCS11Generic()
+    };
+
+    public pkcs11 = (modulePath: string): AbstractPkcs11 => {
+        return this.moduleFactory.createPKCS11(modulePath);
     };
 
     public fileex = (): AbstractFileExchange => {

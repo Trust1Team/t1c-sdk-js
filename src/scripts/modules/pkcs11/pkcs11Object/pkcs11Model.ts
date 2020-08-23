@@ -2,103 +2,75 @@ import { T1CLibException } from '../../../core/exceptions/CoreExceptions';
 import {
     CertificatesResponse, DataObjectResponse, DataResponse
 } from '../../../core/service/CoreModel';
+import {Pkcs11Info, Pkcs11Slot, Pkcs11TokenInfo} from "../../../..";
 
 
 
 export interface AbstractPkcs11 {
-    certificates(slotId: string,
-                 options?: any,
-                 callback?: (error: T1CLibException, data: Pkcs11CertificatesResponse) => void): Promise<Pkcs11CertificatesResponse>;
-    info(callback?: (error: T1CLibException, data: Pkcs11InfoResponse) => void): Promise<Pkcs11InfoResponse>;
-    signData(data: Pkcs11SignData, callback?: (error: T1CLibException, data: DataResponse) => void): Promise<DataResponse>;
-    slots(callback?: (error: T1CLibException, data: Pkcs11SlotsResponse) => void): Promise<Pkcs11SlotsResponse>;
-    slotsWithTokenPresent(callback?: (error: T1CLibException, data: Pkcs11SlotsResponse) => void): Promise<Pkcs11SlotsResponse>;
-    token(slotId: string, callback?: (error: T1CLibException, data: Pkcs11TokenResponse) => void): Promise<Pkcs11TokenResponse>;
+    certificates(slotId: string, callback?: (error: T1CLibException, data: Pkcs11ObjectCertificatesResponse) => void): Promise<Pkcs11ObjectCertificatesResponse>;
+    // info(callback?: (error: T1CLibException, data: Pkcs11ObjectInfoResponse) => void): Promise<Pkcs11ObjectInfoResponse>;
+    signData(data: Pkcs11SignData, callback?: (error: T1CLibException, data: Pkcs11ObjectSignResponse) => void): Promise<Pkcs11ObjectSignResponse>;
+    slots(callback?: (error: T1CLibException, data: Pkcs11ObjectSlotsResponse) => void): Promise<Pkcs11ObjectSlotsResponse>;
+    slotsWithTokenPresent(callback?: (error: T1CLibException, data: Pkcs11ObjectSlotsResponse) => void): Promise<Pkcs11ObjectSlotsResponse>;
+    token(slotId: string, callback?: (error: T1CLibException, data: Pkcs11ObjectTokenResponse) => void): Promise<Pkcs11ObjectTokenResponse>;
 }
 
-export class Pkcs11InfoResponse extends DataObjectResponse {
+export class Pkcs11ObjectInfoResponse extends DataObjectResponse {
     constructor(public data: Pkcs11Info, public success: boolean) {
         super(data, success);
     }
 }
 
-export class Pkcs11Info {
-    constructor(public cryptoki_version: string,
-                public manufacturer_id: string,
-                public flags: string,
-                public library_description: string,
-                public library_version: string) {}
-}
-
-export class Pkcs11Slot {
-    constructor(public slot_id: string,
-                public description: string,
-                public flags: number,
-                public hardware_version: string,
-                public firmware_version: string) {}
-}
-
-export class Pkcs11SlotsResponse {
-    constructor(public data: Pkcs11Slot[], public success: boolean) {
+export class Pkcs11ObjectSign {
+    constructor(public data: string) {
     }
 }
 
-export class Pkcs11Certificate {
-    constructor(public id: string, public base64: string, public parsed?: object) {}
+export class Pkcs11ObjectSignResponse {
+    constructor(public data: Pkcs11ObjectSign, public success: boolean) {
+    }
 }
 
-export class Pkcs11CertificatesResponse extends CertificatesResponse {
-    constructor(public data: Pkcs11Certificate[], public success: boolean) {
-        super(data, success);
+export class Pkcs11ObjectSlots {
+    constructor(public slots: Pkcs11Slot[]) {
+    }
+}
+
+export class Pkcs11ObjectSlotsResponse {
+    constructor(public data: Pkcs11ObjectSlots, public success: boolean) {
+    }
+}
+
+
+export class Pkcs11ObjectCertificates {
+    constructor(public certificates: Pkcs11ObjectCertificate[]) {}
+}
+
+
+export class Pkcs11ObjectCertificate {
+    constructor(public id: string, public certificate: string) {}
+}
+
+export class Pkcs11ObjectCertificatesResponse {
+    constructor(public data: Pkcs11ObjectCertificates, public success: boolean) {
     }
 }
 
 export class Pkcs11SignData {
-    constructor(public slot_id: string,
-                public cert_id: string,
-                public algorithm_reference: string,
+    constructor(public slotId: string,
+                public certificateId: string,
+                public algorithm: string,
                 public data: string,
-                public pin?: string,
-                public pace?: string) {}
+                public pin?: string) {}
 }
 
-export class Pkcs11VerifySignedData{
-    constructor(public slot_id: string,
-                public cert_id: string,
-                public algorithm_reference: string,
-                public data: string,
-                public signature: string,
-                public pin?: string,
-                public pace?: string) {
-    }
-}
-
-export class Pkcs11TokenInfo {
-    constructor(public slot_id: string,
-                public label: string,
-                public manufacturer_id: string,
-                public model: string,
-                public serial_number: string,
-                public flags: string,
-                public max_session_count: number,
-                public session_count: number,
-                public max_rw_session_count: number,
-                public rw_session_count: number,
-                public max_pin_length: number,
-                public min_pin_length: number,
-                public total_public_memory: number,
-                public free_public_memory: number,
-                public total_private_memory: number,
-                public free_private_memory: number,
-                public hardware_version: string,
-                public firmware_version: string) {}
-}
-
-export class Pkcs11TokenResponse {
+export class Pkcs11ObjectTokenResponse {
     constructor(public data: Pkcs11TokenInfo, public success: boolean) {
     }
 }
 
-export class Pkcs11ModuleConfig {
-    constructor(public linux: string, public mac: string, public win: string) {}
+export class Pkcs11SetConfigResponse {
+    constructor(public data: string, public success: boolean) {
+    }
 }
+

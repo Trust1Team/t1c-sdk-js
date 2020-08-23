@@ -22,7 +22,7 @@ export class T1CConfig {
   private _t1cProxyPort = '51983';
   private _t1cRpcPort = '50051';
   private _jwt = '';
-  private _osPinDialog = false;
+  private _osPinDialog = true;
 
   // constructor for DTO
   public constructor(options: T1CConfigOptions) {

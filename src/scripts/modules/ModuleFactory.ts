@@ -51,7 +51,7 @@ export interface AbstractFactory {
     createOberthur(reader_id?: string): AbstractOberthur73;
     // createPIV(reader_id?: string): AbstractPiv;
     createPKCS11Generic(): AbstractPkcs11Generic;
-    createPKCS11(): AbstractPkcs11;
+    createPKCS11(modulePath: string): AbstractPkcs11;
     // createJavaKeyTool(): AbstractJavaKeyTool
     // createSsh(): AbstractSsh
     // createRawPrint(runInUserSpace: boolean): AbstractRawPrint
@@ -75,7 +75,7 @@ const CONTAINER_IDEMIA = CONTAINER_NEW_CONTEXT_PATH + 'idemia_cosmo_82';
 const CONTAINER_PIV = CONTAINER_NEW_CONTEXT_PATH + 'piv';
 const CONTAINER_PTEID = CONTAINER_NEW_CONTEXT_PATH + 'pteid';
 const CONTAINER_PKCS11 = CONTAINER_NEW_CONTEXT_PATH + 'pkcs11';
-const CONTAINER_PKCS11_Object = CONTAINER_NEW_CONTEXT_PATH + 'pkcs11';
+const CONTAINER_PKCS11_Object = CONTAINER_NEW_CONTEXT_PATH + 'pkcs11-objects';
 const CONTAINER_REMOTE_LOADING = CONTAINER_NEW_CONTEXT_PATH + 'remoteloading';
 const CONTAINER_JAVA_KEY_TOOL = CONTAINER_NEW_CONTEXT_PATH + 'java-keytool';
 const CONTAINER_SSH = CONTAINER_NEW_CONTEXT_PATH + 'ssh';
@@ -145,8 +145,8 @@ export class ModuleFactory implements AbstractFactory {
         return new Wacom(this.url, CONTAINER_WACOM, this.connection);
     }
 
-    createPKCS11(): AbstractPkcs11 {
-        return new PKCS11(this.url, CONTAINER_PKCS11_Object, this.connection);
+    createPKCS11(modulePath: string): AbstractPkcs11 {
+        return new PKCS11(this.url, CONTAINER_PKCS11_Object, this.connection, modulePath);
     }
 
 
