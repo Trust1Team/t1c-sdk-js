@@ -1,4 +1,4 @@
-import {LocalConnection} from '../../../../../core/client/Connection';
+import {LocalConnection, RequestHeaders} from '../../../../../core/client/Connection';
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {
     TokenAddressResponse, TokenAllCertsResponse, TokenAuthenticateResponse,
@@ -14,10 +14,10 @@ import {
 } from '../../../../../core/service/CoreModel';
 import {RequestHandler} from '../../../../../util/RequestHandler';
 import {TokenAuthenticateOrSignData, TokenVerifyPinData} from '../../TokenCard';
-import {AbstractEidBE} from "./EidBeModel";
 import {Options} from "../../../Card";
+import {AbstractEidLux, PinType} from "./EidLuxModel";
 
-export class EidBe implements AbstractEidBE {
+export class EidLux implements AbstractEidLux {
     static PATH_TOKEN_APP = '/apps/token';
     static PATH_READERS = '/readers';
     static ALL_DATA = '/all-data';
@@ -25,8 +25,6 @@ export class EidBe implements AbstractEidBE {
     static CERT_ROOT = '/root-cert';
     static CERT_AUTHENTICATION = '/authentication-cert';
     static CERT_NON_REPUDIATION = '/nonrepudiation-cert';
-    static CERT_ENCRYPTION = '/encryption-cert';
-    static CERT_INTERMEDIATE = '/intermediate-certs';
     static RN_DATA = '/biometric';
     static ADDRESS = '/address';
     static PHOTO = '/picture';
@@ -42,8 +40,22 @@ export class EidBe implements AbstractEidBE {
         protected baseUrl: string,
         protected containerUrl: string,
         protected connection: LocalConnection,
-        protected reader_id: string
+        protected reader_id: string,
+        protected pin: string,
+        protected pinType: PinType,
     ) {
+        if (!pinType) {
+            this.pinType = PinType.PIN;
+        }
+    }
+
+    // by default using Pace-PIN
+    private static EncryptedHeader(code: string, pinType: PinType): RequestHeaders {
+        if (pinType === PinType.CAN) {
+            return {'X-Can': code === undefined ? '' : code};
+        } else {
+            return {'X-Pin': code === undefined ? '' : code};
+        }
     }
 
     public allData(
@@ -54,8 +66,9 @@ export class EidBe implements AbstractEidBE {
         const requestOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.ALL_DATA),
-            requestOptions.params
+            this.tokenApp(EidLux.ALL_DATA),
+            requestOptions.params,
+            EidLux.EncryptedHeader(this.pin, this.pinType)
         );
     }
 
@@ -64,9 +77,9 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenBiometricDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.RN_DATA),
+            this.tokenApp(EidLux.RN_DATA),
             undefined,
-            undefined,
+            EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -76,9 +89,9 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenAddressResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.ADDRESS),
+            this.tokenApp(EidLux.ADDRESS),
             undefined,
-            undefined,
+            EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -88,9 +101,9 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.TOKEN),
+            this.tokenApp(EidLux.TOKEN),
             undefined,
-            undefined,
+            EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -100,9 +113,9 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenPictureResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.PHOTO),
+            this.tokenApp(EidLux.PHOTO),
             undefined,
-            undefined,
+            EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -112,21 +125,9 @@ export class EidBe implements AbstractEidBE {
     ): Promise<CertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.CERT_ROOT),
+            this.tokenApp(EidLux.CERT_ROOT),
             undefined,
-            undefined,
-            callback
-        );
-    }
-
-    public intermediateCertificates(
-        callback?: (error: T1CLibException, data: CertificateResponse) => void
-    ): Promise<CertificateResponse> {
-        return this.connection.get(
-            this.baseUrl,
-            this.tokenApp(EidBe.CERT_INTERMEDIATE),
-            undefined,
-            undefined,
+            EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -136,9 +137,9 @@ export class EidBe implements AbstractEidBE {
     ): Promise<CertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.CERT_AUTHENTICATION),
+            this.tokenApp(EidLux.CERT_AUTHENTICATION),
             undefined,
-            undefined,
+            EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -148,21 +149,9 @@ export class EidBe implements AbstractEidBE {
     ): Promise<CertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.CERT_NON_REPUDIATION),
+            this.tokenApp(EidLux.CERT_NON_REPUDIATION),
             undefined,
-            undefined,
-            callback
-        );
-    }
-
-    public encryptionCertificate(
-        callback?: (error: T1CLibException, data: CertificateResponse) => void
-    ): Promise<CertificateResponse> {
-        return this.connection.get(
-            this.baseUrl,
-            this.tokenApp(EidBe.CERT_ENCRYPTION),
-            undefined,
-            undefined,
+            EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -172,9 +161,9 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenAlgorithmReferencesResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.SUPPORTED_ALGOS),
+            this.tokenApp(EidLux.SUPPORTED_ALGOS),
             undefined,
-            undefined,
+            EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -187,8 +176,9 @@ export class EidBe implements AbstractEidBE {
         const reqOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.ALL_CERTIFICATES),
-            reqOptions.params
+            this.tokenApp(EidLux.ALL_CERTIFICATES),
+            reqOptions.params,
+            EidLux.EncryptedHeader(this.pin, this.pinType)
         );
     }
 
@@ -198,10 +188,10 @@ export class EidBe implements AbstractEidBE {
     ): Promise<T1CResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(EidBe.VERIFY_PIN),
+            this.tokenApp(EidLux.VERIFY_PIN),
             body,
             undefined,
-            undefined,
+            EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -212,10 +202,10 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenAuthenticateResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(EidBe.AUTHENTICATE),
+            this.tokenApp(EidLux.AUTHENTICATE),
             body,
             undefined,
-            undefined,
+            EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -228,10 +218,10 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenSignResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(EidBe.SIGN_DATA),
+            this.tokenApp(EidLux.SIGN_DATA),
             body,
             [this.getBulkSignQueryParams(bulk)],
-            undefined,
+            EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -239,7 +229,7 @@ export class EidBe implements AbstractEidBE {
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.RESET_BULK_PIN),
+            this.tokenApp(EidLux.RESET_BULK_PIN),
             undefined,
             undefined,
             callback
@@ -249,7 +239,7 @@ export class EidBe implements AbstractEidBE {
     // resolves the reader_id in the base URL
     protected tokenApp(path?: string): string {
         let suffix = this.containerUrl;
-        suffix += EidBe.PATH_TOKEN_APP + EidBe.PATH_READERS;
+        suffix += EidLux.PATH_TOKEN_APP + EidLux.PATH_READERS;
         if (this.reader_id && this.reader_id.length) {
             suffix += '/' + this.reader_id;
         }
@@ -258,6 +248,7 @@ export class EidBe implements AbstractEidBE {
         }
         return suffix;
     }
+
 
     protected getBulkSignQueryParams(bulk?: boolean): any {
         if(bulk) {

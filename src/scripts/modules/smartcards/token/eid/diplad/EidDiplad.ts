@@ -6,6 +6,7 @@ import {
     TokenDataResponse, TokenAlgorithmReferencesResponse,
 } from '../generic/EidGenericModel';
 import {
+    BoolDataResponse,
     CertificateResponse,
     DataArrayResponse,
     DataObjectResponse,
@@ -35,6 +36,7 @@ export class EidDiplad implements AbstractEidDiplad {
     static AUTHENTICATE = '/authenticate';
     static VERIFY_PRIV_KEY_REF = 'non-repudiation';
     static SUPPORTED_ALGOS = '/supported-algorithms';
+    static RESET_BULK_PIN = "/reset-bulk-pin"
 
     constructor(
         protected baseUrl: string,
@@ -221,12 +223,23 @@ export class EidDiplad implements AbstractEidDiplad {
 
     public sign(
         body: TokenAuthenticateOrSignData,
+        bulk?: boolean,
         callback?: (error: T1CLibException, data: TokenSignResponse) => void
     ): Promise<TokenSignResponse> {
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidDiplad.SIGN_DATA),
             body,
+            [this.getBulkSignQueryParams(bulk)],
+            undefined,
+            callback
+        );
+    }
+
+    resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
+        return this.connection.get(
+            this.baseUrl,
+            this.tokenApp(EidDiplad.RESET_BULK_PIN),
             undefined,
             undefined,
             callback
@@ -244,5 +257,12 @@ export class EidDiplad implements AbstractEidDiplad {
             suffix += path.startsWith('/') ? path : '/' + path;
         }
         return suffix;
+    }
+
+
+    protected getBulkSignQueryParams(bulk?: boolean): any {
+        if(bulk) {
+            return {bulk: true};
+        }
     }
 }

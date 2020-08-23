@@ -24,6 +24,7 @@ import {AbstractRemoteLoading} from "../modules/hsm/remoteloading/RemoteLoadingM
 import axios from 'axios';
 import {AbstractPkcs11Generic} from "../modules/pkcs11/generic/Pkcs11GenericModel";
 import {AbstractPaymentGeneric} from "../modules/smartcards/payment/generic/PaymentGenericModel";
+import {AbstractPkcs11} from "../modules/pkcs11/pkcs11Object/pkcs11Model";
 
 const urlVersion = "/v3";
 
@@ -67,29 +68,19 @@ export class T1CClient {
                 if (res.status >= 200 && res.status < 300) {
                     if (res.data.t1CInfoAPI.service.deviceType && res.data.t1CInfoAPI.service.deviceType == "PROXY") {
                         console.info("Proxy detected");
-                        if (document.cookie) {
-                            const proxyCookie = document.cookie.split(";").find(s => s.includes("t1c-agent-proxy"))
-                            if (proxyCookie) {
-                                cfg.t1cApiPort = proxyCookie.split("::").reverse()[0]
-                                const client = new T1CClient(cfg);
-                                client.t1cInstalled = true;
-                                resolve(client);
-                            } else {
-                                const client = new T1CClient(cfg);
-                                reject(new T1CLibException(
-                                    "500",
-                                    "No valid consent found.",
-                                    client
-                                ));
-                            }
-                        } else {
+                        axios.get(cfg.t1cProxyUrl + "/consent").then((res) => {
+                            cfg.t1cApiPort = res.data.apiPort;
+                            const client = new T1CClient(cfg);
+                            client.t1cInstalled = true;
+                            resolve(client);
+                        }, err => {
                             const client = new T1CClient(cfg);
                             reject(new T1CLibException(
                                 "500",
                                 "No valid consent found.",
                                 client
                             ));
-                        }
+                        })
                     } else {
                         const client = new T1CClient(cfg);
                         client.t1cInstalled = true;
@@ -154,6 +145,10 @@ export class T1CClient {
 
     public pkcs11Generic = (): AbstractPkcs11Generic => {
         return this.moduleFactory.createPKCS11Generic()
+    };
+
+    public pkcs11 = (modulePath: string): AbstractPkcs11 => {
+        return this.moduleFactory.createPKCS11(modulePath);
     };
 
     public fileex = (): AbstractFileExchange => {

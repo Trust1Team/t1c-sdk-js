@@ -4,6 +4,7 @@ import {Options} from '../../../Card';
 import {AbstractOberthur73} from './OberthurModel';
 import {LocalConnection} from '../../../../../core/client/Connection';
 import {
+    BoolDataResponse,
     CertificateResponse,
     DataArrayResponse,
     DataObjectResponse,
@@ -34,6 +35,7 @@ export class Oberthur implements AbstractOberthur73 {
     static SIGN_DATA = '/sign';
     static VERIFY_PIN = '/verify-pin';
     static SUPPORTED_ALGOS = '/supported-algorithms'
+    static RESET_BULK_PIN = "/reset-bulk-pin"
 
     constructor(protected baseUrl: string, protected containerUrl: string,protected connection: LocalConnection, protected reader_id: string) {}
 
@@ -82,11 +84,11 @@ export class Oberthur implements AbstractOberthur73 {
         return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.AUTHENTICATE), body, undefined, undefined, callback);
     }
 
-    public sign(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
+    public sign(body: TokenAuthenticateOrSignData, bulk?: boolean, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
-        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.SIGN_DATA), body, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.SIGN_DATA), body, [this.getBulkSignQueryParams(bulk)], undefined, callback);
     }
 
     protected getCertificate(certUrl: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
@@ -95,6 +97,16 @@ export class Oberthur implements AbstractOberthur73 {
 
     public tokenData(callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
         return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.INFO), undefined);
+    }
+
+    resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
+        return this.connection.get(
+            this.baseUrl,
+            this.tokenApp(Oberthur.RESET_BULK_PIN),
+            undefined,
+            undefined,
+            callback
+        );
     }
 
     // resolves the reader_id in the base URL
@@ -108,5 +120,12 @@ export class Oberthur implements AbstractOberthur73 {
             suffix += path.startsWith('/') ? path : '/' + path;
         }
         return suffix;
+    }
+
+
+    protected getBulkSignQueryParams(bulk?: boolean): any {
+        if(bulk) {
+            return {bulk: true};
+        }
     }
 }

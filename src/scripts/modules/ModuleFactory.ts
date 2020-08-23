@@ -25,18 +25,24 @@ import {EidDiplad} from "./smartcards/token/eid/diplad/EidDiplad";
 import {Pkcs11Generic} from "./pkcs11/generic/Pkcs11Generic";
 import {AbstractPaymentGeneric} from "./smartcards/payment/generic/PaymentGenericModel";
 import {PaymentGeneric} from "./smartcards/payment/generic/PaymentGeneric";
+import {AbstractEidLux, PinType} from "./smartcards/token/eid/lux/EidLuxModel";
+import {EidLux} from "./smartcards/token/eid/lux/EidLux";
+import {AbstractWacom} from "./wacom/WacomModel";
+import {Wacom} from "./wacom/Wacom";
+import {AbstractPkcs11} from "./pkcs11/pkcs11Object/pkcs11Model";
+import {PKCS11} from "./pkcs11/pkcs11Object/pkcs11";
 
 export interface AbstractFactory {
-    createEidGeneric(reader_id?: string): AbstractEidGeneric;
+    createEidGeneric(reader_id: string): AbstractEidGeneric;
     createEidGenericMeta(): AbstractEidGeneric;
-    createEidBE(reader_id?: string): AbstractEidBE;
-    createEidDiplad(reader_id?: string): AbstractEidDiplad;
-    // createEidLUX(reader_id?: string): AbstractEidLUX;
-    createEmv(reader_id?: string): AbstractEmv;
+    createEidBE(reader_id: string): AbstractEidBE;
+    createEidDiplad(reader_id: string): AbstractEidDiplad;
+    createEidLUX(reader_id: string, pin: string, pinType: PinType): AbstractEidLux;
+    createEmv(reader_id: string): AbstractEmv;
     createPaymentGeneric(reader_id?: string): AbstractPaymentGeneric;
     createPaymentGenericMeta(): AbstractPaymentGeneric;
     createFileExchange(): AbstractFileExchange;
-    // createWacom(): AbstractWacom;
+    createWacom(): AbstractWacom;
     // createIsabel(reader_id?: string, runInUserSpace?: boolean): AbstractIsabel;
     // createLuxTrust(reader_id?: string): AbstractLuxTrust;
     // createMobib(reader_id?: string): AbstractMobib;
@@ -45,6 +51,7 @@ export interface AbstractFactory {
     createOberthur(reader_id?: string): AbstractOberthur73;
     // createPIV(reader_id?: string): AbstractPiv;
     createPKCS11Generic(): AbstractPkcs11Generic;
+    createPKCS11(modulePath: string): AbstractPkcs11;
     // createJavaKeyTool(): AbstractJavaKeyTool
     // createSsh(): AbstractSsh
     // createRawPrint(runInUserSpace: boolean): AbstractRawPrint
@@ -68,6 +75,7 @@ const CONTAINER_IDEMIA = CONTAINER_NEW_CONTEXT_PATH + 'idemia_cosmo_82';
 const CONTAINER_PIV = CONTAINER_NEW_CONTEXT_PATH + 'piv';
 const CONTAINER_PTEID = CONTAINER_NEW_CONTEXT_PATH + 'pteid';
 const CONTAINER_PKCS11 = CONTAINER_NEW_CONTEXT_PATH + 'pkcs11';
+const CONTAINER_PKCS11_Object = CONTAINER_NEW_CONTEXT_PATH + 'pkcs11-objects';
 const CONTAINER_REMOTE_LOADING = CONTAINER_NEW_CONTEXT_PATH + 'remoteloading';
 const CONTAINER_JAVA_KEY_TOOL = CONTAINER_NEW_CONTEXT_PATH + 'java-keytool';
 const CONTAINER_SSH = CONTAINER_NEW_CONTEXT_PATH + 'ssh';
@@ -127,6 +135,18 @@ export class ModuleFactory implements AbstractFactory {
 
     public createRemoteLoading(reader_id: string): AbstractRemoteLoading {
         return new RemoteLoading(this.url, CONTAINER_REMOTE_LOADING, this.connection, reader_id);
+    }
+
+    public createEidLUX(reader_id: string, pin: string, pinType: PinType): AbstractEidLux {
+        return new EidLux(this.url, CONTAINER_LUXEID, this.connection, reader_id, pin, pinType);
+    }
+
+    public createWacom(): AbstractWacom {
+        return new Wacom(this.url, CONTAINER_WACOM, this.connection);
+    }
+
+    createPKCS11(modulePath: string): AbstractPkcs11 {
+        return new PKCS11(this.url, CONTAINER_PKCS11_Object, this.connection, modulePath);
     }
 
 
