@@ -1,6 +1,6 @@
 {
   "name": "t1c-sdk-js",
-  "version": "3.1.4-SNAPSHOT",
+  "version": "3.1.4",
   "description": "Trust1Connector JavaScript SDK",
   "main": "dist/T1Csdk.js",
   "types": "dist/lib/index.d.ts",
