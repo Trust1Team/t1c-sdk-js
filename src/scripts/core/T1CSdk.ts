@@ -68,8 +68,8 @@ export class T1CClient {
                 if (res.status >= 200 && res.status < 300) {
                     if (res.data.t1CInfoAPI.service.deviceType && res.data.t1CInfoAPI.service.deviceType == "PROXY") {
                         console.info("Proxy detected");
-                        axios.get(cfg.t1cProxyUrl + "/consent").then((res) => {
-                            cfg.t1cApiPort = res.data.apiPort;
+                        axios.get(cfg.t1cProxyUrl + "/consent", {withCredentials: true}).then((res) => {
+                            cfg.t1cApiPort = res.data.data.apiPort;
                             const client = new T1CClient(cfg);
                             client.t1cInstalled = true;
                             resolve(client);
