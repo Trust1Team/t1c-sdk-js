@@ -25,6 +25,7 @@ import axios from 'axios';
 import {AbstractPkcs11Generic} from "../modules/pkcs11/generic/Pkcs11GenericModel";
 import {AbstractPaymentGeneric} from "../modules/smartcards/payment/generic/PaymentGenericModel";
 import {AbstractPkcs11} from "../modules/pkcs11/pkcs11Object/pkcs11Model";
+import {AbstractCrelan} from "../modules/smartcards/payment/crelan/CrelanModel";
 
 const urlVersion = "/v3";
 
@@ -166,6 +167,11 @@ export class T1CClient {
     public emv = (reader_id: string): AbstractEmv => {
         return this.moduleFactory.createEmv(reader_id)
     };
+
+    public crelan = (reader_id: string): AbstractCrelan => {
+        return this.moduleFactory.createCrelan(reader_id)
+    };
+
     // get instance for Aventra
     public aventra = (reader_id: string): AbstractAventra => {
         return this.moduleFactory.createAventra(reader_id);

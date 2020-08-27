@@ -31,6 +31,8 @@ import {AbstractWacom} from "./wacom/WacomModel";
 import {Wacom} from "./wacom/Wacom";
 import {AbstractPkcs11} from "./pkcs11/pkcs11Object/pkcs11Model";
 import {PKCS11} from "./pkcs11/pkcs11Object/pkcs11";
+import {Crelan} from "./smartcards/payment/crelan/Crelan";
+import {AbstractCrelan} from "./smartcards/payment/crelan/CrelanModel";
 
 export interface AbstractFactory {
     createEidGeneric(reader_id: string): AbstractEidGeneric;
@@ -39,6 +41,7 @@ export interface AbstractFactory {
     createEidDiplad(reader_id: string): AbstractEidDiplad;
     createEidLUX(reader_id: string, pin: string, pinType: PinType): AbstractEidLux;
     createEmv(reader_id: string): AbstractEmv;
+    createCrelan(reader_id: string): AbstractCrelan;
     createPaymentGeneric(reader_id?: string): AbstractPaymentGeneric;
     createPaymentGenericMeta(): AbstractPaymentGeneric;
     createFileExchange(): AbstractFileExchange;
@@ -63,6 +66,7 @@ const CONTAINER_DIPLAD = CONTAINER_NEW_CONTEXT_PATH + 'diplad';
 const CONTAINER_LUXEID = CONTAINER_NEW_CONTEXT_PATH + 'luxeid';
 const CONTAINER_DNIE = CONTAINER_NEW_CONTEXT_PATH + 'dnie';
 const CONTAINER_EMV = CONTAINER_NEW_CONTEXT_PATH + 'emv';
+const CONTAINER_CRELAN = CONTAINER_NEW_CONTEXT_PATH + 'crelan';
 const CONTAINER_WACOM = CONTAINER_NEW_CONTEXT_PATH + 'wacom-stu';
 const CONTAINER_ISABEL = CONTAINER_NEW_CONTEXT_PATH + 'isabel';
 const CONTAINER_FILE_EXCHANGE = CONTAINER_NEW_CONTEXT_PATH + 'fileexchange';
@@ -127,6 +131,10 @@ export class ModuleFactory implements AbstractFactory {
 
     public createEmv(reader_id: string): AbstractEmv {
         return new Emv(this.url, CONTAINER_EMV, this.connection, reader_id);
+    }
+
+    public createCrelan(reader_id: string): AbstractCrelan {
+        return new Crelan(this.url, CONTAINER_CRELAN, this.connection, reader_id);
     }
 
     public createFileExchange(): AbstractFileExchange {

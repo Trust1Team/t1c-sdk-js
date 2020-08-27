@@ -1,5 +1,5 @@
-import {PaymentVerifyPinData} from "../PaymentCard";
-import {BoolDataResponse, DataObjectResponse, T1CLibException} from "../../../../../index";
+import {PaymentSignData, PaymentVerifyPinData} from "../PaymentCard";
+import {BoolDataResponse, DataObjectResponse, T1CLibException, TokenAuthenticateOrSignData} from "../../../../../index";
 import {Options} from "../../Card";
 
 
@@ -12,6 +12,7 @@ export interface AbstractPaymentGeneric {
   verifyPin(module: string, body: PaymentVerifyPinData, callback?: (error: T1CLibException, data: PaymentVerifyPinResponse) => void): Promise<PaymentVerifyPinResponse>;
   getModuleDescription(module: string, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse>;
   resetBulkPin(module: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
+  sign(module: string, body: PaymentSignData, bulk?: boolean, callback?: (error: T1CLibException, data: PaymentSignResponse) => void): Promise<PaymentSignResponse>;
 }
 
 export class PaymentModuleDescriptionResponse extends DataObjectResponse {
@@ -101,5 +102,14 @@ export class PaymentCertificate {
   constructor(certificate?: string,
               exponent?: string,
               remainder?: string) {}
+}
+
+export class PaymentSignResponseData {
+  constructor(public success: boolean, public data?: string, public cardSignature?: string, public readerSignature?: string) {
+  }
+}
+
+export class PaymentSignResponse {
+  constructor(public data: PaymentSignResponseData, public success: boolean) {}
 }
 
