@@ -28,7 +28,7 @@ import {AbstractPkcs11} from "../modules/pkcs11/pkcs11Object/pkcs11Model";
 import {AbstractCrelan} from "../modules/smartcards/payment/crelan/CrelanModel";
 import {AbstractEidLux, PinType} from "../modules/smartcards/token/eid/lux/EidLuxModel";
 import {AbstractWacom} from "../modules/wacom/WacomModel";
-import {AbstractEidDiplad} from "../..";
+import {AbstractEidDiplad} from "../modules/smartcards/token/eid/diplad/EidDipladModel";
 
 const urlVersion = "/v3";
 
