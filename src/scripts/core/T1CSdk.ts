@@ -26,6 +26,9 @@ import {AbstractPkcs11Generic} from "../modules/pkcs11/generic/Pkcs11GenericMode
 import {AbstractPaymentGeneric} from "../modules/smartcards/payment/generic/PaymentGenericModel";
 import {AbstractPkcs11} from "../modules/pkcs11/pkcs11Object/pkcs11Model";
 import {AbstractCrelan} from "../modules/smartcards/payment/crelan/CrelanModel";
+import {AbstractEidLux, PinType} from "../modules/smartcards/token/eid/lux/EidLuxModel";
+import {AbstractWacom} from "../modules/wacom/WacomModel";
+import {AbstractEidDiplad} from "../..";
 
 const urlVersion = "/v3";
 
@@ -185,6 +188,18 @@ export class T1CClient {
     // get instance for Oberthur
     public idemia = (reader_id: string): AbstractIdemia => {
         return this.moduleFactory.createIdemia(reader_id);
+    }
+
+    public luxeid = (reader_id: string, pin: string, pin_type: PinType): AbstractEidLux => {
+        return this.moduleFactory.createEidLUX(reader_id, pin, pin_type);
+    }
+
+    public wacom = (): AbstractWacom => {
+        return this.moduleFactory.createWacom();
+    }
+
+    public diplad = (reader_id: string): AbstractEidDiplad => {
+        return this.moduleFactory.createEidDiplad(reader_id);
     }
 
     // get instance for Remote Loading
