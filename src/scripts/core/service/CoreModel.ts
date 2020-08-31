@@ -1,5 +1,6 @@
 import {T1CLibException} from '../exceptions/CoreExceptions';
 import {T1CClient} from '../T1CSdk';
+import Certificate from 'pkijs/build/Certificate';
 
 export interface AbstractCore {
   // async
@@ -142,7 +143,8 @@ export class T1CCertificate {
     public certificate?: string,
     public certificates?: Array<string>,
     public certificateType?: string,
-    public id?: string
+    public id?: string,
+    public parsed?: Certificate
   ) {}
 }
 
