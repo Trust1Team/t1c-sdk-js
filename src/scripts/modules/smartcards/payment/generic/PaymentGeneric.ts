@@ -1,12 +1,11 @@
 import {
-    AbstractPaymentGeneric, PaymentAllCertsResponse,
-    PaymentCertificateResponse,
+    AbstractPaymentGeneric,
     PaymentReadApplicationDataResponse, PaymentReadDataResponse, PaymentSignResponse, PaymentVerifyPinResponse
 } from "./PaymentGenericModel";
 import {
     BoolDataResponse,
     DataObjectResponse,
-    LocalConnection, PaymentSignData,
+    LocalConnection, PaymentAllCertsResponse, PaymentCertificateResponse, PaymentSignData,
     PaymentVerifyPinData,
     T1CLibException, TokenAuthenticateOrSignData
 } from "../../../../../index";

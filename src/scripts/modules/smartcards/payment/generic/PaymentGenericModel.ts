@@ -1,5 +1,11 @@
 import {PaymentSignData, PaymentVerifyPinData} from "../PaymentCard";
-import {BoolDataResponse, DataObjectResponse, T1CLibException, TokenAuthenticateOrSignData} from "../../../../../index";
+import {
+  BoolDataResponse,
+  DataObjectResponse,
+  PaymentAllCertsResponse, PaymentCertificateResponse,
+  T1CLibException,
+  TokenAuthenticateOrSignData
+} from "../../../../../index";
 import {Options} from "../../Card";
 
 
@@ -40,19 +46,6 @@ export class PaymentVerifyPinResponseData {
   ) {}
 }
 
-export class PaymentAllCertsResponse extends DataObjectResponse {
-  constructor(public data: PaymentAllCerts, public success: boolean) {
-    super(data, success);
-  }
-}
-
-export class PaymentAllCerts {
-  constructor(
-      public issuerPublicCertificate?: PaymentCertificate,
-      public iccPublicCertificate?: PaymentCertificate,
-  ) {}
-}
-
 export class PaymentReadData {
   constructor(
       public applications: Array<PaymentApplication>,
@@ -90,18 +83,6 @@ export class PaymentReadApplicationDataResponse extends DataObjectResponse {
   constructor(public data: PaymentReadApplicationData, public success: boolean) {
     super(data, success);
   }
-}
-
-export class PaymentCertificateResponse extends DataObjectResponse {
-  constructor(public data: PaymentCertificate, public success: boolean) {
-    super(data, success);
-  }
-}
-
-export class PaymentCertificate {
-  constructor(certificate?: string,
-              exponent?: string,
-              remainder?: string) {}
 }
 
 export class PaymentSignResponseData {
