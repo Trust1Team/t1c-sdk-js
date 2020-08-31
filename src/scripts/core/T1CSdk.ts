@@ -6,7 +6,7 @@ import {
     LocalTestConnection,
     RemoteApiKeyConnection,
     LocalAuthAdminConnection,
-    LocalAdminConnection, RequestHeaders,
+    LocalAdminConnection,
 } from './client/Connection';
 import {DataResponse,} from './service/CoreModel';
 import {T1CLibException} from './exceptions/CoreExceptions';
@@ -24,7 +24,7 @@ import {AbstractRemoteLoading} from "../modules/hsm/remoteloading/RemoteLoadingM
 import axios from 'axios';
 import {AbstractPkcs11Generic} from "../modules/pkcs11/generic/Pkcs11GenericModel";
 import {AbstractPaymentGeneric} from "../modules/smartcards/payment/generic/PaymentGenericModel";
-import {AbstractPkcs11} from "../modules/pkcs11/pkcs11Object/pkcs11Model";
+import {AbstractPkcs11} from "../modules/pkcs11/pkcs11Object/Pkcs11Model";
 import {AbstractCrelan} from "../modules/smartcards/payment/crelan/CrelanModel";
 import {AbstractEidLux, PinType} from "../modules/smartcards/token/eid/lux/EidLuxModel";
 import {AbstractWacom} from "../modules/wacom/WacomModel";

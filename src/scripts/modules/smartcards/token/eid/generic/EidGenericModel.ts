@@ -1,9 +1,9 @@
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {
   BoolDataResponse,
-  CertificateResponse, DataArrayResponse,
+  TokenCertificateResponse, DataArrayResponse,
   DataObjectResponse,
-  T1CCertificate,
+  TokenAllCertsResponse,
 } from '../../../../../core/service/CoreModel';
 import {TokenAuthenticateOrSignData} from "../../TokenCard";
 import {TokenVerifyPinData} from "../../TokenCard";
@@ -11,17 +11,17 @@ import {Options} from "../../../Card";
 
 export interface AbstractEidGeneric {
   getModuleDescription(module: string, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse>;
-  allData(module: string, filters: string[] | Options, callback?: (error: T1CLibException, data: TokenAllDataResponse) => void): Promise<TokenAllDataResponse>;
-  allCerts(module: string, filters: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse>;
+  allData(module: string, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllDataResponse) => void): Promise<TokenAllDataResponse>;
+  allCerts(module: string, parseCerts?: boolean,  filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse>;
   biometric(module: string, callback?: (error: T1CLibException, data: TokenBiometricDataResponse) => void): Promise<TokenBiometricDataResponse>;
   tokenData(module: string, callback?: (error: T1CLibException, data: TokenDataResponse) => void): Promise<TokenDataResponse>;
   address(module: string, callback?: (error: T1CLibException, data: TokenAddressResponse) => void): Promise<TokenAddressResponse>;
   picture(module: string, callback?: (error: T1CLibException, data: TokenPictureResponse) => void): Promise<TokenPictureResponse>;
-  rootCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
-  intermediateCertificates(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
-  authenticationCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
-  nonRepudiationCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
-  encryptionCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse>;
+  rootCertificate(module: string, parseCerts?: boolean,  callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse>;
+  intermediateCertificates(module: string, parseCerts?: boolean,  callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse>;
+  authenticationCertificate(module: string, parseCerts?: boolean,  callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse>;
+  nonRepudiationCertificate(module: string, parseCerts?: boolean,  callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse>;
+  encryptionCertificate(module: string, parseCerts?: boolean,  callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse>;
   verifyPin(module: string, body: TokenVerifyPinData, callback?: (error: T1CLibException, data: TokenVerifyPinResponse) => void): Promise<TokenVerifyPinResponse>;
   authenticate(module: string, body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse>;
   sign(module: string, body: TokenAuthenticateOrSignData, bulk?: boolean, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse>;
@@ -100,21 +100,7 @@ export class TokenAddressData {
   ) {}
 }
 
-export class TokenAllCertsResponse extends DataObjectResponse {
-  constructor(public data: TokenAllCerts, public success: boolean) {
-    super(data, success);
-  }
-}
 
-export class TokenAllCerts {
-  constructor(
-      public authenticationCertificate?: T1CCertificate,
-      public citizenCertificate?: T1CCertificate,
-      public nonRepudiationCertificate?: T1CCertificate,
-      public rootCertificate?: T1CCertificate,
-      public encryptionCertificate?: T1CCertificate
-  ) {}
-}
 
 export class TokenAllDataResponse extends DataObjectResponse {
   constructor(public data: TokenAllData, public success: boolean) {

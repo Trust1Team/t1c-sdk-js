@@ -1,13 +1,14 @@
 import { T1CLibException } from '../../../core/exceptions/CoreExceptions';
 import {
-    CertificatesResponse, DataObjectResponse, DataResponse
+    DataObjectResponse
 } from '../../../core/service/CoreModel';
 import {Pkcs11Info, Pkcs11Slot, Pkcs11TokenInfo} from "../../../..";
+import Certificate from 'pkijs/build/Certificate';
 
 
 
 export interface AbstractPkcs11 {
-    certificates(slotId: string, callback?: (error: T1CLibException, data: Pkcs11ObjectCertificatesResponse) => void): Promise<Pkcs11ObjectCertificatesResponse>;
+    certificates(slotId: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: Pkcs11ObjectCertificatesResponse) => void): Promise<Pkcs11ObjectCertificatesResponse>;
     // info(callback?: (error: T1CLibException, data: Pkcs11ObjectInfoResponse) => void): Promise<Pkcs11ObjectInfoResponse>;
     signData(data: Pkcs11SignData, callback?: (error: T1CLibException, data: Pkcs11ObjectSignResponse) => void): Promise<Pkcs11ObjectSignResponse>;
     slots(callback?: (error: T1CLibException, data: Pkcs11ObjectSlotsResponse) => void): Promise<Pkcs11ObjectSlotsResponse>;
@@ -48,7 +49,7 @@ export class Pkcs11ObjectCertificates {
 
 
 export class Pkcs11ObjectCertificate {
-    constructor(public id: string, public certificate: string) {}
+    constructor(public id: string, public certificate: string, public parsed?: Certificate) {}
 }
 
 export class Pkcs11ObjectCertificatesResponse {

@@ -4,22 +4,20 @@
  */
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {AbstractAventra} from './AventraModel';
-import {LocalConnection, QueryParams} from '../../../../../core/client/Connection';
+import {LocalConnection} from '../../../../../core/client/Connection';
 import {
-    BoolDataResponse,
-    CertificateResponse,
-    DataArrayResponse,
-    DataObjectResponse,
-    DataResponse, T1CResponse
+    BoolDataResponse, TokenAllCertsResponse,
+    TokenCertificateResponse,
 } from "../../../../../core/service/CoreModel";
 import {
-    TokenAllCertsResponse,
     TokenAuthenticateResponse,
     TokenSignResponse,
     TokenDataResponse, TokenVerifyPinResponse, TokenAlgorithmReferencesResponse, TokenResetPinResponse
 } from "../../eid/generic/EidGenericModel";
 import {TokenAuthenticateOrSignData, TokenResetPinData, TokenVerifyPinData} from "../../TokenCard";
 import {Options} from "../../../Card";
+import {CertParser} from "../../../../../util/CertParser";
+import {ResponseHandler} from "../../../../../util/ResponseHandler";
 
 export class Aventra implements AbstractAventra {
     static CONTAINER_PREFIX = 'aventra_myid_4';
@@ -57,24 +55,24 @@ export class Aventra implements AbstractAventra {
         return ['authenticate', 'sign', 'encrypt'];
     }
 
-    public rootCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Aventra.CERT_ROOT, callback);
+    public rootCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+        return this.getCertificate(Aventra.CERT_ROOT, parseCerts, callback);
     }
 
-    public issuerCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Aventra.CERT_ISSUER, callback);
+    public issuerCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+        return this.getCertificate(Aventra.CERT_ISSUER, parseCerts, callback);
     }
 
-    public authenticationCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Aventra.CERT_AUTHENTICATION, callback);
+    public authenticationCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+        return this.getCertificate(Aventra.CERT_AUTHENTICATION, parseCerts, callback);
     }
 
-    public nonRepudiationCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Aventra.CERT_NON_REPUDIATION, callback);
+    public nonRepudiationCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+        return this.getCertificate(Aventra.CERT_NON_REPUDIATION, parseCerts, callback);
     }
 
-    public encryptionCertificate(callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.getCertificate(Aventra.CERT_ENCRYPTION, callback);
+    public encryptionCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+        return this.getCertificate(Aventra.CERT_ENCRYPTION, parseCerts, callback);
     }
 
     public verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: TokenVerifyPinResponse) => void): Promise<TokenVerifyPinResponse> {
@@ -89,8 +87,12 @@ export class Aventra implements AbstractAventra {
         return this.connection.get(this.baseUrl, this.tokenApp(Aventra.SUPPORTED_ALGOS), undefined, undefined, callback);
     }
 
-    public allCerts(filters: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Aventra.ALL_CERTIFICATES), filters)
+    public allCerts(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(Aventra.ALL_CERTIFICATES), filters).then((res: TokenAllCertsResponse) => {
+            return CertParser.processTokenAllCertificates(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
 
     public authenticate(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse> {
@@ -105,15 +107,19 @@ export class Aventra implements AbstractAventra {
         return this.connection.post(this.baseUrl, this.tokenApp(Aventra.SIGN_DATA), body, [this.getBulkSignQueryParams(bulk)], undefined, callback);
     }
 
-    protected getCertificate(certUrl: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(certUrl), undefined, callback);
+    protected getCertificate(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(certUrl), undefined, callback).then((res: TokenCertificateResponse) => {
+            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
 
-    tokenData(callback?: (error: T1CLibException, data: TokenDataResponse) => void): Promise<TokenDataResponse> {
+    public tokenData(callback?: (error: T1CLibException, data: TokenDataResponse) => void): Promise<TokenDataResponse> {
         return this.connection.get(this.baseUrl, this.tokenApp(Aventra.INFO), undefined);
     }
 
-    resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
+    public resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(Aventra.RESET_BULK_PIN),

@@ -19,18 +19,18 @@ export enum TokenResetPinReferenceType {
 
 export class TokenResetPinData {
     constructor(
-        puk: string,
-        pin?: string,
-        resetOnly?: boolean,
-        osDialog?: boolean,
-        reference?: TokenResetPinReferenceType) {
+        public puk: string,
+        public pin?: string,
+        public resetOnly?: boolean,
+        public osDialog?: boolean,
+        public reference?: TokenResetPinReferenceType) {
     }
 }
 
 export class TokenChangePinData {
-    constructor(pin?: string,
-                newPin?: string,
-                osDialog?: boolean) {
+    constructor(public pin?: string,
+                public newPin?: string,
+                public osDialog?: boolean) {
     }
 }
 

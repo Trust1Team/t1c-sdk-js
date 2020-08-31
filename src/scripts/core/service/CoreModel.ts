@@ -124,29 +124,70 @@ export class CardReadersResponse extends T1CResponse {
   }
 }
 
-export class CertificateResponse extends T1CResponse {
-  constructor(public data: T1CCertificate, public success: boolean) {
-    super(success, data);
-  }
-}
-
-export class CertificatesResponse extends T1CResponse {
-  constructor(public data: T1CCertificate[], public success: boolean) {
+export class TokenCertificateResponse extends T1CResponse {
+  constructor(public data: TokenCertificate, public success: boolean) {
     super(success, data);
   }
 }
 
 
 // certificate: Option[String], certificates: Option[Seq[String]] = None, certificateType: Option[String] = None, id: Option[String] = None
-export class T1CCertificate {
+export class TokenCertificate {
   constructor(
     public certificate?: string,
     public certificates?: Array<string>,
     public certificateType?: string,
     public id?: string,
-    public parsed?: Certificate
+    public parsedCertificate?: Certificate,
+    public parsedCertificates?: Array<Certificate>
   ) {}
 }
+
+export class TokenAllCertsResponse extends DataObjectResponse {
+  constructor(public data: TokenAllCerts, public success: boolean) {
+    super(data, success);
+  }
+}
+
+export class TokenAllCerts {
+  constructor(
+      public authenticationCertificate?: TokenCertificate,
+      public citizenCertificate?: TokenCertificate,
+      public nonRepudiationCertificate?: TokenCertificate,
+      public rootCertificate?: TokenCertificate,
+      public encryptionCertificate?: TokenCertificate
+  ) {}
+}
+
+
+export class PaymentCertificateResponse extends DataObjectResponse {
+  constructor(public data: PaymentCertificate, public success: boolean) {
+    super(data, success);
+  }
+}
+
+export class PaymentCertificate {
+  constructor(public certificate?: string,
+              public exponent?: string,
+              public remainder?: string,
+              public parsed?: Certificate) {}
+}
+
+export class PaymentAllCertsResponse extends DataObjectResponse {
+  constructor(public data: PaymentAllCerts, public success: boolean) {
+    super(data, success);
+  }
+}
+
+export class PaymentAllCerts {
+  constructor(
+      public issuerPublicCertificate?: PaymentCertificate,
+      public iccPublicCertificate?: PaymentCertificate,
+  ) {}
+}
+
+
+
 
 export class SingleReaderResponse extends T1CResponse {
   constructor(public data: CardReader, public success: boolean) {

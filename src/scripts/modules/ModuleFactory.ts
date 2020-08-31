@@ -29,8 +29,8 @@ import {AbstractEidLux, PinType} from "./smartcards/token/eid/lux/EidLuxModel";
 import {EidLux} from "./smartcards/token/eid/lux/EidLux";
 import {AbstractWacom} from "./wacom/WacomModel";
 import {Wacom} from "./wacom/Wacom";
-import {AbstractPkcs11} from "./pkcs11/pkcs11Object/pkcs11Model";
-import {PKCS11} from "./pkcs11/pkcs11Object/pkcs11";
+import {AbstractPkcs11} from "./pkcs11/pkcs11Object/Pkcs11Model";
+import {PKCS11} from "./pkcs11/pkcs11Object/Pkcs11";
 import {Crelan} from "./smartcards/payment/crelan/Crelan";
 import {AbstractCrelan} from "./smartcards/payment/crelan/CrelanModel";
 
