@@ -99,7 +99,6 @@ export class CoreService implements AbstractCore {
           callback
       ).then(res => {
         this.connection.cfg.t1cApiPort = res.data.apiPort;
-        this.connection.cfg.t1cRpcPort = res.data.sandboxPort;
         const newClient = new T1CClient(this.connection.cfg)
         resolve(newClient)
       }, err => {

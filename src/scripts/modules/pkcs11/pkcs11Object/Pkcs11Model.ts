@@ -62,7 +62,8 @@ export class Pkcs11SignData {
                 public certificateId: string,
                 public algorithm: string,
                 public data: string,
-                public pin?: string) {}
+                public pin?: string,
+                public osDialog?: boolean) {}
 }
 
 export class Pkcs11ObjectTokenResponse {

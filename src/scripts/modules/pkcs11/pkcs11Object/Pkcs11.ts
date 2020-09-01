@@ -1,11 +1,8 @@
 import {T1CLibException} from '../../../core/exceptions/CoreExceptions';
-import {DataResponse} from '../../../core/service/CoreModel';
 import {LocalConnection} from '../../../core/client/Connection';
-import {RequestHandler} from '../../../util/RequestHandler';
 import {
     AbstractPkcs11, Pkcs11ObjectCertificate, Pkcs11ObjectCertificates,
-    Pkcs11ObjectCertificatesResponse,
-    Pkcs11ObjectInfoResponse, Pkcs11ObjectSignResponse,
+    Pkcs11ObjectCertificatesResponse, Pkcs11ObjectSignResponse,
     Pkcs11ObjectSlotsResponse, Pkcs11ObjectTokenResponse,
     Pkcs11SetConfigResponse,
     Pkcs11SignData,
@@ -68,7 +65,7 @@ export class PKCS11 implements AbstractPkcs11 {
                 pin: signData.pin,
                 data: signData.data,
                 algorithm: signData.algorithm,
-                osDialog: this.connection.cfg.osPinDialog
+                osDialog: signData.osDialog
             };
             return this.connection.post(this.baseUrl, this.pkcs11Path(PKCS11.SIGN, signData.slotId), req, undefined)
         })
