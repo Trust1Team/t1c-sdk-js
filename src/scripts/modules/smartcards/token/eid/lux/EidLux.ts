@@ -54,9 +54,9 @@ export class EidLux implements AbstractEidLux {
     // by default using Pace-PIN
     private static EncryptedHeader(code: string, pinType: PinType): RequestHeaders {
         if (pinType === PinType.CAN) {
-            return {'X-Can': code === undefined ? '' : code};
+            return {'X-Pace-Can': code === undefined ? '' : code};
         } else {
-            return {'X-Pin': code === undefined ? '' : code};
+            return {'X-Pace-Pin': code === undefined ? '' : code};
         }
     }
 

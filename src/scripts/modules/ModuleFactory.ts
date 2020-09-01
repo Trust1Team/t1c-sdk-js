@@ -153,7 +153,7 @@ export class ModuleFactory implements AbstractFactory {
         return new Wacom(this.url, CONTAINER_WACOM, this.connection);
     }
 
-    createPKCS11(modulePath: string): AbstractPkcs11 {
+    public createPKCS11(modulePath: string): AbstractPkcs11 {
         return new PKCS11(this.url, CONTAINER_PKCS11_Object, this.connection, modulePath);
     }
 
