@@ -69,13 +69,13 @@ export class PaymentReadDataResponse extends DataObjectResponse {
 
 export class PaymentReadApplicationData {
   constructor(
-      country?: string,
-      countryCode?: string,
-      effectiveDate?: string,
-      expirationDate?: string,
-      language?: string,
-      name?: string,
-      pan?: string,
+      public country?: string,
+      public countryCode?: string,
+      public effectiveDate?: string,
+      public expirationDate?: string,
+      public language?: string,
+      public name?: string,
+      public pan?: string,
   ) {}
 }
 

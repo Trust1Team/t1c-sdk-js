@@ -91,12 +91,12 @@ export class TokenModuleDescription {
 
 export class TokenAddressData {
   constructor(
-    public municipality: string,
-    public rawData: string,
-    public signature: string,
-    public streetAndNumber: string,
-    public version: number,
-    public zipcode: string
+    public municipality?: string,
+    public rawData?: string,
+    public signature?: string,
+    public streetAndNumber?: string,
+    public version?: number,
+    public zipcode?: string
   ) {}
 }
 
@@ -151,26 +151,27 @@ export class TokenDataResponse extends DataObjectResponse {
 
 export class TokenBiometricData {
   constructor(
-    public birthDate: string,
-    public birthLocation: string,
-    public cardDeliveryMunicipality: string,
-    public cardNumber: string,
-    public cardValidityDateBegin: string,
-    public cardValidityDateEnd: string,
-    public chipNumber: string,
-    public documentType: string,
-    public firstNames: string,
-    public name: string,
-    public nationalNumber: string,
-    public nationality: string,
-    public nobleCondition: string,
-    public pictureHash: string,
-    public rawData: string,
-    public sex: string,
-    public signature: string,
-    public specialStatus: string,
-    public thirdName: string,
-    public version: number
+    public birthDate?: string,
+    public birthLocation?: string,
+    public cardDeliveryMunicipality?: string,
+    public cardNumber?: string,
+    public cardValidityDateBegin?: string,
+    public cardValidityDateEnd?: string,
+    public chipNumber?: string,
+    public documentType?: string,
+    public firstNames?: string,
+    public name?: string,
+    public nationalNumber?: string,
+    public nationality?: string,
+    public nobleCondition?: string,
+    public pictureHash?: string,
+    public rawData?: string,
+    public sex?: string,
+    public signature?: string,
+    public specialStatus?: string,
+    public thirdName?: string,
+    public version?: number,
+    public issuer?: string
   ) {}
 }
 
