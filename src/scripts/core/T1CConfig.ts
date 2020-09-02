@@ -38,6 +38,9 @@ export class T1CConfig {
       if (options.t1cProxyPort) {
         this._t1cProxyPort = options.t1cProxyPort;
       }
+      if (options.jwt) {
+        this._jwt = options.jwt;
+      }
     }
   }
 

@@ -68,11 +68,17 @@ export class T1CClient {
 
     public static initialize(cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
         return new Promise((resolve, reject) => {
-            axios.get(cfg.t1cApiUrl + "/info").then((res) => {
+            axios.get(cfg.t1cApiUrl + "/info", {withCredentials: true,  headers: {
+                    Authorization: "Bearer " + cfg.t1cJwt,
+                    "X-CSRF-Token": "t1c-js"
+                }}).then((res) => {
                 if (res.status >= 200 && res.status < 300) {
                     if (res.data.t1CInfoAPI.service.deviceType && res.data.t1CInfoAPI.service.deviceType == "PROXY") {
                         console.info("Proxy detected");
-                        axios.get(cfg.t1cProxyUrl + "/consent", {withCredentials: true}).then((res) => {
+                        axios.get(cfg.t1cProxyUrl + "/consent", {withCredentials: true,  headers: {
+                                Authorization: "Bearer " + cfg.t1cJwt,
+                                "X-CSRF-Token": "t1c-js"
+                            }}).then((res) => {
                             cfg.t1cApiPort = res.data.data.apiPort;
                             const client = new T1CClient(cfg);
                             client.t1cInstalled = true;

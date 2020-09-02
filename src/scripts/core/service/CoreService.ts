@@ -22,6 +22,7 @@ const CORE_CONSENT_IMPLICIT = '/agents/consent';
 const CORE_RETUREVE_ENCRYPTED_PIN = '/dialog/pin';
 import * as semver from 'semver';
 import axios from "axios";
+import {ResponseHandler} from "../../util/ResponseHandler";
 
 declare let VERSION: string;
 
@@ -105,7 +106,16 @@ export class CoreService implements AbstractCore {
         reject(err);
       })
     });
+  }
 
+  public updateJWT(
+      jwt: string,
+      callback?: (error: T1CLibException, data?: T1CClient) => void
+  ): Promise<T1CClient> {
+    if (jwt.length <= 0) return ResponseHandler.error(new T1CLibException('121', 'JWT may not be empty'), callback)
+    this.connection.cfg.t1cJwt = jwt;
+    const newClient = new T1CClient(this.connection.cfg)
+    return ResponseHandler.response(newClient, callback)
   }
 
   public info(callback?: (error: T1CLibException, data: InfoResponse) => void): Promise<InfoResponse> {
