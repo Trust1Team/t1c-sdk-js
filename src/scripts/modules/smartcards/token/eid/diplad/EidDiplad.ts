@@ -269,13 +269,8 @@ export class EidDiplad implements AbstractEidDiplad {
     }
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        return this.connection.get(
-            this.baseUrl,
-            this.tokenApp(EidDiplad.RESET_BULK_PIN),
-            undefined,
-            undefined,
-            callback
-        );
+        // @ts-ignore
+        return this.connection.post(this.baseUrl, this.tokenApp(EidDiplad.RESET_BULK_PIN), null, undefined, undefined, callback);
     }
 
     // resolves the reader_id in the base URL

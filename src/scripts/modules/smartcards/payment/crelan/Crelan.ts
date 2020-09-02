@@ -104,13 +104,8 @@ export class Crelan implements AbstractCrelan {
     }
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        return this.connection.get(
-            this.baseUrl,
-            this.paymentApp(Crelan.RESET_BULK_PIN),
-            undefined,
-            undefined,
-            callback
-        );
+        // @ts-ignore
+        return this.connection.post(this.baseUrl, this.paymentApp(Crelan.RESET_BULK_PIN), null, undefined, undefined, callback);
     }
 
     protected getBulkSignQueryParams(bulk?: boolean): any {

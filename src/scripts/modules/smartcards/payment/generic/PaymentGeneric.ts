@@ -96,13 +96,8 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     }
 
     resetBulkPin(module: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        return this.connection.get(
-            this.baseUrl,
-            this.paymentApp(module, PaymentGeneric.RESET_BULK_PIN),
-            undefined,
-            undefined,
-            callback
-        );
+        // @ts-ignore
+        return this.connection.post(this.baseUrl, this.paymentApp(module, PaymentGeneric.RESET_BULK_PIN), null, undefined, undefined, callback);
     }
 
     sign(module: string, body: PaymentSignData, bulk?: boolean, callback?: (error: T1CLibException, data: PaymentSignResponse) => void): Promise<PaymentSignResponse> {
