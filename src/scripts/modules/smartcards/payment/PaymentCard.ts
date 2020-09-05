@@ -5,6 +5,6 @@ export class PaymentVerifyPinData {
 }
 
 export class PaymentSignData {
-    constructor(public txId: string, language: string, data: string) {
+    constructor(public txId: string, public language: string, public data: string) {
     }
 }

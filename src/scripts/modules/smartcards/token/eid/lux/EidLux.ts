@@ -1,21 +1,23 @@
 import {LocalConnection, RequestHeaders} from '../../../../../core/client/Connection';
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {
-    TokenAddressResponse, TokenAllCertsResponse, TokenAuthenticateResponse,
+    TokenAddressResponse, TokenAuthenticateResponse,
     TokenBiometricDataResponse, TokenPictureResponse, TokenSignResponse,
     TokenDataResponse, TokenAlgorithmReferencesResponse,
 } from '../generic/EidGenericModel';
 import {
     BoolDataResponse,
-    CertificateResponse,
+    TokenCertificateResponse,
     DataArrayResponse,
     DataObjectResponse,
-    T1CResponse,
+    T1CResponse, TokenAllCertsResponse,
 } from '../../../../../core/service/CoreModel';
 import {RequestHandler} from '../../../../../util/RequestHandler';
 import {TokenAuthenticateOrSignData, TokenVerifyPinData} from '../../TokenCard';
 import {Options} from "../../../Card";
 import {AbstractEidLux, PinType} from "./EidLuxModel";
+import {CertParser} from "../../../../../util/CertParser";
+import {ResponseHandler} from "../../../../../util/ResponseHandler";
 
 export class EidLux implements AbstractEidLux {
     static PATH_TOKEN_APP = '/apps/token';
@@ -52,9 +54,9 @@ export class EidLux implements AbstractEidLux {
     // by default using Pace-PIN
     private static EncryptedHeader(code: string, pinType: PinType): RequestHeaders {
         if (pinType === PinType.CAN) {
-            return {'X-Can': code === undefined ? '' : code};
+            return {'X-Pace-Can': code === undefined ? '' : code};
         } else {
-            return {'X-Pin': code === undefined ? '' : code};
+            return {'X-Pace-Pin': code === undefined ? '' : code};
         }
     }
 
@@ -121,39 +123,54 @@ export class EidLux implements AbstractEidLux {
     }
 
     public rootCertificate(
-        callback?: (error: T1CLibException, data: CertificateResponse) => void
-    ): Promise<CertificateResponse> {
+        parseCerts?: boolean,
+        callback?: (error: T1CLibException, data: TokenCertificateResponse) => void
+    ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(EidLux.CERT_ROOT),
             undefined,
             EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
-        );
+        ).then((res: TokenCertificateResponse) => {
+            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
 
     public authenticationCertificate(
-        callback?: (error: T1CLibException, data: CertificateResponse) => void
-    ): Promise<CertificateResponse> {
+        parseCerts?: boolean,
+        callback?: (error: T1CLibException, data: TokenCertificateResponse) => void
+    ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(EidLux.CERT_AUTHENTICATION),
             undefined,
             EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
-        );
+        ).then((res: TokenCertificateResponse) => {
+            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
 
     public nonRepudiationCertificate(
-        callback?: (error: T1CLibException, data: CertificateResponse) => void
-    ): Promise<CertificateResponse> {
+        parseCerts?: boolean,
+        callback?: (error: T1CLibException, data: TokenCertificateResponse) => void
+    ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(EidLux.CERT_NON_REPUDIATION),
             undefined,
             EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
-        );
+        ).then((res: TokenCertificateResponse) => {
+            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
 
     public allAlgoRefs(
@@ -169,7 +186,8 @@ export class EidLux implements AbstractEidLux {
     }
 
     public allCerts(
-        options: string[] | Options,
+        parseCerts?: boolean,
+        options?: string[] | Options,
         callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void
     ): Promise<TokenAllCertsResponse> {
         // @ts-ignore
@@ -179,7 +197,11 @@ export class EidLux implements AbstractEidLux {
             this.tokenApp(EidLux.ALL_CERTIFICATES),
             reqOptions.params,
             EidLux.EncryptedHeader(this.pin, this.pinType)
-        );
+        ).then((res: TokenAllCertsResponse) => {
+            return CertParser.processTokenAllCertificates(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
 
     public verifyPin(
@@ -227,13 +249,8 @@ export class EidLux implements AbstractEidLux {
     }
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        return this.connection.get(
-            this.baseUrl,
-            this.tokenApp(EidLux.RESET_BULK_PIN),
-            undefined,
-            undefined,
-            callback
-        );
+        // @ts-ignore
+        return this.connection.post(this.baseUrl, this.tokenApp(EidLux.RESET_BULK_PIN), null, undefined, undefined, callback);
     }
 
     // resolves the reader_id in the base URL

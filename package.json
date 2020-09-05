@@ -76,7 +76,8 @@
     "semver": "^7.3.2",
     "sha256": "^0.2.0",
     "store2": "^2.11.1",
-    "uuid": "^8.0.0"
+    "uuid": "^8.0.0",
+    "pkijs": "2.1.41"
   },
   "browserify": {
     "transform": [

@@ -1,4 +1,5 @@
 import {
+    BoolDataResponse,
     LocalConnection, PaymentAllCertsResponse, PaymentCertificateResponse, PaymentReadApplicationDataResponse,
     PaymentReadDataResponse, PaymentSignData, PaymentSignResponse,
     PaymentVerifyPinResponse,
@@ -21,6 +22,7 @@ export class Crelan implements AbstractCrelan {
     static READ_APPLICATION_DATA = '/application-data';
     static VERIFY_PIN = '/verify-pin';
     static SIGN = '/sign';
+    static RESET_BULK_PIN = '/reset-bulk-pin';
 
     constructor(
         protected baseUrl: string,
@@ -99,6 +101,11 @@ export class Crelan implements AbstractCrelan {
             undefined,
             callback
         );
+    }
+
+    resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
+        // @ts-ignore
+        return this.connection.post(this.baseUrl, this.paymentApp(Crelan.RESET_BULK_PIN), null, undefined, undefined, callback);
     }
 
     protected getBulkSignQueryParams(bulk?: boolean): any {

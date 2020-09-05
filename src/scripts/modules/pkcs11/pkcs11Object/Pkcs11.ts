@@ -1,15 +1,14 @@
 import {T1CLibException} from '../../../core/exceptions/CoreExceptions';
-import {DataResponse} from '../../../core/service/CoreModel';
 import {LocalConnection} from '../../../core/client/Connection';
-import {RequestHandler} from '../../../util/RequestHandler';
 import {
-    AbstractPkcs11,
-    Pkcs11ObjectCertificatesResponse,
-    Pkcs11ObjectInfoResponse, Pkcs11ObjectSignResponse,
+    AbstractPkcs11, Pkcs11ObjectCertificate, Pkcs11ObjectCertificates,
+    Pkcs11ObjectCertificatesResponse, Pkcs11ObjectSignResponse,
     Pkcs11ObjectSlotsResponse, Pkcs11ObjectTokenResponse,
     Pkcs11SetConfigResponse,
     Pkcs11SignData,
-} from './pkcs11Model';
+} from './Pkcs11Model';
+import {ResponseHandler} from "../../../util/ResponseHandler";
+import {CertParser} from "../../../util/CertParser";
 
 export class PKCS11 implements AbstractPkcs11 {
 
@@ -31,10 +30,24 @@ export class PKCS11 implements AbstractPkcs11 {
                 protected configPath: string) {
     }
 
-    public certificates(slotId: string, callback?: (error: T1CLibException, data: Pkcs11ObjectCertificatesResponse)
+    public certificates(slotId: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: Pkcs11ObjectCertificatesResponse)
                             => void): Promise<Pkcs11ObjectCertificatesResponse> {
-        return this.setLibrary().then(res => {
+        return this.setLibrary().then(_ => {
             return this.connection.get(this.baseUrl, this.pkcs11Path(PKCS11.ALL_CERTIFICATES, slotId), undefined)
+                .then((res: Pkcs11ObjectCertificatesResponse) => {
+                    if (parseCerts) {
+                        const newRes = new Pkcs11ObjectCertificates([]);
+                        res.data.certificates.forEach((cert: Pkcs11ObjectCertificate) => {
+                            newRes.certificates.push(new Pkcs11ObjectCertificate(cert.id, cert.certificate, CertParser.processCert(cert.certificate)))
+                        });
+                        return ResponseHandler.response(new Pkcs11ObjectCertificatesResponse(newRes, res.success), callback);
+                    } else {
+                        return ResponseHandler.response(res, callback);
+                    }
+                })
+                .catch(error => {
+                    return ResponseHandler.error(error, callback);
+                })
         })
     }
 
@@ -52,7 +65,7 @@ export class PKCS11 implements AbstractPkcs11 {
                 pin: signData.pin,
                 data: signData.data,
                 algorithm: signData.algorithm,
-                osDialog: this.connection.cfg.osPinDialog
+                osDialog: signData.osDialog
             };
             return this.connection.post(this.baseUrl, this.pkcs11Path(PKCS11.SIGN, signData.slotId), req, undefined)
         })

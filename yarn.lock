@@ -2084,7 +2084,7 @@ asn1@~0.2.3:
   dependencies:
     safer-buffer "~2.1.0"
 
-asn1js@^2.0.21:
+asn1js@^2.0.21, asn1js@latest:
   version "2.0.26"
   resolved "https://registry.yarnpkg.com/asn1js/-/asn1js-2.0.26.tgz#0a6d435000f556a96c6012969d9704d981b71251"
   integrity sha512-yG89F0j9B4B0MKIcFyWWxnpZPLaNTjCj4tkE3fjbAoo0qmpGw0PYYqSbX/4ebnd9Icn8ZgK4K1fvDyEtW1JYtQ==
@@ -7574,6 +7574,14 @@ pkg-up@^2.0.0:
   integrity sha1-yBmscoBZpGHKscOImivjxJoATX8=
   dependencies:
     find-up "^2.1.0"
+
+pkijs@2.1.41:
+  version "2.1.41"
+  resolved "https://registry.yarnpkg.com/pkijs/-/pkijs-2.1.41.tgz#a4be07611c4fca5389f7e595442b534b45115043"
+  integrity sha512-fqnpBSIfnSL2cfKJA4kWDQtnwc0FgfgkOCXoA3bPWBmWtGZ9Sd/5OXe/MGcV/Fa13xSE573Pt8QA4qN+lkOrSg==
+  dependencies:
+    asn1js latest
+    pvutils latest
 
 plugin-error@^1.0.1:
   version "1.0.1"

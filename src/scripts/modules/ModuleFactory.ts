@@ -29,8 +29,8 @@ import {AbstractEidLux, PinType} from "./smartcards/token/eid/lux/EidLuxModel";
 import {EidLux} from "./smartcards/token/eid/lux/EidLux";
 import {AbstractWacom} from "./wacom/WacomModel";
 import {Wacom} from "./wacom/Wacom";
-import {AbstractPkcs11} from "./pkcs11/pkcs11Object/pkcs11Model";
-import {PKCS11} from "./pkcs11/pkcs11Object/pkcs11";
+import {AbstractPkcs11} from "./pkcs11/pkcs11Object/Pkcs11Model";
+import {PKCS11} from "./pkcs11/pkcs11Object/Pkcs11";
 import {Crelan} from "./smartcards/payment/crelan/Crelan";
 import {AbstractCrelan} from "./smartcards/payment/crelan/CrelanModel";
 
@@ -153,7 +153,7 @@ export class ModuleFactory implements AbstractFactory {
         return new Wacom(this.url, CONTAINER_WACOM, this.connection);
     }
 
-    createPKCS11(modulePath: string): AbstractPkcs11 {
+    public createPKCS11(modulePath: string): AbstractPkcs11 {
         return new PKCS11(this.url, CONTAINER_PKCS11_Object, this.connection, modulePath);
     }
 

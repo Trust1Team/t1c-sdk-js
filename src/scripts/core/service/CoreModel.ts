@@ -1,12 +1,13 @@
 import {T1CLibException} from '../exceptions/CoreExceptions';
 import {T1CClient} from '../T1CSdk';
+import Certificate from 'pkijs/build/Certificate';
 
 export interface AbstractCore {
   // async
   //TODO
   getConsent(title: string, codeWord: string, durationInDays?: number, alertLevel?: string, alertPosition?: string, type?: string, timeoutInSeconds?: number, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
-  //TODO
   getImplicitConsent(codeWord: string, durationInDays?: number, callback?: (error: T1CLibException, data?: T1CClient) => void): Promise<T1CClient>;
+  updateJWT(jwt: string, callback?: (error: T1CLibException, data?: T1CClient) => void): Promise<T1CClient>
   info(callback?: (error: T1CLibException, data: InfoResponse) => void): void | Promise<InfoResponse>;
   reader(reader_id: string, callback?: (error: T1CLibException, data: SingleReaderResponse) => void): Promise<SingleReaderResponse>;
   readers(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
@@ -123,28 +124,70 @@ export class CardReadersResponse extends T1CResponse {
   }
 }
 
-export class CertificateResponse extends T1CResponse {
-  constructor(public data: T1CCertificate, public success: boolean) {
-    super(success, data);
-  }
-}
-
-export class CertificatesResponse extends T1CResponse {
-  constructor(public data: T1CCertificate[], public success: boolean) {
+export class TokenCertificateResponse extends T1CResponse {
+  constructor(public data: TokenCertificate, public success: boolean) {
     super(success, data);
   }
 }
 
 
 // certificate: Option[String], certificates: Option[Seq[String]] = None, certificateType: Option[String] = None, id: Option[String] = None
-export class T1CCertificate {
+export class TokenCertificate {
   constructor(
     public certificate?: string,
     public certificates?: Array<string>,
     public certificateType?: string,
-    public id?: string
+    public id?: string,
+    public parsedCertificate?: Certificate,
+    public parsedCertificates?: Array<Certificate>
   ) {}
 }
+
+export class TokenAllCertsResponse extends DataObjectResponse {
+  constructor(public data: TokenAllCerts, public success: boolean) {
+    super(data, success);
+  }
+}
+
+export class TokenAllCerts {
+  constructor(
+      public authenticationCertificate?: TokenCertificate,
+      public citizenCertificate?: TokenCertificate,
+      public nonRepudiationCertificate?: TokenCertificate,
+      public rootCertificate?: TokenCertificate,
+      public encryptionCertificate?: TokenCertificate
+  ) {}
+}
+
+
+export class PaymentCertificateResponse extends DataObjectResponse {
+  constructor(public data: PaymentCertificate, public success: boolean) {
+    super(data, success);
+  }
+}
+
+export class PaymentCertificate {
+  constructor(public certificate?: string,
+              public exponent?: string,
+              public remainder?: string,
+              public parsed?: Certificate) {}
+}
+
+export class PaymentAllCertsResponse extends DataObjectResponse {
+  constructor(public data: PaymentAllCerts, public success: boolean) {
+    super(data, success);
+  }
+}
+
+export class PaymentAllCerts {
+  constructor(
+      public issuerPublicCertificate?: PaymentCertificate,
+      public iccPublicCertificate?: PaymentCertificate,
+  ) {}
+}
+
+
+
 
 export class SingleReaderResponse extends T1CResponse {
   constructor(public data: CardReader, public success: boolean) {
