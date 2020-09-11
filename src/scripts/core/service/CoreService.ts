@@ -1,18 +1,13 @@
 import {LocalAuthConnection} from '../client/Connection';
 import {
   AbstractCore,
-  BoolDataResponse,
-  BrowserInfoResponse,
-  CardReader,
   CardReadersResponse,
-  CheckT1CVersion,
-  CheckT1CVersionResponse,
   DataResponse,
   InfoResponse,
   SingleReaderResponse,
 } from './CoreModel';
 import {T1CLibException} from '../exceptions/CoreExceptions';
-import {T1CClient, T1CConfig} from '../../..';
+import {T1CClient} from '../../..';
 
 const CORE_CONSENT = '/consent';
 const CORE_INFO = '/info';
@@ -20,8 +15,6 @@ const CORE_VERSION = '/v3';
 const CORE_READERS = '/readers';
 const CORE_CONSENT_IMPLICIT = '/agents/consent';
 const CORE_RETUREVE_ENCRYPTED_PIN = '/dialog/pin';
-import * as semver from 'semver';
-import axios from "axios";
 import {ResponseHandler} from "../../util/ResponseHandler";
 
 declare let VERSION: string;
@@ -37,48 +30,42 @@ export class CoreService implements AbstractCore {
     return {cardInserted: inserted};
   }
 
-  public getConsent(
-    title: string,
-    codeWord: string,
-    durationInDays?: number,
-    alertLevel?: string,
-    alertPosition?: string,
-    type?: string,
-    timeoutInSeconds?: number,
-    callback?: (error: T1CLibException, data: BoolDataResponse) => void
-  ): Promise<BoolDataResponse> {
-    /*        if (!title || !title.length) {
-            return ResponseHandler.error({status: 400, description: 'Title is required!', code: '801'}, callback);
-        }
-        if (!codeWord || !codeWord.length) {
-            return ResponseHandler.error({status: 400, description: 'Code word is required!', code: '801'}, callback);
-        }*/
-    let days: number = 365;
-    if (durationInDays) {
-      days = durationInDays;
-    }
-
-    let timeout: number = 240;
-    if (timeoutInSeconds) {
-      timeout = timeoutInSeconds;
-    }
-    return this.connection.post(
-      this.url,
-      CORE_CONSENT,
-      {
-        title,
-        text: codeWord,
-        days,
-        alert_level: alertLevel,
-        alert_position: alertPosition,
-        type,
-        timeout,
-      },
-      undefined,
-      undefined,
-      callback
-    );
-  }
+  // public getConsent(
+  //   title: string,
+  //   codeWord: string,
+  //   durationInDays?: number,
+  //   alertLevel?: string,
+  //   alertPosition?: string,
+  //   type?: string,
+  //   timeoutInSeconds?: number,
+  //   callback?: (error: T1CLibException, data: BoolDataResponse) => void
+  // ): Promise<BoolDataResponse> {
+  //   let days: number = 365;
+  //   if (durationInDays) {
+  //     days = durationInDays;
+  //   }
+  //
+  //   let timeout: number = 240;
+  //   if (timeoutInSeconds) {
+  //     timeout = timeoutInSeconds;
+  //   }
+  //   return this.connection.post(
+  //     this.url,
+  //     CORE_CONSENT,
+  //     {
+  //       title,
+  //       text: codeWord,
+  //       days,
+  //       alert_level: alertLevel,
+  //       alert_position: alertPosition,
+  //       type,
+  //       timeout,
+  //     },
+  //     undefined,
+  //     undefined,
+  //     callback
+  //   );
+  // }
 
 
   /*NOTE: The application is responsible to copy the codeWord on the clipboard BEFORE calling this function*/

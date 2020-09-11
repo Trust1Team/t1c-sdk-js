@@ -1,0 +1,11 @@
+src/*
+.babelrc
+.prettierrc.js
+.eslintrc.json
+webpack.config.js
+tsconfig.json
+tslint.json
+typings.json
+.github/ISSUE_TEMPLATE/bug_report.md
+.github/ISSUE_TEMPLATE/feature_request.md
+.idea/*
