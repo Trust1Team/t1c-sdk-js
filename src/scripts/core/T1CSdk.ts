@@ -6,7 +6,7 @@ import {
     LocalTestConnection,
     RemoteApiKeyConnection,
     LocalAuthAdminConnection,
-    LocalAdminConnection, RequestHeaders,
+    LocalAdminConnection,
 } from './client/Connection';
 import {DataResponse,} from './service/CoreModel';
 import {T1CLibException} from './exceptions/CoreExceptions';
@@ -24,7 +24,11 @@ import {AbstractRemoteLoading} from "../modules/hsm/remoteloading/RemoteLoadingM
 import axios from 'axios';
 import {AbstractPkcs11Generic} from "../modules/pkcs11/generic/Pkcs11GenericModel";
 import {AbstractPaymentGeneric} from "../modules/smartcards/payment/generic/PaymentGenericModel";
-import {AbstractPkcs11} from "../modules/pkcs11/pkcs11Object/pkcs11Model";
+import {AbstractPkcs11} from "../modules/pkcs11/pkcs11Object/Pkcs11Model";
+import {AbstractCrelan} from "../modules/smartcards/payment/crelan/CrelanModel";
+import {AbstractEidLux, PinType} from "../modules/smartcards/token/eid/lux/EidLuxModel";
+import {AbstractWacom} from "../modules/wacom/WacomModel";
+import {AbstractEidDiplad} from "../modules/smartcards/token/eid/diplad/EidDipladModel";
 
 const urlVersion = "/v3";
 
@@ -54,7 +58,6 @@ export class T1CClient {
         this.moduleFactory = new ModuleFactory(this.localConfig.t1cApiUrl + urlVersion, this.connection);
         this.localTestConnection = new LocalTestConnection(this.localConfig);
         this.coreService = new CoreService(this.localConfig.t1cApiUrl, this.authConnection);
-        console.log("Core service initialized: " + this.localConfig.t1cApiUrl);
         this.coreService.version().then(info => console.log("Running T1C-sdk-js version: " + info))
     }
 
@@ -64,36 +67,58 @@ export class T1CClient {
 
     public static initialize(cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
         return new Promise((resolve, reject) => {
-            axios.get(cfg.t1cApiUrl + "/info").then((res) => {
+            axios.get(cfg.t1cApiUrl + "/info", {withCredentials: true,  headers: {
+                    Authorization: "Bearer " + cfg.t1cJwt,
+                    "X-CSRF-Token": "t1c-js"
+                }}).then((res) => {
                 if (res.status >= 200 && res.status < 300) {
                     if (res.data.t1CInfoAPI.service.deviceType && res.data.t1CInfoAPI.service.deviceType == "PROXY") {
                         console.info("Proxy detected");
-                        axios.get(cfg.t1cProxyUrl + "/consent", {withCredentials: true}).then((res) => {
+                        axios.get(cfg.t1cProxyUrl + "/consent", {withCredentials: true,  headers: {
+                                Authorization: "Bearer " + cfg.t1cJwt,
+                                "X-CSRF-Token": "t1c-js"
+                            }}).then((res) => {
                             cfg.t1cApiPort = res.data.data.apiPort;
                             const client = new T1CClient(cfg);
                             client.t1cInstalled = true;
+                            if (callback && typeof callback === 'function') {
+                                // @ts-ignore
+                                callback(null, client);
+                            }
                             resolve(client);
                         }, err => {
                             const client = new T1CClient(cfg);
-                            reject(new T1CLibException(
+                            const error = new T1CLibException(
                                 "500",
                                 "No valid consent found.",
                                 client
-                            ));
+                            );
+                            if (callback && typeof callback === 'function') {
+                                callback(error, client);
+                            }
+                            reject(error);
                         })
                     } else {
                         const client = new T1CClient(cfg);
                         client.t1cInstalled = true;
+                        if (callback && typeof callback === 'function') {
+                            // @ts-ignore
+                            callback(null, client);
+                        }
                         resolve(client);
                     }
                 } else {
-                    console.error(res.data)
                     const client = new T1CClient(cfg);
-                    reject(new T1CLibException(
+                    const error = new T1CLibException(
                         "100",
                         res.statusText,
                         client
-                    ))
+                    )
+                    if (callback && typeof callback === 'function') {
+                        // @ts-ignore
+                        callback(error, client);
+                    }
+                    reject(error)
                 }
             }, err => {
                 const client = new T1CClient(cfg);
@@ -166,6 +191,11 @@ export class T1CClient {
     public emv = (reader_id: string): AbstractEmv => {
         return this.moduleFactory.createEmv(reader_id)
     };
+
+    public crelan = (reader_id: string): AbstractCrelan => {
+        return this.moduleFactory.createCrelan(reader_id)
+    };
+
     // get instance for Aventra
     public aventra = (reader_id: string): AbstractAventra => {
         return this.moduleFactory.createAventra(reader_id);
@@ -181,55 +211,21 @@ export class T1CClient {
         return this.moduleFactory.createIdemia(reader_id);
     }
 
-    // get instance for Remote Loading
-    /*    public readerapi = (reader_id: string): AbstractRemoteLoading => {
-          return this.pluginFactory.createRemoteLoading(reader_id);
-        };
+    public luxeid = (reader_id: string, pin: string, pin_type: PinType): AbstractEidLux => {
+        return this.moduleFactory.createEidLUX(reader_id, pin, pin_type);
+    }
 
-        // get instance for Belfius
-        public belfius = (reader_id: string): AbstractBelfius => {
-          return this.pluginFactory.createBelfius(reader_id);
-        };
+    public wacom = (): AbstractWacom => {
+        return this.moduleFactory.createWacom();
+    }
 
-        // get instance for File Exchange
-        public filex = (): AbstractFileExchange => {
-          return this.pluginFactory.createFileExchange();
-        };*/
+    public diplad = (reader_id: string): AbstractEidDiplad => {
+        return this.moduleFactory.createEidDiplad(reader_id);
+    }
 
     set t1cInstalled(value: boolean) {
         this._t1cInstalled = value;
     }
-
-    /*  public download(
-      version?: string,
-      callback?: (error: T1CLibException, data: DSDownloadLinkResponse) => void
-    ) {
-      return this.core()
-        .infoBrowser()
-        .then(
-          info => {
-            const downloadData = new DSDownloadRequest(
-              info.data.browser,
-              info.data.manufacturer,
-              info.data.os,
-              info.data.ua,
-              this.config().dsUrl,
-              version
-            );
-            return this.ds().then(
-              ds => {
-                return ds.downloadLink(downloadData, callback);
-              },
-              err => {
-                return ResponseHandler.error(err, callback);
-              }
-            );
-          },
-          error => {
-            return ResponseHandler.error(error, callback);
-          }
-        );
-    }*/
 
     public retrieveEncryptedUserPin(
         callback?: (error: T1CLibException, data: DataResponse) => void
@@ -237,15 +233,4 @@ export class T1CClient {
         return this.core().retrieveEncryptedUserPin(callback);
     }
 
-    /**
-     * Utility methods
-     */
-    // public updateAuthConnection(cfg: T1CConfig) {
-    //   this.authConnection = new LocalAuthConnection(cfg);
-    //     cfg.t1cApiUrl,
-    //     this.authConnection,
-    //     this.adminConnection
-    //   ); // TODO check if authConnection or LocalAuthAdminConnection should be passed
-    //   this.coreService = new CoreService(cfg.t1cApiUrl, this.authConnection);
-    // }
 }

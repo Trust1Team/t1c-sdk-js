@@ -60,10 +60,7 @@ export interface RequestCallback {
 }
 
 export interface SecurityConfig {
-    sendGwJwt: boolean;
-    sendT1CJwt: boolean;
-    sendApiKey: boolean;
-    sendToken: boolean;
+    sendJWT: boolean;
 }
 
 /**
@@ -80,22 +77,6 @@ export abstract class GenericConnection implements Connection {
     static readonly HEADER_GCL_LANG = 'X-Language-Code';
 
     constructor(public cfg: T1CConfig) {
-    }
-
-    /**
-     * Returns relevant error for requests that cannot be completed without an API key
-     * @param {(error: T1CLibException, data: JWTResponse) => void} callback
-     * @returns {Promise<never>}
-     */
-    private static disabledWithoutApiKey(callback: RequestCallback | undefined) {
-        /*    return ResponseHandler.error(
-                      new T1CLibException(
-                        412,
-                        '901',
-                        'Configuration must contain API key to use this method'
-                      ),
-                      callback
-                    );*/
     }
 
     /**
@@ -213,7 +194,7 @@ export abstract class GenericConnection implements Connection {
     getRequestHeaders(headers?: RequestHeaders): RequestHeaders {
         const reqHeaders = headers || {};
         reqHeaders['Accept-Language'] = 'en-US';
-        reqHeaders['t1c-csrf'] = 'client';
+        reqHeaders['X-CSRF-Token'] = 't1c-js';
         return reqHeaders;
     }
 
@@ -223,10 +204,7 @@ export abstract class GenericConnection implements Connection {
      */
     getSecurityConfig(): SecurityConfig {
         return {
-            sendGwJwt: true,
-            sendT1CJwt: true,
-            sendApiKey: false,
-            sendToken: true,
+            sendJWT: true
         };
     }
 
@@ -267,27 +245,21 @@ export abstract class GenericConnection implements Connection {
         if (params) {
             config.params = params;
         }
-
-        if (securityConfig.sendT1CJwt) {
+        if (securityConfig.sendJWT) {
             config.headers.Authorization = 'Bearer ' + t1cConfig.t1cJwt;
         }
-        // browser fingerprinting
-        /*            if (gclConfig.tokenCompatible && securityConfig.sendToken) {
-                                    config.headers[
-                                        GenericConnection.AUTH_TOKEN_HEADER] = BrowserFingerprint.get();
-                                }*/
 
         return new Promise((resolve, reject) => {
             let securityPromise;
-            if (securityConfig.sendGwJwt) {
-                securityPromise = t1cConfig.t1cJwt;
+            if (securityConfig.sendJWT) {
+                securityPromise = Promise.resolve(t1cConfig.t1cJwt);
             } else {
                 securityPromise = Promise.resolve('');
             }
 
             securityPromise.then(
                 jwt => {
-                    if (securityConfig.sendGwJwt) {
+                    if (securityConfig.sendJWT) {
                         config.headers.Authorization = 'Bearer ' + jwt;
                     }
                     axios
@@ -353,10 +325,7 @@ export class LocalAdminConnection extends GenericConnection
 
     getSecurityConfig(): SecurityConfig {
         return {
-            sendGwJwt: false,
-            sendT1CJwt: false,
-            sendApiKey: false,
-            sendToken: true,
+            sendJWT: true
         };
     }
 }
@@ -384,10 +353,7 @@ export class LocalAuthAdminConnection extends GenericConnection
 
     getSecurityConfig(): SecurityConfig {
         return {
-            sendGwJwt: false,
-            sendT1CJwt: true,
-            sendApiKey: false,
-            sendToken: true,
+            sendJWT: true
         };
     }
 
@@ -467,10 +433,7 @@ export class LocalAuthConnection extends GenericConnection
 
     getSecurityConfig(): SecurityConfig {
         return {
-            sendGwJwt: false,
-            sendT1CJwt: true,
-            sendApiKey: false,
-            sendToken: true,
+            sendJWT: true
         };
     }
 
@@ -590,10 +553,7 @@ export class LocalConnection extends GenericConnection implements Connection {
 
     getSecurityConfig(): SecurityConfig {
         return {
-            sendGwJwt: false,
-            sendT1CJwt: false,
-            sendApiKey: false,
-            sendToken: true,
+            sendJWT: true
         };
     }
 
@@ -790,10 +750,7 @@ export class RemoteApiKeyConnection extends GenericConnection
 
     getSecurityConfig(): SecurityConfig {
         return {
-            sendGwJwt: false,
-            sendT1CJwt: false,
-            sendApiKey: true,
-            sendToken: false
+            sendJWT: true
         };
     }
 }
@@ -809,10 +766,7 @@ export class RemoteJwtConnection extends GenericConnection
 
     getSecurityConfig(): SecurityConfig {
         return {
-            sendGwJwt: true,
-            sendT1CJwt: false,
-            sendApiKey: false,
-            sendToken: false
+            sendJWT: true
         };
     }
 }

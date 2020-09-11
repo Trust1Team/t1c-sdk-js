@@ -7,8 +7,11 @@ export class ResponseHandler {
         return Promise.reject(err);
     }
 
-    public static response(data: any, callback?: (error: T1CLibException|undefined, data: any) => void) {
-        if (callback && typeof callback === 'function') { callback(undefined, data); }
+    public static response(data: any, callback?: (error: T1CLibException , data: any) => void) {
+        if (callback && typeof callback === 'function') {
+            // @ts-ignore
+            callback(null, data);
+        }
         return Promise.resolve(data);
     }
 }

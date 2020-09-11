@@ -1,5 +1,11 @@
-import {PaymentVerifyPinData} from "../PaymentCard";
-import {BoolDataResponse, DataObjectResponse, T1CLibException} from "../../../../../index";
+import {PaymentSignData, PaymentVerifyPinData} from "../PaymentCard";
+import {
+  BoolDataResponse,
+  DataObjectResponse,
+  PaymentAllCertsResponse, PaymentCertificateResponse,
+  T1CLibException,
+  TokenAuthenticateOrSignData
+} from "../../../../../index";
 import {Options} from "../../Card";
 
 
@@ -12,6 +18,7 @@ export interface AbstractPaymentGeneric {
   verifyPin(module: string, body: PaymentVerifyPinData, callback?: (error: T1CLibException, data: PaymentVerifyPinResponse) => void): Promise<PaymentVerifyPinResponse>;
   getModuleDescription(module: string, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse>;
   resetBulkPin(module: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
+  sign(module: string, body: PaymentSignData, bulk?: boolean, callback?: (error: T1CLibException, data: PaymentSignResponse) => void): Promise<PaymentSignResponse>;
 }
 
 export class PaymentModuleDescriptionResponse extends DataObjectResponse {
@@ -39,19 +46,6 @@ export class PaymentVerifyPinResponseData {
   ) {}
 }
 
-export class PaymentAllCertsResponse extends DataObjectResponse {
-  constructor(public data: PaymentAllCerts, public success: boolean) {
-    super(data, success);
-  }
-}
-
-export class PaymentAllCerts {
-  constructor(
-      public issuerPublicCertificate?: PaymentCertificate,
-      public iccPublicCertificate?: PaymentCertificate,
-  ) {}
-}
-
 export class PaymentReadData {
   constructor(
       public applications: Array<PaymentApplication>,
@@ -75,13 +69,13 @@ export class PaymentReadDataResponse extends DataObjectResponse {
 
 export class PaymentReadApplicationData {
   constructor(
-      country?: string,
-      countryCode?: string,
-      effectiveDate?: string,
-      expirationDate?: string,
-      language?: string,
-      name?: string,
-      pan?: string,
+      public country?: string,
+      public countryCode?: string,
+      public effectiveDate?: string,
+      public expirationDate?: string,
+      public language?: string,
+      public name?: string,
+      public pan?: string,
   ) {}
 }
 
@@ -91,15 +85,12 @@ export class PaymentReadApplicationDataResponse extends DataObjectResponse {
   }
 }
 
-export class PaymentCertificateResponse extends DataObjectResponse {
-  constructor(public data: PaymentCertificate, public success: boolean) {
-    super(data, success);
+export class PaymentSignResponseData {
+  constructor(public success: boolean, public data?: string, public cardSignature?: string, public readerSignature?: string) {
   }
 }
 
-export class PaymentCertificate {
-  constructor(certificate?: string,
-              exponent?: string,
-              remainder?: string) {}
+export class PaymentSignResponse {
+  constructor(public data: PaymentSignResponseData, public success: boolean) {}
 }
 

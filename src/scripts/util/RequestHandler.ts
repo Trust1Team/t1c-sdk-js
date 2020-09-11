@@ -2,7 +2,7 @@ import {Options} from "../modules/smartcards/Card";
 
 
 export class RequestOptions {
-    constructor(public params?: { [key: string]: string}, public callback?: () => void) {}
+    constructor(public parseCerts?: boolean, public params?: { [key: string]: string}, public callback?: () => void) {}
 }
 
 export class RequestHandler {
@@ -23,7 +23,7 @@ export class RequestHandler {
     }
 
     public static determineOptionsWithFilter(firstParam: string[] | Options): RequestOptions {
-        let result = new RequestOptions({});
+        let result = new RequestOptions( false,{});
         if (Array.isArray(firstParam)) {
             // array of strings; assume parse boolean is false
             if (firstParam.length) {
@@ -38,6 +38,7 @@ export class RequestHandler {
                     result.params.filter = firstParam.filters.join(',');
                 }
             }
+            if (firstParam.parseCerts) { result.parseCerts = firstParam.parseCerts }
         }
         return result;
     }

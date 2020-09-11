@@ -2,20 +2,22 @@ import {LocalConnection} from '../../../../../core/client/Connection';
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {
     AbstractEidGeneric,
-    TokenAddressResponse, TokenAllCertsResponse, TokenAuthenticateResponse,
+    TokenAddressResponse, TokenAuthenticateResponse,
     TokenBiometricDataResponse, TokenPictureResponse, TokenSignResponse,
     TokenDataResponse, TokenAlgorithmReferencesResponse,
 } from './EidGenericModel';
 import {
     BoolDataResponse,
-    CertificateResponse,
+    TokenCertificateResponse,
     DataArrayResponse,
     DataObjectResponse,
-    T1CResponse,
+    T1CResponse, TokenAllCertsResponse,
 } from '../../../../../core/service/CoreModel';
 import {RequestHandler} from '../../../../../util/RequestHandler';
 import {TokenAuthenticateOrSignData, TokenVerifyPinData} from '../../TokenCard';
 import {Options} from "../../../Card";
+import {CertParser} from "../../../../../util/CertParser";
+import {ResponseHandler} from "../../../../../util/ResponseHandler";
 
 export class EidGeneric implements AbstractEidGeneric {
     static PATH_TOKEN_APP = '/apps/token';
@@ -47,7 +49,7 @@ export class EidGeneric implements AbstractEidGeneric {
     ) {
     }
 
-    public allData(module: string, options: string[] | Options, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
+    public allData(module: string, options?: string[] | Options, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
         // @ts-ignore
         const requestOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
@@ -97,54 +99,74 @@ export class EidGeneric implements AbstractEidGeneric {
         );
     }
 
-    public rootCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+    public rootCertificate(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_ROOT),
             undefined,
             undefined,
             callback
-        );
+        ).then((res: TokenCertificateResponse) => {
+            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
 
-    public intermediateCertificates(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+    public intermediateCertificates(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_INTERMEDIATE),
             undefined,
             undefined,
             callback
-        );
+        ).then((res: TokenCertificateResponse) => {
+            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
 
-    public authenticationCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+    public authenticationCertificate(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_AUTHENTICATION),
             undefined,
             undefined,
             callback
-        );
+        ).then((res: TokenCertificateResponse) => {
+            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
 
-    public nonRepudiationCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+    public nonRepudiationCertificate(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_NON_REPUDIATION),
             undefined,
             undefined,
             callback
-        );
+        ).then((res: TokenCertificateResponse) => {
+            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
 
-    public encryptionCertificate(module: string, callback?: (error: T1CLibException, data: CertificateResponse) => void): Promise<CertificateResponse> {
+    public encryptionCertificate(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_ENCRYPTION),
             undefined,
             undefined,
             callback
-        );
+        ).then((res: TokenCertificateResponse) => {
+            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
 
     public allAlgoRefs(module: string, callback?: (error: T1CLibException, data: TokenAlgorithmReferencesResponse) => void): Promise<TokenAlgorithmReferencesResponse> {
@@ -157,14 +179,18 @@ export class EidGeneric implements AbstractEidGeneric {
         );
     }
 
-    public allCerts(module: string, options: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
+    public allCerts(module: string, parseCerts?: boolean, options?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
         // @ts-ignore
         const reqOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.ALL_CERTIFICATES),
             reqOptions.params
-        );
+        ).then((res: TokenAllCertsResponse) => {
+            return CertParser.processTokenAllCertificates(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
 
     public verifyPin(module: string, body: TokenVerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
@@ -202,13 +228,8 @@ export class EidGeneric implements AbstractEidGeneric {
     }
 
     resetBulkPin(module: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        return this.connection.get(
-            this.baseUrl,
-            this.tokenApp(module, EidGeneric.RESET_BULK_PIN),
-            undefined,
-            undefined,
-            callback
-        );
+        // @ts-ignore
+        return this.connection.post(this.baseUrl, this.tokenApp(module, EidGeneric.RESET_BULK_PIN), null, undefined, undefined, callback);
     }
 
     // resolves the reader_id in the base URL

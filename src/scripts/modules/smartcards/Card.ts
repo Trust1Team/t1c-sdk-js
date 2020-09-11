@@ -1,5 +1,5 @@
 
 // classes
 export class Options {
-    constructor(public filters?: string[]) {}
+    constructor(public filters?: string[], public parseCerts?: boolean) {}
 }

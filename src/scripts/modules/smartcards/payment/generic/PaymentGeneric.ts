@@ -1,14 +1,13 @@
 import {
-    AbstractPaymentGeneric, PaymentAllCertsResponse,
-    PaymentCertificateResponse,
-    PaymentReadApplicationDataResponse, PaymentReadDataResponse, PaymentVerifyPinResponse
+    AbstractPaymentGeneric,
+    PaymentReadApplicationDataResponse, PaymentReadDataResponse, PaymentSignResponse, PaymentVerifyPinResponse
 } from "./PaymentGenericModel";
 import {
     BoolDataResponse,
     DataObjectResponse,
-    LocalConnection,
+    LocalConnection, PaymentAllCertsResponse, PaymentCertificateResponse, PaymentSignData,
     PaymentVerifyPinData,
-    T1CLibException
+    T1CLibException, TokenAuthenticateOrSignData
 } from "../../../../../index";
 import {RequestHandler} from "../../../../util/RequestHandler";
 import {Options} from "../../Card";
@@ -25,6 +24,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     static RESET_BULK_PIN = '/reset-bulk-pin';
     static READ_APPLICATION_DATA = '/application-data';
     static VERIFY_PIN = '/verify-pin';
+    static SIGN = '/sign';
 
     constructor(
         protected baseUrl: string,
@@ -96,15 +96,26 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     }
 
     resetBulkPin(module: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        return this.connection.get(
+        // @ts-ignore
+        return this.connection.post(this.baseUrl, this.paymentApp(module, PaymentGeneric.RESET_BULK_PIN), null, undefined, undefined, callback);
+    }
+
+    sign(module: string, body: PaymentSignData, bulk?: boolean, callback?: (error: T1CLibException, data: PaymentSignResponse) => void): Promise<PaymentSignResponse> {
+        return this.connection.post(
             this.baseUrl,
-            this.paymentApp(module, PaymentGeneric.RESET_BULK_PIN),
-            undefined,
+            this.paymentApp(module, PaymentGeneric.SIGN),
+            body,
+            [this.getBulkSignQueryParams(bulk)],
             undefined,
             callback
         );
     }
 
+    protected getBulkSignQueryParams(bulk?: boolean): any {
+        if(bulk) {
+            return {bulk: true};
+        }
+    }
 
     // resolves the reader_id in the base URL
     protected paymentApp(module: string, path?: string, aid?: string): string {
