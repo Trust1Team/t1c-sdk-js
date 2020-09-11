@@ -6,10 +6,10 @@ This is version 3 of the library, and is intended to be used with Trust1Connecto
 
 When the Trust1Connector isn’t installed the library will return an uninitialised client which can be used to download a client installer.
 
-## DOCUMENTATION
+## Documentation
 Documentation is available on [gitbook](https://app.gitbook.com/@t1t/s/t1c-js-guide-v3/).
 
-## Backward compatibility
+## Backwards compatibility
 The library will detect the installed version of Trust1Connector and will only function with version 3.0.0 and higher.
 
 If you have version 1/2.x.x installed you have two options:
@@ -55,39 +55,6 @@ $ yarn
 Use npm install
 ```bash
 $ npm install
-```
-
-### Run tests
-Use npm run the test suite of the project
-```bash
-$ npm run test
-```
-
-## Release
-### Prerequisite
-- Have gren installed and add the token to your profile (https://github.com/github-tools/github-release-notes)
-```
-npm install github-release-notes
-```
-- Have the .npmrc file
-
-### Preparation
-1. Create milestone on github with the name "Release x.y.z"
-1. Create issues with the changes assigned to the milestone and close them
-1. Create a release branch with the name "vx.y.z" with x.y.z being the version, starting from your feature branch
-1. Merge the develop branch into the release branch
-1. Increase version in package.json to x.y.z
-1. Build TypeScript and JavaScript library
-1. Finish the release branch and back-merge into develop and master
-1. Push the branches
-1. execute command "gren r -o" this will generate the changelog
-1. publish to npm
-
-### Build and package
-To build the TypeScript and JavaScript library, compressed:
-```bash
-$ yarn build-ts
-$ yarn build-prod
 ```
 
 ### Publish to NPM

@@ -58,7 +58,6 @@ export class T1CClient {
         this.moduleFactory = new ModuleFactory(this.localConfig.t1cApiUrl + urlVersion, this.connection);
         this.localTestConnection = new LocalTestConnection(this.localConfig);
         this.coreService = new CoreService(this.localConfig.t1cApiUrl, this.authConnection);
-        console.log("Core service initialized: " + this.localConfig.t1cApiUrl);
         this.coreService.version().then(info => console.log("Running T1C-sdk-js version: " + info))
     }
 
@@ -82,28 +81,44 @@ export class T1CClient {
                             cfg.t1cApiPort = res.data.data.apiPort;
                             const client = new T1CClient(cfg);
                             client.t1cInstalled = true;
+                            if (callback && typeof callback === 'function') {
+                                // @ts-ignore
+                                callback(null, client);
+                            }
                             resolve(client);
                         }, err => {
                             const client = new T1CClient(cfg);
-                            reject(new T1CLibException(
+                            const error = new T1CLibException(
                                 "500",
                                 "No valid consent found.",
                                 client
-                            ));
+                            );
+                            if (callback && typeof callback === 'function') {
+                                callback(error, client);
+                            }
+                            reject(error);
                         })
                     } else {
                         const client = new T1CClient(cfg);
                         client.t1cInstalled = true;
+                        if (callback && typeof callback === 'function') {
+                            // @ts-ignore
+                            callback(null, client);
+                        }
                         resolve(client);
                     }
                 } else {
-                    console.error(res.data)
                     const client = new T1CClient(cfg);
-                    reject(new T1CLibException(
+                    const error = new T1CLibException(
                         "100",
                         res.statusText,
                         client
-                    ))
+                    )
+                    if (callback && typeof callback === 'function') {
+                        // @ts-ignore
+                        callback(error, client);
+                    }
+                    reject(error)
                 }
             }, err => {
                 const client = new T1CClient(cfg);
@@ -208,55 +223,9 @@ export class T1CClient {
         return this.moduleFactory.createEidDiplad(reader_id);
     }
 
-    // get instance for Remote Loading
-    /*    public readerapi = (reader_id: string): AbstractRemoteLoading => {
-          return this.pluginFactory.createRemoteLoading(reader_id);
-        };
-
-        // get instance for Belfius
-        public belfius = (reader_id: string): AbstractBelfius => {
-          return this.pluginFactory.createBelfius(reader_id);
-        };
-
-        // get instance for File Exchange
-        public filex = (): AbstractFileExchange => {
-          return this.pluginFactory.createFileExchange();
-        };*/
-
     set t1cInstalled(value: boolean) {
         this._t1cInstalled = value;
     }
-
-    /*  public download(
-      version?: string,
-      callback?: (error: T1CLibException, data: DSDownloadLinkResponse) => void
-    ) {
-      return this.core()
-        .infoBrowser()
-        .then(
-          info => {
-            const downloadData = new DSDownloadRequest(
-              info.data.browser,
-              info.data.manufacturer,
-              info.data.os,
-              info.data.ua,
-              this.config().dsUrl,
-              version
-            );
-            return this.ds().then(
-              ds => {
-                return ds.downloadLink(downloadData, callback);
-              },
-              err => {
-                return ResponseHandler.error(err, callback);
-              }
-            );
-          },
-          error => {
-            return ResponseHandler.error(error, callback);
-          }
-        );
-    }*/
 
     public retrieveEncryptedUserPin(
         callback?: (error: T1CLibException, data: DataResponse) => void
@@ -264,15 +233,4 @@ export class T1CClient {
         return this.core().retrieveEncryptedUserPin(callback);
     }
 
-    /**
-     * Utility methods
-     */
-    // public updateAuthConnection(cfg: T1CConfig) {
-    //   this.authConnection = new LocalAuthConnection(cfg);
-    //     cfg.t1cApiUrl,
-    //     this.authConnection,
-    //     this.adminConnection
-    //   ); // TODO check if authConnection or LocalAuthAdminConnection should be passed
-    //   this.coreService = new CoreService(cfg.t1cApiUrl, this.authConnection);
-    // }
 }
