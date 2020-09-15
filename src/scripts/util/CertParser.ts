@@ -1,6 +1,6 @@
 import * as asn1js from 'asn1js';
 import * as Base64 from 'Base64';
-import Certificate from 'pkijs/build/Certificate';
+import Certificate from 'pkijs/src/Certificate';
 import { T1CLibException } from '../core/exceptions/CoreExceptions';
 import {
     TokenCertificateResponse,
