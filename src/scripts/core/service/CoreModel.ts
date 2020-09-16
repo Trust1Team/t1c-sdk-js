@@ -150,13 +150,13 @@ export class TokenAllCertsResponse extends DataObjectResponse {
 export class TokenAllCerts {
   constructor(
       public authenticationCertificate?: TokenCertificate,
-      public citizenCertificate?: TokenCertificate,
+      public intermediateCertificates?: TokenCertificate,
       public nonRepudiationCertificate?: TokenCertificate,
       public rootCertificate?: TokenCertificate,
-      public encryptionCertificate?: TokenCertificate
+      public encryptionCertificate?: TokenCertificate,
+      public issuerCertificate?: TokenCertificate,
   ) {}
 }
-
 
 export class PaymentCertificateResponse extends DataObjectResponse {
   constructor(public data: PaymentCertificate, public success: boolean) {

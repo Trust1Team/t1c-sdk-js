@@ -20,17 +20,20 @@ export class CertParser {
         if (response.data.authenticationCertificate) {
             updatedCerts = new TokenAllCerts(this.processTokenCert(response.data.authenticationCertificate, parseCerts))
         }
-        if (response.data.citizenCertificate) {
-            updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, this.processTokenCert(response.data.citizenCertificate, parseCerts))
+        if (response.data.intermediateCertificates) {
+            updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, this.processTokenCert(response.data.intermediateCertificates, parseCerts))
         }
         if (response.data.nonRepudiationCertificate) {
-            updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, updatedCerts.citizenCertificate, this.processTokenCert(response.data.nonRepudiationCertificate, parseCerts))
+            updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, this.processTokenCert(response.data.nonRepudiationCertificate, parseCerts))
         }
         if (response.data.rootCertificate) {
-            updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, updatedCerts.citizenCertificate, updatedCerts.nonRepudiationCertificate, this.processTokenCert(response.data.rootCertificate, parseCerts))
+            updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, updatedCerts.nonRepudiationCertificate, this.processTokenCert(response.data.rootCertificate, parseCerts))
         }
         if (response.data.encryptionCertificate) {
-            updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, updatedCerts.citizenCertificate, updatedCerts.nonRepudiationCertificate, updatedCerts.rootCertificate, this.processTokenCert(response.data.encryptionCertificate, parseCerts))
+            updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, updatedCerts.nonRepudiationCertificate, updatedCerts.rootCertificate, this.processTokenCert(response.data.encryptionCertificate, parseCerts))
+        }
+        if (response.data.issuerCertificate) {
+            updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, updatedCerts.nonRepudiationCertificate, updatedCerts.rootCertificate, updatedCerts.encryptionCertificate, this.processTokenCert(response.data.encryptionCertificate, parseCerts))
         }
 
         return ResponseHandler.response(new TokenAllCertsResponse(updatedCerts,response.success), callback)

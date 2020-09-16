@@ -227,10 +227,4 @@ export class T1CClient {
         this._t1cInstalled = value;
     }
 
-    public retrieveEncryptedUserPin(
-        callback?: (error: T1CLibException, data: DataResponse) => void
-    ) {
-        return this.core().retrieveEncryptedUserPin(callback);
-    }
-
 }
