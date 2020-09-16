@@ -166,7 +166,13 @@ export class Pkcs11TokenInfo {
                 public ulTotalPrivateMemory: number,
                 public ulFreePrivateMemory: number,
                 public hardwareVersion: string,
-                public firmwareVersion: string) {
+                public firmwareVersion: string,
+                public mechanisms: Array<Mechanism>) {
+    }
+}
+
+export class Mechanism {
+    constructor(public mechanism: string, public flags: Array<string>, public ulMinKeySize: number, public ulMaxKeySize: number) {
     }
 }
 

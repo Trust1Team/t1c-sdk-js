@@ -61,7 +61,7 @@ export class PKCS11 implements AbstractPkcs11 {
         return this.setLibrary().then(res => {
             let req = {
                 certificateId: signData.certificateId,
-                slot_id: signData.slotId,
+                slotId: signData.slotId,
                 pin: signData.pin,
                 data: signData.data,
                 algorithm: signData.algorithm,

@@ -106,22 +106,9 @@ export class CoreService implements AbstractCore {
   }
 
   public info(callback?: (error: T1CLibException, data: InfoResponse) => void): Promise<InfoResponse> {
-    return this.connection.getSkipCitrix(
+    return this.connection.get(
       this.url,
       CORE_INFO,
-      undefined,
-      undefined,
-      callback
-    );
-  }
-
-  public retrieveEncryptedUserPin(
-    callback?: (error: T1CLibException, data: DataResponse) => void
-  ): Promise<DataResponse> {
-    return this.connection.post(
-      this.url,
-      CORE_RETUREVE_ENCRYPTED_PIN,
-      {},
       undefined,
       undefined,
       callback
