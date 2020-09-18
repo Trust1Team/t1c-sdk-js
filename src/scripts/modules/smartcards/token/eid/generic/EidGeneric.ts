@@ -54,7 +54,7 @@ export class EidGeneric implements AbstractEidGeneric {
         const requestOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(module, EidGeneric.ALL_DATA),
+            this.tokenApp(module, EidGeneric.ALL_DATA, true),
             requestOptions.params
         );
     }
@@ -62,7 +62,7 @@ export class EidGeneric implements AbstractEidGeneric {
     public biometric(module: string, callback?: (error: T1CLibException, data: TokenBiometricDataResponse) => void): Promise<TokenBiometricDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(module, EidGeneric.BIOMETRIC),
+            this.tokenApp(module, EidGeneric.BIOMETRIC, true),
             undefined,
             undefined,
             callback
@@ -72,7 +72,7 @@ export class EidGeneric implements AbstractEidGeneric {
     public address(module: string, callback?: (error: T1CLibException, data: TokenAddressResponse) => void): Promise<TokenAddressResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(module, EidGeneric.ADDRESS),
+            this.tokenApp(module, EidGeneric.ADDRESS, true),
             undefined,
             undefined,
             callback
@@ -82,7 +82,7 @@ export class EidGeneric implements AbstractEidGeneric {
     public tokenData(module: string, callback?: (error: T1CLibException, data: TokenDataResponse) => void): Promise<TokenDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(module, EidGeneric.TOKEN),
+            this.tokenApp(module, EidGeneric.TOKEN, true),
             undefined,
             undefined,
             callback
@@ -92,7 +92,7 @@ export class EidGeneric implements AbstractEidGeneric {
     public picture(module: string, callback?: (error: T1CLibException, data: TokenPictureResponse) => void): Promise<TokenPictureResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(module, EidGeneric.PHOTO),
+            this.tokenApp(module, EidGeneric.PHOTO, true),
             undefined,
             undefined,
             callback
@@ -102,7 +102,7 @@ export class EidGeneric implements AbstractEidGeneric {
     public rootCertificate(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(module, EidGeneric.CERT_ROOT),
+            this.tokenApp(module, EidGeneric.CERT_ROOT, true),
             undefined,
             undefined,
             callback
@@ -116,7 +116,7 @@ export class EidGeneric implements AbstractEidGeneric {
     public intermediateCertificates(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(module, EidGeneric.CERT_INTERMEDIATE),
+            this.tokenApp(module, EidGeneric.CERT_INTERMEDIATE, true),
             undefined,
             undefined,
             callback
@@ -130,7 +130,7 @@ export class EidGeneric implements AbstractEidGeneric {
     public authenticationCertificate(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(module, EidGeneric.CERT_AUTHENTICATION),
+            this.tokenApp(module, EidGeneric.CERT_AUTHENTICATION, true),
             undefined,
             undefined,
             callback
@@ -144,7 +144,7 @@ export class EidGeneric implements AbstractEidGeneric {
     public nonRepudiationCertificate(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(module, EidGeneric.CERT_NON_REPUDIATION),
+            this.tokenApp(module, EidGeneric.CERT_NON_REPUDIATION, true),
             undefined,
             undefined,
             callback
@@ -158,7 +158,7 @@ export class EidGeneric implements AbstractEidGeneric {
     public encryptionCertificate(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(module, EidGeneric.CERT_ENCRYPTION),
+            this.tokenApp(module, EidGeneric.CERT_ENCRYPTION, true),
             undefined,
             undefined,
             callback
@@ -172,7 +172,7 @@ export class EidGeneric implements AbstractEidGeneric {
     public allAlgoRefs(module: string, callback?: (error: T1CLibException, data: TokenAlgorithmReferencesResponse) => void): Promise<TokenAlgorithmReferencesResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(module, EidGeneric.SUPPORTED_ALGOS),
+            this.tokenApp(module, EidGeneric.SUPPORTED_ALGOS, true),
             undefined,
             undefined,
             callback
@@ -184,7 +184,7 @@ export class EidGeneric implements AbstractEidGeneric {
         const reqOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(module, EidGeneric.ALL_CERTIFICATES),
+            this.tokenApp(module, EidGeneric.ALL_CERTIFICATES, true),
             reqOptions.params
         ).then((res: TokenAllCertsResponse) => {
             return CertParser.processTokenAllCertificates(res, parseCerts, callback)
@@ -196,7 +196,7 @@ export class EidGeneric implements AbstractEidGeneric {
     public verifyPin(module: string, body: TokenVerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(module, EidGeneric.VERIFY_PIN),
+            this.tokenApp(module, EidGeneric.VERIFY_PIN, true),
             body,
             undefined,
             undefined,
@@ -207,7 +207,7 @@ export class EidGeneric implements AbstractEidGeneric {
     public authenticate(module: string, body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(module, EidGeneric.AUTHENTICATE),
+            this.tokenApp(module, EidGeneric.AUTHENTICATE, true),
             body,
             undefined,
             undefined,
@@ -219,9 +219,9 @@ export class EidGeneric implements AbstractEidGeneric {
     public sign(module: string, body: TokenAuthenticateOrSignData, bulk?: boolean, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(module, EidGeneric.SIGN_DATA),
+            this.tokenApp(module, EidGeneric.SIGN_DATA, true),
             body,
-            [this.getBulkSignQueryParams(bulk)],
+             this.getBulkSignQueryParams(bulk),
             undefined,
             callback
         );
@@ -229,16 +229,16 @@ export class EidGeneric implements AbstractEidGeneric {
 
     resetBulkPin(module: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
         // @ts-ignore
-        return this.connection.post(this.baseUrl, this.tokenApp(module, EidGeneric.RESET_BULK_PIN), null, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(module, EidGeneric.RESET_BULK_PIN, false), null, undefined, undefined, callback);
     }
 
     // resolves the reader_id in the base URL
-    protected tokenApp(module: string, path?: string): string {
+    protected tokenApp(module: string, path?: string, includeReaderId?: boolean): string {
         let suffix = this.containerUrl; // is '/modules/'
         suffix += module; //add module name
-        suffix += EidGeneric.PATH_TOKEN_APP + EidGeneric.PATH_READERS;
-        if (this.reader_id && this.reader_id.length) {
-            suffix += '/' + this.reader_id;
+        suffix += EidGeneric.PATH_TOKEN_APP;
+        if (this.reader_id && this.reader_id.length && includeReaderId) {
+            suffix += EidGeneric.PATH_READERS + '/' + this.reader_id;
         }
         if (path && path.length) {
             suffix += path.startsWith('/') ? path : '/' + path;
@@ -267,7 +267,7 @@ export class EidGeneric implements AbstractEidGeneric {
     }
 
 
-    protected getBulkSignQueryParams(bulk?: boolean): any {
+     protected getBulkSignQueryParams(bulk?: boolean): any {
         if(bulk) {
             return {bulk: true};
         }

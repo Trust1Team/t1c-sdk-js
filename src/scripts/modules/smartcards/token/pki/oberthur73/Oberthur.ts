@@ -68,15 +68,15 @@ export class Oberthur implements AbstractOberthur73 {
     }
 
     public verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
-        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.VERIFY_PIN), body, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.VERIFY_PIN, true), body, undefined, undefined, callback);
     }
 
     public allAlgoRefs(callback?: (error: T1CLibException, data: TokenAlgorithmReferencesResponse) => void): Promise<TokenAlgorithmReferencesResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.SUPPORTED_ALGOS), undefined, undefined, callback);
+        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.SUPPORTED_ALGOS, true), undefined, undefined, callback);
     }
 
     allCerts(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.ALL_CERTIFICATES), filters).then((res: TokenAllCertsResponse) => {
+        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.ALL_CERTIFICATES, true), filters).then((res: TokenAllCertsResponse) => {
             return CertParser.processTokenAllCertificates(res, parseCerts, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
@@ -85,14 +85,14 @@ export class Oberthur implements AbstractOberthur73 {
 
     public authenticate(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse> {
         body.algorithm = body.algorithm.toLowerCase();
-        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.AUTHENTICATE), body, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.AUTHENTICATE, true), body, undefined, undefined, callback);
     }
 
     public sign(body: TokenAuthenticateOrSignData, bulk?: boolean, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
-        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.SIGN_DATA), body, [this.getBulkSignQueryParams(bulk)], undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.SIGN_DATA, true), body,  this.getBulkSignQueryParams(bulk), undefined, callback);
     }
 
     protected getCertificate(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
@@ -104,20 +104,20 @@ export class Oberthur implements AbstractOberthur73 {
     }
 
     public tokenData(callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.INFO), undefined);
+        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.INFO, true), undefined);
     }
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
         // @ts-ignore
-        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.RESET_BULK_PIN), null, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.RESET_BULK_PIN, false), null, undefined, undefined, callback);
     }
 
     // resolves the reader_id in the base URL
-    protected tokenApp(path?: string): string {
+    protected tokenApp(path?: string, includeReaderId?: boolean): string {
         let suffix = this.containerUrl;
-        suffix += Oberthur.PATH_TOKEN_APP + Oberthur.PATH_READERS
-        if (this.reader_id && this.reader_id.length) {
-            suffix += '/' + this.reader_id;
+        suffix += Oberthur.PATH_TOKEN_APP
+        if (this.reader_id && this.reader_id.length && includeReaderId) {
+            suffix += Oberthur.PATH_READERS + '/' + this.reader_id;
         }
         if (path && path.length) {
             suffix += path.startsWith('/') ? path : '/' + path;
@@ -126,7 +126,7 @@ export class Oberthur implements AbstractOberthur73 {
     }
 
 
-    protected getBulkSignQueryParams(bulk?: boolean): any {
+     protected getBulkSignQueryParams(bulk?: boolean): any {
         if(bulk) {
             return {bulk: true};
         }

@@ -76,19 +76,19 @@ export class Aventra implements AbstractAventra {
     }
 
     public verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: TokenVerifyPinResponse) => void): Promise<TokenVerifyPinResponse> {
-        return this.connection.post(this.baseUrl, this.tokenApp(Aventra.VERIFY_PIN), body, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(Aventra.VERIFY_PIN, true), body, undefined, undefined, callback);
     }
 
     public resetPin(body: TokenResetPinData, callback?: (error: T1CLibException, data: TokenResetPinResponse) => void): Promise<TokenResetPinResponse> {
-        return this.connection.post(this.baseUrl, this.tokenApp(Aventra.RESET_PIN), body, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(Aventra.RESET_PIN, true), body, undefined, undefined, callback);
     }
 
     public allAlgoRefs(callback?: (error: T1CLibException, data: TokenAlgorithmReferencesResponse) => void): Promise<TokenAlgorithmReferencesResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Aventra.SUPPORTED_ALGOS), undefined, undefined, callback);
+        return this.connection.get(this.baseUrl, this.tokenApp(Aventra.SUPPORTED_ALGOS, true), undefined, undefined, callback);
     }
 
     public allCerts(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Aventra.ALL_CERTIFICATES), filters).then((res: TokenAllCertsResponse) => {
+        return this.connection.get(this.baseUrl, this.tokenApp(Aventra.ALL_CERTIFICATES, true), filters).then((res: TokenAllCertsResponse) => {
             return CertParser.processTokenAllCertificates(res, parseCerts, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
@@ -97,14 +97,14 @@ export class Aventra implements AbstractAventra {
 
     public authenticate(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse> {
         body.algorithm = body.algorithm.toLowerCase();
-        return this.connection.post(this.baseUrl, this.tokenApp(Aventra.AUTHENTICATE), body, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(Aventra.AUTHENTICATE, true), body, undefined, undefined, callback);
     }
 
     public sign(body: TokenAuthenticateOrSignData, bulk?: boolean, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
-        return this.connection.post(this.baseUrl, this.tokenApp(Aventra.SIGN_DATA), body, [this.getBulkSignQueryParams(bulk)], undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(Aventra.SIGN_DATA, true), body,  this.getBulkSignQueryParams(bulk), undefined, callback);
     }
 
     protected getCertificate(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
@@ -116,20 +116,20 @@ export class Aventra implements AbstractAventra {
     }
 
     public tokenData(callback?: (error: T1CLibException, data: TokenDataResponse) => void): Promise<TokenDataResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Aventra.INFO), undefined);
+        return this.connection.get(this.baseUrl, this.tokenApp(Aventra.INFO, true), undefined);
     }
 
     public resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
         // @ts-ignore
-        return this.connection.post(this.baseUrl, this.tokenApp(Aventra.RESET_BULK_PIN), null, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(Aventra.RESET_BULK_PIN, false), null, undefined, undefined, callback);
     }
 
     // resolves the reader_id in the base URL
-    protected tokenApp(path?: string): string {
+    protected tokenApp(path?: string, includeReaderId?: boolean): string {
         let suffix = this.containerUrl;
-        suffix += Aventra.PATH_TOKEN_APP + Aventra.PATH_READERS
-        if (this.reader_id && this.reader_id.length) {
-            suffix += '/' + this.reader_id;
+        suffix += Aventra.PATH_TOKEN_APP
+        if (this.reader_id && this.reader_id.length && includeReaderId) {
+            suffix += Aventra.PATH_READERS + '/' + this.reader_id;
         }
         if (path && path.length) {
             suffix += path.startsWith('/') ? path : '/' + path;
@@ -138,7 +138,7 @@ export class Aventra implements AbstractAventra {
     }
 
 
-    protected getBulkSignQueryParams(bulk?: boolean): any {
+     protected getBulkSignQueryParams(bulk?: boolean): any {
         if(bulk) {
             return {bulk: true};
         }

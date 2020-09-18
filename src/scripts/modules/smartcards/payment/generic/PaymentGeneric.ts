@@ -39,7 +39,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
         const reqOptions = RequestHandler.determineOptionsWithFilter(filters);
         return this.connection.get(
             this.baseUrl,
-            this.paymentApp(module, PaymentGeneric.ALL_CERTIFICATES, aid),
+            this.paymentApp(module, PaymentGeneric.ALL_CERTIFICATES, aid, true),
             reqOptions.params
         );
     }
@@ -47,7 +47,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     iccPublicCertificate(module: string, aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.paymentApp(module, PaymentGeneric.CERT_ICC, aid),
+            this.paymentApp(module, PaymentGeneric.CERT_ICC, aid, true),
             undefined,
             undefined,
             callback
@@ -57,7 +57,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     issuerPublicCertificate(module: string, aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.paymentApp(module, PaymentGeneric.CERT_ISSUER, aid),
+            this.paymentApp(module, PaymentGeneric.CERT_ISSUER, aid, true),
             undefined,
             undefined,
             callback
@@ -67,7 +67,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     readApplicationData(module: string, callback?: (error: T1CLibException, data: PaymentReadApplicationDataResponse) => void): Promise<PaymentReadApplicationDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.paymentApp(module, PaymentGeneric.READ_APPLICATION_DATA),
+            this.paymentApp(module, PaymentGeneric.READ_APPLICATION_DATA, undefined, true),
             undefined,
             undefined,
             callback
@@ -77,7 +77,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     readData(module: string, callback?: (error: T1CLibException, data: PaymentReadDataResponse) => void): Promise<PaymentReadDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.paymentApp(module, PaymentGeneric.READ_DATA),
+            this.paymentApp(module, PaymentGeneric.READ_DATA, undefined, true),
             undefined,
             undefined,
             callback
@@ -87,7 +87,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     verifyPin(module: string, body: PaymentVerifyPinData, callback?: (error: T1CLibException, data: PaymentVerifyPinResponse) => void): Promise<PaymentVerifyPinResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.paymentApp(module, PaymentGeneric.VERIFY_PIN),
+            this.paymentApp(module, PaymentGeneric.VERIFY_PIN, undefined, true),
             body,
             undefined,
             undefined,
@@ -97,37 +97,36 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
 
     resetBulkPin(module: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
         // @ts-ignore
-        return this.connection.post(this.baseUrl, this.paymentApp(module, PaymentGeneric.RESET_BULK_PIN), null, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.paymentApp(module, PaymentGeneric.RESET_BULK_PIN, undefined, false), null, undefined, undefined, callback);
     }
 
     sign(module: string, body: PaymentSignData, bulk?: boolean, callback?: (error: T1CLibException, data: PaymentSignResponse) => void): Promise<PaymentSignResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.paymentApp(module, PaymentGeneric.SIGN),
+            this.paymentApp(module, PaymentGeneric.SIGN, undefined, true),
             body,
-            [this.getBulkSignQueryParams(bulk)],
+             this.getBulkSignQueryParams(bulk),
             undefined,
             callback
         );
     }
 
-    protected getBulkSignQueryParams(bulk?: boolean): any {
+     protected getBulkSignQueryParams(bulk?: boolean): any {
         if(bulk) {
             return {bulk: true};
         }
     }
 
     // resolves the reader_id in the base URL
-    protected paymentApp(module: string, path?: string, aid?: string): string {
+    protected paymentApp(module: string, path?: string, aid?: string, includeReaderId?: boolean): string {
         let suffix = this.containerUrl; // is '/modules/'
         suffix += module; //add module name
         suffix += PaymentGeneric.PATH_PAYMENT_APP;
         if(aid != undefined) {
             suffix += '/' + aid;
         }
-        suffix += PaymentGeneric.PATH_READERS;
-        if (this.reader_id && this.reader_id.length) {
-            suffix += '/' + this.reader_id;
+        if (this.reader_id && this.reader_id.length && includeReaderId) {
+            suffix += PaymentGeneric.PATH_READERS + '/' + this.reader_id;
         }
         if (path && path.length) {
             suffix += path.startsWith('/') ? path : '/' + path;

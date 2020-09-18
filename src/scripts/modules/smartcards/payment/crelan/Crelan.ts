@@ -36,7 +36,7 @@ export class Crelan implements AbstractCrelan {
         const reqOptions = RequestHandler.determineOptionsWithFilter(filters);
         return this.connection.get(
             this.baseUrl,
-            this.paymentApp(Crelan.ALL_CERTIFICATES, aid),
+            this.paymentApp(Crelan.ALL_CERTIFICATES, aid, true),
             reqOptions.params
         );
     }
@@ -44,7 +44,7 @@ export class Crelan implements AbstractCrelan {
     iccPublicCertificate(aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.paymentApp(Crelan.CERT_ICC, aid),
+            this.paymentApp(Crelan.CERT_ICC, aid, true),
             undefined,
             undefined,
             callback
@@ -54,7 +54,7 @@ export class Crelan implements AbstractCrelan {
     issuerPublicCertificate(aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.paymentApp(Crelan.CERT_ISSUER, aid),
+            this.paymentApp(Crelan.CERT_ISSUER, aid, true),
             undefined,
             undefined,
             callback
@@ -64,7 +64,7 @@ export class Crelan implements AbstractCrelan {
     readApplicationData(callback?: (error: T1CLibException, data: PaymentReadApplicationDataResponse) => void): Promise<PaymentReadApplicationDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.paymentApp(Crelan.READ_APPLICATION_DATA),
+            this.paymentApp(Crelan.READ_APPLICATION_DATA, undefined, true),
             undefined,
             undefined,
             callback
@@ -74,7 +74,7 @@ export class Crelan implements AbstractCrelan {
     readData(callback?: (error: T1CLibException, data: PaymentReadDataResponse) => void): Promise<PaymentReadDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.paymentApp(Crelan.READ_DATA),
+            this.paymentApp(Crelan.READ_DATA, undefined, true),
             undefined,
             undefined,
             callback
@@ -84,7 +84,7 @@ export class Crelan implements AbstractCrelan {
     verifyPin(body: PaymentVerifyPinData, callback?: (error: T1CLibException, data: PaymentVerifyPinResponse) => void): Promise<PaymentVerifyPinResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.paymentApp(Crelan.VERIFY_PIN),
+            this.paymentApp(Crelan.VERIFY_PIN, undefined, true),
             body,
             undefined,
             undefined,
@@ -95,9 +95,9 @@ export class Crelan implements AbstractCrelan {
     sign(body: PaymentSignData, bulk?: boolean, callback?: (error: T1CLibException, data: PaymentSignResponse) => void): Promise<PaymentSignResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.paymentApp(Crelan.SIGN),
+            this.paymentApp(Crelan.SIGN, undefined, true),
             body,
-            [this.getBulkSignQueryParams(bulk)],
+             this.getBulkSignQueryParams(bulk),
             undefined,
             callback
         );
@@ -105,10 +105,10 @@ export class Crelan implements AbstractCrelan {
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
         // @ts-ignore
-        return this.connection.post(this.baseUrl, this.paymentApp(Crelan.RESET_BULK_PIN), null, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.paymentApp(Crelan.RESET_BULK_PIN, undefined, false), null, undefined, undefined, callback);
     }
 
-    protected getBulkSignQueryParams(bulk?: boolean): any {
+     protected getBulkSignQueryParams(bulk?: boolean): any {
         if(bulk) {
             return {bulk: true};
         }
@@ -117,15 +117,14 @@ export class Crelan implements AbstractCrelan {
 
 
     // resolves the reader_id in the base URL
-    protected paymentApp(path?: string, aid?: string): string {
+    protected paymentApp(path?: string, aid?: string, includeReaderId?: boolean): string {
         let suffix = this.containerUrl;
         suffix += Crelan.PATH_PAYMENT_APP;
         if(aid != undefined) {
             suffix += '/' + aid;
         }
-        suffix += Crelan.PATH_READERS;
-        if (this.reader_id && this.reader_id.length) {
-            suffix += '/' + this.reader_id;
+        if (this.reader_id && this.reader_id.length && includeReaderId) {
+            suffix += Crelan.PATH_READERS + '/' + this.reader_id;
         }
         if (path && path.length) {
             suffix += path.startsWith('/') ? path : '/' + path;
