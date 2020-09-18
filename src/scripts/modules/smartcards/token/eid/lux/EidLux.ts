@@ -68,7 +68,7 @@ export class EidLux implements AbstractEidLux {
         const requestOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidLux.ALL_DATA),
+            this.tokenApp(EidLux.ALL_DATA, true),
             requestOptions.params,
             EidLux.EncryptedHeader(this.pin, this.pinType)
         );
@@ -79,7 +79,7 @@ export class EidLux implements AbstractEidLux {
     ): Promise<TokenBiometricDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidLux.RN_DATA),
+            this.tokenApp(EidLux.RN_DATA, true),
             undefined,
             EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
@@ -91,7 +91,7 @@ export class EidLux implements AbstractEidLux {
     ): Promise<TokenAddressResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidLux.ADDRESS),
+            this.tokenApp(EidLux.ADDRESS, true),
             undefined,
             EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
@@ -103,7 +103,7 @@ export class EidLux implements AbstractEidLux {
     ): Promise<TokenDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidLux.TOKEN),
+            this.tokenApp(EidLux.TOKEN, true),
             undefined,
             EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
@@ -115,7 +115,7 @@ export class EidLux implements AbstractEidLux {
     ): Promise<TokenPictureResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidLux.PHOTO),
+            this.tokenApp(EidLux.PHOTO, true),
             undefined,
             EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
@@ -128,7 +128,7 @@ export class EidLux implements AbstractEidLux {
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidLux.CERT_ROOT),
+            this.tokenApp(EidLux.CERT_ROOT, true),
             undefined,
             EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
@@ -145,7 +145,7 @@ export class EidLux implements AbstractEidLux {
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidLux.CERT_AUTHENTICATION),
+            this.tokenApp(EidLux.CERT_AUTHENTICATION, true),
             undefined,
             EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
@@ -162,7 +162,7 @@ export class EidLux implements AbstractEidLux {
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidLux.CERT_NON_REPUDIATION),
+            this.tokenApp(EidLux.CERT_NON_REPUDIATION, true),
             undefined,
             EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
@@ -178,7 +178,7 @@ export class EidLux implements AbstractEidLux {
     ): Promise<TokenAlgorithmReferencesResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidLux.SUPPORTED_ALGOS),
+            this.tokenApp(EidLux.SUPPORTED_ALGOS, true),
             undefined,
             EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
@@ -194,7 +194,7 @@ export class EidLux implements AbstractEidLux {
         const reqOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidLux.ALL_CERTIFICATES),
+            this.tokenApp(EidLux.ALL_CERTIFICATES, true),
             reqOptions.params,
             EidLux.EncryptedHeader(this.pin, this.pinType)
         ).then((res: TokenAllCertsResponse) => {
@@ -210,7 +210,7 @@ export class EidLux implements AbstractEidLux {
     ): Promise<T1CResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(EidLux.VERIFY_PIN),
+            this.tokenApp(EidLux.VERIFY_PIN, true),
             body,
             undefined,
             EidLux.EncryptedHeader(this.pin, this.pinType),
@@ -224,7 +224,7 @@ export class EidLux implements AbstractEidLux {
     ): Promise<TokenAuthenticateResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(EidLux.AUTHENTICATE),
+            this.tokenApp(EidLux.AUTHENTICATE, true),
             body,
             undefined,
             EidLux.EncryptedHeader(this.pin, this.pinType),
@@ -240,9 +240,9 @@ export class EidLux implements AbstractEidLux {
     ): Promise<TokenSignResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(EidLux.SIGN_DATA),
+            this.tokenApp(EidLux.SIGN_DATA, true),
             body,
-            [this.getBulkSignQueryParams(bulk)],
+            this.getBulkSignQueryParams(bulk),
             EidLux.EncryptedHeader(this.pin, this.pinType),
             callback
         );
@@ -250,15 +250,15 @@ export class EidLux implements AbstractEidLux {
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
         // @ts-ignore
-        return this.connection.post(this.baseUrl, this.tokenApp(EidLux.RESET_BULK_PIN), null, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(EidLux.RESET_BULK_PIN, false), null, undefined, undefined, callback);
     }
 
     // resolves the reader_id in the base URL
-    protected tokenApp(path?: string): string {
+    protected tokenApp(path?: string, includeReaderId?: boolean): string {
         let suffix = this.containerUrl;
-        suffix += EidLux.PATH_TOKEN_APP + EidLux.PATH_READERS;
-        if (this.reader_id && this.reader_id.length) {
-            suffix += '/' + this.reader_id;
+        suffix += EidLux.PATH_TOKEN_APP;
+        if (this.reader_id && this.reader_id.length && includeReaderId) {
+            suffix += EidLux.PATH_READERS + '/' + this.reader_id;
         }
         if (path && path.length) {
             suffix += path.startsWith('/') ? path : '/' + path;
@@ -267,7 +267,7 @@ export class EidLux implements AbstractEidLux {
     }
 
 
-    protected getBulkSignQueryParams(bulk?: boolean): any {
+     protected getBulkSignQueryParams(bulk?: boolean): any {
         if(bulk) {
             return {bulk: true};
         }

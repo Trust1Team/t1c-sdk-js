@@ -56,7 +56,7 @@ export class EidDiplad implements AbstractEidDiplad {
         const requestOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidDiplad.ALL_DATA),
+            this.tokenApp(EidDiplad.ALL_DATA, true),
             requestOptions.params
         );
     }
@@ -66,7 +66,7 @@ export class EidDiplad implements AbstractEidDiplad {
     ): Promise<TokenBiometricDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidDiplad.RN_DATA),
+            this.tokenApp(EidDiplad.RN_DATA, true),
             undefined,
             undefined,
             callback
@@ -78,7 +78,7 @@ export class EidDiplad implements AbstractEidDiplad {
     ): Promise<TokenAddressResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidDiplad.ADDRESS),
+            this.tokenApp(EidDiplad.ADDRESS, true),
             undefined,
             undefined,
             callback
@@ -90,7 +90,7 @@ export class EidDiplad implements AbstractEidDiplad {
     ): Promise<TokenDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidDiplad.TOKEN),
+            this.tokenApp(EidDiplad.TOKEN, true),
             undefined,
             undefined,
             callback
@@ -102,7 +102,7 @@ export class EidDiplad implements AbstractEidDiplad {
     ): Promise<TokenPictureResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidDiplad.PHOTO),
+            this.tokenApp(EidDiplad.PHOTO, true),
             undefined,
             undefined,
             callback
@@ -115,7 +115,7 @@ export class EidDiplad implements AbstractEidDiplad {
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidDiplad.CERT_ROOT),
+            this.tokenApp(EidDiplad.CERT_ROOT, true),
             undefined,
             undefined,
             callback
@@ -132,7 +132,7 @@ export class EidDiplad implements AbstractEidDiplad {
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidDiplad.CERT_INTERMEDIATE),
+            this.tokenApp(EidDiplad.CERT_INTERMEDIATE, true),
             undefined,
             undefined,
             callback
@@ -149,7 +149,7 @@ export class EidDiplad implements AbstractEidDiplad {
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidDiplad.CERT_AUTHENTICATION),
+            this.tokenApp(EidDiplad.CERT_AUTHENTICATION, true),
             undefined,
             undefined,
             callback
@@ -166,7 +166,7 @@ export class EidDiplad implements AbstractEidDiplad {
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidDiplad.CERT_NON_REPUDIATION),
+            this.tokenApp(EidDiplad.CERT_NON_REPUDIATION, true),
             undefined,
             undefined,
             callback
@@ -183,7 +183,7 @@ export class EidDiplad implements AbstractEidDiplad {
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidDiplad.CERT_ENCRYPTION),
+            this.tokenApp(EidDiplad.CERT_ENCRYPTION, true),
             undefined,
             undefined,
             callback
@@ -199,7 +199,7 @@ export class EidDiplad implements AbstractEidDiplad {
     ): Promise<TokenAlgorithmReferencesResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidDiplad.SUPPORTED_ALGOS),
+            this.tokenApp(EidDiplad.SUPPORTED_ALGOS, true),
             undefined,
             undefined,
             callback
@@ -215,7 +215,7 @@ export class EidDiplad implements AbstractEidDiplad {
         const reqOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidDiplad.ALL_CERTIFICATES),
+            this.tokenApp(EidDiplad.ALL_CERTIFICATES, true),
             reqOptions.params
         ).then((res: TokenAllCertsResponse) => {
             return CertParser.processTokenAllCertificates(res, parseCerts, callback)
@@ -230,7 +230,7 @@ export class EidDiplad implements AbstractEidDiplad {
     ): Promise<T1CResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(EidDiplad.VERIFY_PIN),
+            this.tokenApp(EidDiplad.VERIFY_PIN, true),
             body,
             undefined,
             undefined,
@@ -244,7 +244,7 @@ export class EidDiplad implements AbstractEidDiplad {
     ): Promise<TokenAuthenticateResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(EidDiplad.AUTHENTICATE),
+            this.tokenApp(EidDiplad.AUTHENTICATE, true),
             body,
             undefined,
             undefined,
@@ -260,9 +260,9 @@ export class EidDiplad implements AbstractEidDiplad {
     ): Promise<TokenSignResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(EidDiplad.SIGN_DATA),
+            this.tokenApp(EidDiplad.SIGN_DATA, true),
             body,
-            [this.getBulkSignQueryParams(bulk)],
+             this.getBulkSignQueryParams(bulk),
             undefined,
             callback
         );
@@ -270,15 +270,15 @@ export class EidDiplad implements AbstractEidDiplad {
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
         // @ts-ignore
-        return this.connection.post(this.baseUrl, this.tokenApp(EidDiplad.RESET_BULK_PIN), null, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(EidDiplad.RESET_BULK_PIN, false), null, undefined, undefined, callback);
     }
 
     // resolves the reader_id in the base URL
-    protected tokenApp(path?: string): string {
+    protected tokenApp(path?: string, includeReaderId?: boolean): string {
         let suffix = this.containerUrl;
-        suffix += EidDiplad.PATH_TOKEN_APP + EidDiplad.PATH_READERS;
-        if (this.reader_id && this.reader_id.length) {
-            suffix += '/' + this.reader_id;
+        suffix += EidDiplad.PATH_TOKEN_APP;
+        if (this.reader_id && this.reader_id.length && includeReaderId) {
+            suffix += EidDiplad.PATH_READERS + '/' + this.reader_id;
         }
         if (path && path.length) {
             suffix += path.startsWith('/') ? path : '/' + path;
@@ -287,7 +287,7 @@ export class EidDiplad implements AbstractEidDiplad {
     }
 
 
-    protected getBulkSignQueryParams(bulk?: boolean): any {
+     protected getBulkSignQueryParams(bulk?: boolean): any {
         if(bulk) {
             return {bulk: true};
         }

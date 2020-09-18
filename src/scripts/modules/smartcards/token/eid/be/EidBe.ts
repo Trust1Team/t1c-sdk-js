@@ -56,7 +56,7 @@ export class EidBe implements AbstractEidBE {
         const requestOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.ALL_DATA),
+            this.tokenApp(EidBe.ALL_DATA, true),
             requestOptions.params
         );
     }
@@ -66,7 +66,7 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenBiometricDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.RN_DATA),
+            this.tokenApp(EidBe.RN_DATA, true),
             undefined,
             undefined,
             callback
@@ -78,7 +78,7 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenAddressResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.ADDRESS),
+            this.tokenApp(EidBe.ADDRESS, true),
             undefined,
             undefined,
             callback
@@ -90,7 +90,7 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenDataResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.TOKEN),
+            this.tokenApp(EidBe.TOKEN, true),
             undefined,
             undefined,
             callback
@@ -102,7 +102,7 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenPictureResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.PHOTO),
+            this.tokenApp(EidBe.PHOTO, true),
             undefined,
             undefined,
             callback
@@ -115,7 +115,7 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.CERT_ROOT),
+            this.tokenApp(EidBe.CERT_ROOT, true),
             undefined,
             undefined,
             callback
@@ -128,7 +128,7 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.CERT_INTERMEDIATE),
+            this.tokenApp(EidBe.CERT_INTERMEDIATE, true),
             undefined,
             undefined,
             callback
@@ -145,7 +145,7 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.CERT_AUTHENTICATION),
+            this.tokenApp(EidBe.CERT_AUTHENTICATION, true),
             undefined,
             undefined,
             callback
@@ -162,7 +162,7 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.CERT_NON_REPUDIATION),
+            this.tokenApp(EidBe.CERT_NON_REPUDIATION, true),
             undefined,
             undefined,
             callback
@@ -179,7 +179,7 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.CERT_ENCRYPTION),
+            this.tokenApp(EidBe.CERT_ENCRYPTION, true),
             undefined,
             undefined,
             callback
@@ -195,7 +195,7 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenAlgorithmReferencesResponse> {
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.SUPPORTED_ALGOS),
+            this.tokenApp(EidBe.SUPPORTED_ALGOS, true),
             undefined,
             undefined,
             callback
@@ -211,7 +211,7 @@ export class EidBe implements AbstractEidBE {
         const reqOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
             this.baseUrl,
-            this.tokenApp(EidBe.ALL_CERTIFICATES),
+            this.tokenApp(EidBe.ALL_CERTIFICATES, true),
             reqOptions.params
         ).then((res: TokenAllCertsResponse) => {
             return CertParser.processTokenAllCertificates(res, parseCerts, callback)
@@ -226,7 +226,7 @@ export class EidBe implements AbstractEidBE {
     ): Promise<T1CResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(EidBe.VERIFY_PIN),
+            this.tokenApp(EidBe.VERIFY_PIN, true),
             body,
             undefined,
             undefined,
@@ -240,7 +240,7 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenAuthenticateResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(EidBe.AUTHENTICATE),
+            this.tokenApp(EidBe.AUTHENTICATE, true),
             body,
             undefined,
             undefined,
@@ -256,9 +256,9 @@ export class EidBe implements AbstractEidBE {
     ): Promise<TokenSignResponse> {
         return this.connection.post(
             this.baseUrl,
-            this.tokenApp(EidBe.SIGN_DATA),
+            this.tokenApp(EidBe.SIGN_DATA, true),
             body,
-            [this.getBulkSignQueryParams(bulk)],
+             this.getBulkSignQueryParams(bulk),
             undefined,
             callback
         );
@@ -266,15 +266,15 @@ export class EidBe implements AbstractEidBE {
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
         // @ts-ignore
-        return this.connection.post(this.baseUrl, this.tokenApp(EidBe.RESET_BULK_PIN), null, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(EidBe.RESET_BULK_PIN, false), null, undefined, undefined, callback);
     }
 
     // resolves the reader_id in the base URL
-    protected tokenApp(path?: string): string {
+    protected tokenApp(path?: string, includeReaderId?: boolean): string {
         let suffix = this.containerUrl;
-        suffix += EidBe.PATH_TOKEN_APP + EidBe.PATH_READERS;
-        if (this.reader_id && this.reader_id.length) {
-            suffix += '/' + this.reader_id;
+        suffix += EidBe.PATH_TOKEN_APP;
+        if (this.reader_id && this.reader_id.length && includeReaderId) {
+            suffix += EidBe.PATH_READERS + '/' + this.reader_id;
         }
         if (path && path.length) {
             suffix += path.startsWith('/') ? path : '/' + path;
