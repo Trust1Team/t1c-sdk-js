@@ -26,6 +26,24 @@ $ npm i trust1connector@2.4.3
 We're present on Gitter in the following room:
 [Trust1Connector-gitter]
 
+## Build from source
+To build the Trust1Connector JS SDK yourself you need to do the following:
+```shell script
+$ yarn 
+// or 
+$ npm install
+```
+```shell script
+$ yarn build-prod
+// or
+$ npm run build-prod
+```
+The outcome can be found in the folders
+* dist
+* lib
+* lib-esm
+
+
 ## Development
 Verify the dependencies, actual vs new versions
 ```shell script
@@ -56,14 +74,6 @@ Use npm install
 ```bash
 $ npm install
 ```
-
-### Publish to NPM
-To publish to NPM (public!), run the following NPM command:
-```
-$ npm publish
-```
-*Note*: This requires the correct .npmrc to be set. See documentation [here](https://trust1t.atlassian.net/wiki/spaces/NPAPI/pages/631242830/Publishing+to+public+NPM+registry).
-
 
 ## License
 
