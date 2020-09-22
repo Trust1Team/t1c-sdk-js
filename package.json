@@ -1,6 +1,6 @@
 {
   "name": "t1c-sdk-js",
-  "version": "3.2.3",
+  "version": "3.2.4",
   "description": "Trust1Connector JavaScript SDK",
   "main": "dist/T1CSdk.js",
   "types": "lib/index.d.ts",
@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.10.3",
+    "@babel/plugin-transform-arrow-functions": "^7.10.4",
     "@babel/preset-env": "^7.10.3",
     "@types/axios": "^0.14.0",
     "@types/debug": "^4.1.5",
@@ -58,7 +59,7 @@
     "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.43.0",
     "webpack-bundle-analyzer": "^3.7.0",
-    "webpack-cli": "^3.3.11",
+    "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0",
     "webpack-stream": "^5.2.1"
   },
@@ -67,14 +68,17 @@
     "@types/pkijs": "^0.0.3",
     "Base64": "^1.1.0",
     "axios": "^0.19.2",
+    "core-js": "^2.5.3",
+    "es6-object-assign": "^1.1.0",
     "jsencrypt": "^3.0.0-rc.1",
     "lodash": "^4.17.19",
     "logger-bootstrap": "^2.0.0-alpha2",
+    "object-assign": "^4.1.1",
+    "pkijs": "2.1.41",
     "semver": "^7.3.2",
     "sha256": "^0.2.0",
     "store2": "^2.11.1",
-    "uuid": "^8.0.0",
-    "pkijs": "2.1.41"
+    "uuid": "^8.0.0"
   },
   "browserify": {
     "transform": [
