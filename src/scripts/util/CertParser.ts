@@ -1,6 +1,6 @@
 import * as asn1js from 'asn1js';
 import * as Base64 from 'Base64';
-import Certificate from 'pkijs/src/Certificate';
+import Certificate from 'pkijs/build/Certificate';
 import { T1CLibException } from '../core/exceptions/CoreExceptions';
 import {
     TokenCertificateResponse,
@@ -33,7 +33,7 @@ export class CertParser {
             updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, updatedCerts.nonRepudiationCertificate, updatedCerts.rootCertificate, this.processTokenCert(response.data.encryptionCertificate, parseCerts))
         }
         if (response.data.issuerCertificate) {
-            updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, updatedCerts.nonRepudiationCertificate, updatedCerts.rootCertificate, updatedCerts.encryptionCertificate, this.processTokenCert(response.data.encryptionCertificate, parseCerts))
+            updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, updatedCerts.nonRepudiationCertificate, updatedCerts.rootCertificate, updatedCerts.encryptionCertificate, this.processTokenCert(response.data.issuerCertificate, parseCerts))
         }
 
         return ResponseHandler.response(new TokenAllCertsResponse(updatedCerts,response.success), callback)
