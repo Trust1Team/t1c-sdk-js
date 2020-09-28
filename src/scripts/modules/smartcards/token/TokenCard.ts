@@ -2,7 +2,7 @@
 
 
 export class TokenAuthenticateOrSignData {
-    constructor(public algorithm: string, public data: string, public pin?: string, public pace?: string, public id?: string, public osDialog?: boolean) {
+    constructor(public algorithm: string, public data: string, public pin?: string, public pace?: string, public id?: string, public osDialog?: boolean, public txId?: string, public language?: string) {
     }
 }
 
