@@ -3,7 +3,7 @@ import {
     DataObjectResponse
 } from '../../../core/service/CoreModel';
 import {Pkcs11Info, Pkcs11Slot, Pkcs11TokenInfo} from "../../../..";
-import Certificate from 'pkijs/src/Certificate';
+import Certificate from 'pkijs/build/Certificate';
 
 
 

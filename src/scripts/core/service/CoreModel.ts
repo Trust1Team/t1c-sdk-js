@@ -1,6 +1,6 @@
 import {T1CLibException} from '../exceptions/CoreExceptions';
 import {T1CClient} from '../T1CSdk';
-import Certificate from 'pkijs/src/Certificate';
+import Certificate from 'pkijs/build/Certificate';
 
 export interface AbstractCore {
   // getConsent(title: string, codeWord: string, durationInDays?: number, alertLevel?: string, alertPosition?: string, type?: string, timeoutInSeconds?: number, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
