@@ -108,7 +108,7 @@ export class Aventra implements AbstractAventra {
     }
 
     protected getCertificate(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(certUrl), undefined, callback).then((res: TokenCertificateResponse) => {
+        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined, callback).then((res: TokenCertificateResponse) => {
             return CertParser.processTokenCertificate(res, parseCerts, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
