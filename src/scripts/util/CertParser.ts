@@ -1,7 +1,6 @@
 import * as asn1js from 'asn1js';
-import * as Base64 from 'Base64';
-import Certificate from 'pkijs/build/Certificate';
-import { T1CLibException } from '../core/exceptions/CoreExceptions';
+import Certificate from 'pkijs/src/Certificate';
+import { T1CLibException } from '../..';
 import {
     TokenCertificateResponse,
     TokenCertificate,
@@ -100,7 +99,7 @@ export class CertParser {
 
 
     public static processCert(certificate: string): Certificate {
-        let rawCert = Base64.atob(certificate);
+        let rawCert = atob(certificate);
         let buffer = CertParser.str2ab(rawCert);
         const asn1 = asn1js.fromBER(buffer);
         return new Certificate({ schema: asn1.result });

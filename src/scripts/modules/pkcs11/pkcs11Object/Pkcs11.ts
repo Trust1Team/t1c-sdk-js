@@ -21,7 +21,7 @@ export class PKCS11 implements AbstractPkcs11 {
     static SLOTS = '/slots';
     static TOKEN = '/token-info';
 
-    private modulePath;
+    private modulePath: string = '';
 
 
     constructor(protected baseUrl: string,
