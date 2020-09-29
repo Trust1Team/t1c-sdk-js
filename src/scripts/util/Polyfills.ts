@@ -1,5 +1,7 @@
 
+// @ts-ignore
 declare function require(name: string);
+
 export class Polyfills {
     // utility to check browser compatibility with Promise, Array.from, Symbol
     public static check() {
@@ -49,7 +51,7 @@ export class Polyfills {
 
         // filter polyfill
         if (!Array.prototype.filter) {
-            Array.prototype.filter = function(fun) {
+            Array.prototype.filter = function(fun: { call: (arg0: any, arg1: any, arg2: number, arg3: any) => any; }) {
                 'use strict';
                 if (this === void 0 || this === null) {
                     throw new TypeError();
@@ -77,7 +79,7 @@ export class Polyfills {
         // array.find polyfill
         if (!Array.prototype.find) {
             Object.defineProperty(Array.prototype, 'find', {
-                value(predicate) {
+                value(predicate: { call: (arg0: any, arg1: any, arg2: number, arg3: any) => any; }) {
                     if (this == null) {
                         throw new TypeError('"this" is null or not defined');
                     }
