@@ -89,8 +89,8 @@ const CONTAINER_RAW_PRINT = CONTAINER_NEW_CONTEXT_PATH + 'rawprint';
 export class ModuleFactory implements AbstractFactory {
     constructor(private url: string, private connection: LocalConnection) {}
 
-    public createEidGeneric(reader_id: string): AbstractEidGeneric {
-        return new EidGeneric(this.url, CONTAINER_NEW_CONTEXT_PATH, this.connection, reader_id);
+    public createEidGeneric(reader_id: string, pin?: string, pinType?: PinType): AbstractEidGeneric {
+        return new EidGeneric(this.url, CONTAINER_NEW_CONTEXT_PATH, this.connection, reader_id, pin, pinType);
     }
 
     public createEidGenericMeta(): AbstractEidGeneric {
