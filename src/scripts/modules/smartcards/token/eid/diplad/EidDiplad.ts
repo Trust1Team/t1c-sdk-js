@@ -57,7 +57,8 @@ export class EidDiplad implements AbstractEidDiplad {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(EidDiplad.ALL_DATA, true),
-            requestOptions.params
+            requestOptions.params,
+            callback
         );
     }
 
@@ -216,7 +217,8 @@ export class EidDiplad implements AbstractEidDiplad {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(EidDiplad.ALL_CERTIFICATES, true),
-            reqOptions.params
+            reqOptions.params,
+            callback
         ).then((res: TokenAllCertsResponse) => {
             return CertParser.processTokenAllCertificates(res, parseCerts, callback)
         }).catch(error => {
