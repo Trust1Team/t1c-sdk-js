@@ -1,0 +1,22 @@
+language: node_js
+node_js:
+- '9'
+before_script:
+- yarn install
+cache:
+  yarn: true
+  directories:
+  - node_modules
+dist: trusty
+addons:
+  chrome: stable
+before_install:
+- curl -o- -L https://yarnpkg.com/install.sh | bash -s -- --version 1.13.0
+- export PATH="$HOME/.yarn/bin:$PATH"
+install:
+- yarn
+script:
+- yarn build-prod
+notifications:
+  slack:
+    secure: jlSaTJOWzCyxGynuuKWUG/6+o25N1dZ4JiA6U52Jwywik3rTgTneAlgC1gwc3dgQlcu7oLcMdxPoPZA3JROEZGvekhaNo+iewno4+RZTuc+abViIRlRnf21cvFNA4xsNxVJdos7psQLEvNsNVkUuivkejt7vRG2aHgOrw8NGQ6gtvYnJ4wmAMw9wJI8ZJsXn9PWgqgzLup9A4Fr0epClQAETLYMm3mWwPWUadXXXjF+RqOUZXf8kXxhrrvB5nCOgQLQYeXkMb3R0pwirhNlKZ+G4NJyQf53bd3dWZAAnuG5ESUtFwWn+cJV5LDAeZTLqDpb/MsZiPer+21/uxDcT0dXOvh5oNJEMNFrSku1x5AQuqGi93ztMMaR4XeU9zVVqrWWPzFM4lM9OLZxArjp36yN/TgdB4cYqWhjHTg6HHGKjG6+K2XF7v5zKxh/lA0dRvipuwF29jB2O0kiDMVMNypV6PYJdvYD9AM4+qMQgzlNhcV6YQpiiOaO0FaXPvqaM+ePEX0Mv1flL3IK8mw53586hTx2fpCBoyONbCdnXHmaw6onJIQUPsrTtd0Nj2hypHKS/AZ4wMwhEeZJo+/1VUvz//n/WiYQt/pu7yY+sXfLr1bJpeUAdOB1LslcrNQ/GUye/rb5KBLN2gvl3LVUrFWITUfajmfCOrqDTCixXNMk=
