@@ -89,7 +89,7 @@ export class T1CClient {
                         }, err => {
                             const client = new T1CClient(cfg);
                             const error = new T1CLibException(
-                                "500",
+                                "814501",
                                 "No valid consent found.",
                                 client
                             );
@@ -110,7 +110,7 @@ export class T1CClient {
                 } else {
                     const client = new T1CClient(cfg);
                     const error = new T1CLibException(
-                        "100",
+                        "112999",
                         res.statusText,
                         client
                     )
@@ -123,7 +123,7 @@ export class T1CClient {
             }, err => {
                 const client = new T1CClient(cfg);
                 reject(new T1CLibException(
-                    "199",
+                    "112999",
                     "Failed to contact the Trust1Connector API",
                     client
                 ))

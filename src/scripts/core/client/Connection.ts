@@ -281,7 +281,7 @@ export abstract class GenericConnection implements Connection {
                             // check for generic network error
                             if (!error.code && !error.response) {
                                 const thrownError = new T1CLibException(
-                                    "900",
+                                    "112999",
                                     'Internal error',
                                 );
                                 // @ts-ignore
