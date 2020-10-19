@@ -40,7 +40,8 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(module, PaymentGeneric.ALL_CERTIFICATES, aid, true),
-            reqOptions.params
+            reqOptions.params,
+            callback
         );
     }
 

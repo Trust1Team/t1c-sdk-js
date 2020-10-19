@@ -89,7 +89,7 @@ export class T1CClient {
                         }, err => {
                             const client = new T1CClient(cfg);
                             const error = new T1CLibException(
-                                "500",
+                                "814501",
                                 "No valid consent found.",
                                 client
                             );
@@ -110,7 +110,7 @@ export class T1CClient {
                 } else {
                     const client = new T1CClient(cfg);
                     const error = new T1CLibException(
-                        "100",
+                        "112999",
                         res.statusText,
                         client
                     )
@@ -123,7 +123,7 @@ export class T1CClient {
             }, err => {
                 const client = new T1CClient(cfg);
                 reject(new T1CLibException(
-                    "199",
+                    "112999",
                     "Failed to contact the Trust1Connector API",
                     client
                 ))
@@ -152,8 +152,8 @@ export class T1CClient {
     public mf = (): ModuleFactory => {
         return this.moduleFactory;
     }
-    public generic = (reader_id: string): AbstractEidGeneric => {
-        return this.moduleFactory.createEidGeneric(reader_id)
+    public generic = (reader_id: string, pin?: string, pinType?: PinType): AbstractEidGeneric => {
+        return this.moduleFactory.createEidGeneric(reader_id, pin, pinType)
     };
 
     public genericMeta = (): AbstractEidGeneric => {

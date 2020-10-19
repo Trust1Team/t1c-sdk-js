@@ -67,34 +67,34 @@ export class PKCS11 implements AbstractPkcs11 {
                 algorithm: signData.algorithm,
                 osDialog: signData.osDialog
             };
-            return this.connection.post(this.baseUrl, this.pkcs11Path(PKCS11.SIGN, signData.slotId), req, undefined)
+            return this.connection.post(this.baseUrl, this.pkcs11Path(PKCS11.SIGN, signData.slotId), req, undefined, undefined, callback)
         })
     }
 
     public slots(callback?: (error: T1CLibException, data: Pkcs11ObjectSlotsResponse) => void): Promise<Pkcs11ObjectSlotsResponse> {
         return this.setLibrary().then(res => {
             let req = {module: this.modulePath};
-            return this.connection.get(this.baseUrl, this.pkcs11Path(PKCS11.SLOTS), req, undefined)
+            return this.connection.get(this.baseUrl, this.pkcs11Path(PKCS11.SLOTS), req, undefined, callback)
         })
     }
 
     public slotsWithTokenPresent(callback?: (error: T1CLibException, data: Pkcs11ObjectSlotsResponse) => void): Promise<Pkcs11ObjectSlotsResponse> {
         return this.setLibrary().then(res => {
             let req = {module: this.modulePath};
-            return this.connection.get(this.baseUrl, this.pkcs11Path(PKCS11.SLOTS), req, {'token-present': 'true'})
+            return this.connection.get(this.baseUrl, this.pkcs11Path(PKCS11.SLOTS), req, {'token-present': 'true'}, callback)
         })
     }
 
-    public token(slotId: string, callback: (error: T1CLibException, data: Pkcs11ObjectTokenResponse) => void): Promise<Pkcs11ObjectTokenResponse> {
+    public token(slotId: string, callback?: (error: T1CLibException, data: Pkcs11ObjectTokenResponse) => void): Promise<Pkcs11ObjectTokenResponse> {
         return this.setLibrary().then(res => {
             let req = Object.assign({slot_id: slotId}, {module: this.modulePath});
-            return this.connection.get(this.baseUrl, this.pkcs11Path(PKCS11.TOKEN, slotId), req, undefined)
+            return this.connection.get(this.baseUrl, this.pkcs11Path(PKCS11.TOKEN, slotId), req, undefined, callback)
         })
     }
 
-    private setLibrary(): Promise<Pkcs11SetConfigResponse> {
+    private setLibrary(callback?: (error: T1CLibException, data: Pkcs11SetConfigResponse) => void): Promise<Pkcs11SetConfigResponse> {
         let req = Object.assign({path: this.configPath});
-        return this.connection.post(this.baseUrl, this.pkcs11Path(PKCS11.CONFIG), req, undefined)
+        return this.connection.post(this.baseUrl, this.pkcs11Path(PKCS11.CONFIG), req, undefined, undefined, callback)
     }
 
 

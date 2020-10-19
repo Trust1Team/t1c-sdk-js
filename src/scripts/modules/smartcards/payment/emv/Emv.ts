@@ -34,7 +34,8 @@ export class Emv implements AbstractEmv {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(Emv.ALL_CERTIFICATES, aid),
-            reqOptions.params
+            reqOptions.params,
+            callback
         );
     }
 

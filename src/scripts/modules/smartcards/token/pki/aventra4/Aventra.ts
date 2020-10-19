@@ -88,7 +88,7 @@ export class Aventra implements AbstractAventra {
     }
 
     public allCerts(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Aventra.ALL_CERTIFICATES, true), filters).then((res: TokenAllCertsResponse) => {
+        return this.connection.get(this.baseUrl, this.tokenApp(Aventra.ALL_CERTIFICATES, true), filters, undefined, callback).then((res: TokenAllCertsResponse) => {
             return CertParser.processTokenAllCertificates(res, parseCerts, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
@@ -108,7 +108,7 @@ export class Aventra implements AbstractAventra {
     }
 
     protected getCertificate(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined, callback).then((res: TokenCertificateResponse) => {
+        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined,undefined, callback).then((res: TokenCertificateResponse) => {
             return CertParser.processTokenCertificate(res, parseCerts, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
@@ -116,7 +116,7 @@ export class Aventra implements AbstractAventra {
     }
 
     public tokenData(callback?: (error: T1CLibException, data: TokenDataResponse) => void): Promise<TokenDataResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Aventra.INFO, true), undefined);
+        return this.connection.get(this.baseUrl, this.tokenApp(Aventra.INFO, true), undefined, undefined, callback);
     }
 
     public resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {

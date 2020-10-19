@@ -72,7 +72,7 @@ export class CoreService implements AbstractCore {
   public getImplicitConsent(
     codeWord: string,
     durationInDays?: number,
-    callback?: (error: T1CLibException, data?: T1CClient) => void
+    callback?: (error?: T1CLibException, data?: T1CClient) => void
   ): Promise<T1CClient> {
     return new Promise( (resolve,reject) => {
       let days: number = 365;
@@ -83,13 +83,24 @@ export class CoreService implements AbstractCore {
           this.connection.cfg.t1cProxyUrl,
           CORE_CONSENT_IMPLICIT + "/" + codeWord,
           {ttl: days * 24 * 60 * 60},
-          undefined,
-          callback
+          undefined
       ).then(res => {
         this.connection.cfg.t1cApiPort = res.data.apiPort;
         const newClient = new T1CClient(this.connection.cfg)
+        if (!callback || typeof callback !== 'function') {
+          callback = function () {
+            /* no-op */
+          };
+        }
+        callback(undefined, newClient)
         resolve(newClient)
       }, err => {
+        if (!callback || typeof callback !== 'function') {
+          callback = function () {
+            /* no-op */
+          };
+        }
+        callback(err, undefined)
         reject(err);
       })
     });

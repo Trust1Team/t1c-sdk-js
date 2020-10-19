@@ -57,7 +57,8 @@ export class EidBe implements AbstractEidBE {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(EidBe.ALL_DATA, true),
-            requestOptions.params
+            requestOptions.params,
+            callback
         );
     }
 
@@ -212,7 +213,8 @@ export class EidBe implements AbstractEidBE {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(EidBe.ALL_CERTIFICATES, true),
-            reqOptions.params
+            reqOptions.params,
+            callback
         ).then((res: TokenAllCertsResponse) => {
             return CertParser.processTokenAllCertificates(res, parseCerts, callback)
         }).catch(error => {

@@ -64,7 +64,7 @@ export class TypeResponse extends T1CResponse {
 }
 
 export class Type {
-    constructor(public appid?: string, public entity?: string, public type?: string, public path?: string, access?: string, status?: TypeStatus, public files?: number) {}
+    constructor(public appid?: string, public entity?: string, public name?: string, public absPath?: string, access?: string, status?: TypeStatus, public files?: number) {}
 }
 
 export class TypeList {
