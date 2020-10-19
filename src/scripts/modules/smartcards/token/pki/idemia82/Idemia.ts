@@ -79,7 +79,7 @@ export class Idemia implements AbstractIdemia {
     }
 
     allCerts(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Idemia.ALL_CERTIFICATES, true), filters).then((res: TokenAllCertsResponse) => {
+        return this.connection.get(this.baseUrl, this.tokenApp(Idemia.ALL_CERTIFICATES, true), filters, undefined, callback).then((res: TokenAllCertsResponse) => {
             return CertParser.processTokenAllCertificates(res, parseCerts, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
@@ -99,7 +99,7 @@ export class Idemia implements AbstractIdemia {
     }
 
     protected getCertificate(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined, callback).then((res: TokenCertificateResponse) => {
+        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined, undefined, callback).then((res: TokenCertificateResponse) => {
             return CertParser.processTokenCertificate(res, parseCerts, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
@@ -107,7 +107,7 @@ export class Idemia implements AbstractIdemia {
     }
 
     public tokenData(callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Idemia.INFO, true), undefined);
+        return this.connection.get(this.baseUrl, this.tokenApp(Idemia.INFO, true), undefined, undefined, callback);
     }
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {

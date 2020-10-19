@@ -1,4 +1,4 @@
-import {LocalConnection} from '../../../../../core/client/Connection';
+import {LocalConnection, RequestHeaders} from '../../../../../core/client/Connection';
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {
     AbstractEidGeneric,
@@ -18,6 +18,7 @@ import {TokenAuthenticateOrSignData, TokenVerifyPinData} from '../../TokenCard';
 import {Options} from "../../../Card";
 import {CertParser} from "../../../../../util/CertParser";
 import {ResponseHandler} from "../../../../../util/ResponseHandler";
+import {PinType} from "../../../../../..";
 
 export class EidGeneric implements AbstractEidGeneric {
     static PATH_TOKEN_APP = '/apps/token';
@@ -45,8 +46,23 @@ export class EidGeneric implements AbstractEidGeneric {
         protected baseUrl: string,
         protected containerUrl: string,
         protected connection: LocalConnection,
-        protected reader_id: string
+        protected reader_id: string,
+        protected pin?: string,
+        protected pinType?: PinType
     ) {
+    }
+
+    // by default using Pace-PIN
+    private static EncryptedHeader(code?: string, pinType?: PinType): RequestHeaders | undefined {
+        if (code && pinType) {
+            if (pinType === PinType.CAN) {
+                return {'X-Pace-Can': code};
+            } else {
+                return {'X-Pace-Pin': code};
+            }
+        } else {
+            return undefined;
+        }
     }
 
     public allData(module: string, options?: string[] | Options, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
@@ -55,7 +71,9 @@ export class EidGeneric implements AbstractEidGeneric {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.ALL_DATA, true),
-            requestOptions.params
+            requestOptions.params,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
+            callback
         );
     }
 
@@ -64,7 +82,7 @@ export class EidGeneric implements AbstractEidGeneric {
             this.baseUrl,
             this.tokenApp(module, EidGeneric.BIOMETRIC, true),
             undefined,
-            undefined,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -74,7 +92,7 @@ export class EidGeneric implements AbstractEidGeneric {
             this.baseUrl,
             this.tokenApp(module, EidGeneric.ADDRESS, true),
             undefined,
-            undefined,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -84,7 +102,7 @@ export class EidGeneric implements AbstractEidGeneric {
             this.baseUrl,
             this.tokenApp(module, EidGeneric.TOKEN, true),
             undefined,
-            undefined,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -94,7 +112,7 @@ export class EidGeneric implements AbstractEidGeneric {
             this.baseUrl,
             this.tokenApp(module, EidGeneric.PHOTO, true),
             undefined,
-            undefined,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -104,7 +122,7 @@ export class EidGeneric implements AbstractEidGeneric {
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_ROOT, true),
             undefined,
-            undefined,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback
         ).then((res: TokenCertificateResponse) => {
             return CertParser.processTokenCertificate(res, parseCerts, callback)
@@ -118,7 +136,7 @@ export class EidGeneric implements AbstractEidGeneric {
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_INTERMEDIATE, true),
             undefined,
-            undefined,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback
         ).then((res: TokenCertificateResponse) => {
             return CertParser.processTokenCertificate(res, parseCerts, callback)
@@ -132,7 +150,7 @@ export class EidGeneric implements AbstractEidGeneric {
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_AUTHENTICATION, true),
             undefined,
-            undefined,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback
         ).then((res: TokenCertificateResponse) => {
             return CertParser.processTokenCertificate(res, parseCerts, callback)
@@ -146,7 +164,7 @@ export class EidGeneric implements AbstractEidGeneric {
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_NON_REPUDIATION, true),
             undefined,
-            undefined,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback
         ).then((res: TokenCertificateResponse) => {
             return CertParser.processTokenCertificate(res, parseCerts, callback)
@@ -160,7 +178,7 @@ export class EidGeneric implements AbstractEidGeneric {
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_ENCRYPTION, true),
             undefined,
-            undefined,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback
         ).then((res: TokenCertificateResponse) => {
             return CertParser.processTokenCertificate(res, parseCerts, callback)
@@ -174,7 +192,7 @@ export class EidGeneric implements AbstractEidGeneric {
             this.baseUrl,
             this.tokenApp(module, EidGeneric.SUPPORTED_ALGOS, true),
             undefined,
-            undefined,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -185,7 +203,9 @@ export class EidGeneric implements AbstractEidGeneric {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.ALL_CERTIFICATES, true),
-            reqOptions.params
+            reqOptions.params,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
+            callback
         ).then((res: TokenAllCertsResponse) => {
             return CertParser.processTokenAllCertificates(res, parseCerts, callback)
         }).catch(error => {
@@ -199,7 +219,7 @@ export class EidGeneric implements AbstractEidGeneric {
             this.tokenApp(module, EidGeneric.VERIFY_PIN, true),
             body,
             undefined,
-            undefined,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -210,7 +230,7 @@ export class EidGeneric implements AbstractEidGeneric {
             this.tokenApp(module, EidGeneric.AUTHENTICATE, true),
             body,
             undefined,
-            undefined,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
@@ -222,14 +242,14 @@ export class EidGeneric implements AbstractEidGeneric {
             this.tokenApp(module, EidGeneric.SIGN_DATA, true),
             body,
              this.getBulkSignQueryParams(bulk),
-            undefined,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }
 
     resetBulkPin(module: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
         // @ts-ignore
-        return this.connection.post(this.baseUrl, this.tokenApp(module, EidGeneric.RESET_BULK_PIN, false), null, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(module, EidGeneric.RESET_BULK_PIN, false), null, undefined, EidGeneric.EncryptedHeader(this.pin, this.pinType), callback);
     }
 
     // resolves the reader_id in the base URL
@@ -261,7 +281,7 @@ export class EidGeneric implements AbstractEidGeneric {
             this.baseUrl,
             this.baseApp(module, EidGeneric.PATH_MOD_DESC),
             undefined,
-            undefined,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback
         );
     }

@@ -37,7 +37,8 @@ export class Crelan implements AbstractCrelan {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(Crelan.ALL_CERTIFICATES, aid, true),
-            reqOptions.params
+            reqOptions.params,
+            callback
         );
     }
 

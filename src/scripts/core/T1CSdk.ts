@@ -152,8 +152,8 @@ export class T1CClient {
     public mf = (): ModuleFactory => {
         return this.moduleFactory;
     }
-    public generic = (reader_id: string): AbstractEidGeneric => {
-        return this.moduleFactory.createEidGeneric(reader_id)
+    public generic = (reader_id: string, pin?: string, pinType?: PinType): AbstractEidGeneric => {
+        return this.moduleFactory.createEidGeneric(reader_id, pin, pinType)
     };
 
     public genericMeta = (): AbstractEidGeneric => {

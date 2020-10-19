@@ -70,7 +70,8 @@ export class EidLux implements AbstractEidLux {
             this.baseUrl,
             this.tokenApp(EidLux.ALL_DATA, true),
             requestOptions.params,
-            EidLux.EncryptedHeader(this.pin, this.pinType)
+            EidLux.EncryptedHeader(this.pin, this.pinType),
+            callback
         );
     }
 
@@ -196,7 +197,8 @@ export class EidLux implements AbstractEidLux {
             this.baseUrl,
             this.tokenApp(EidLux.ALL_CERTIFICATES, true),
             reqOptions.params,
-            EidLux.EncryptedHeader(this.pin, this.pinType)
+            EidLux.EncryptedHeader(this.pin, this.pinType),
+            callback
         ).then((res: TokenAllCertsResponse) => {
             return CertParser.processTokenAllCertificates(res, parseCerts, callback)
         }).catch(error => {
