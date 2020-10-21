@@ -59,6 +59,7 @@ export class T1CClient {
         this.localTestConnection = new LocalTestConnection(this.localConfig);
         this.coreService = new CoreService(this.localConfig.t1cApiUrl, this.authConnection);
         this.coreService.version().then(info => console.log("Running T1C-sdk-js version: " + info))
+        this.coreService.getDevicePublicKey()
     }
 
     public static checkPolyfills() {

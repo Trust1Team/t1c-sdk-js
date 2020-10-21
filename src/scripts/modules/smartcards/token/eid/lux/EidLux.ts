@@ -18,6 +18,7 @@ import {Options} from "../../../Card";
 import {AbstractEidLux, PinType} from "./EidLuxModel";
 import {CertParser} from "../../../../../util/CertParser";
 import {ResponseHandler} from "../../../../../util/ResponseHandler";
+import {Pinutil} from "../../../../../..";
 
 export class EidLux implements AbstractEidLux {
     static PATH_TOKEN_APP = '/apps/token';
@@ -54,9 +55,11 @@ export class EidLux implements AbstractEidLux {
     // by default using Pace-PIN
     private static EncryptedHeader(code: string, pinType: PinType): RequestHeaders {
         if (pinType === PinType.CAN) {
-            return {'X-Pace-Can': code === undefined ? '' : code};
+            // @ts-ignore
+            return {'X-Pace-Can': code === undefined ? '' : Pinutil.encryptPin(code)};
         } else {
-            return {'X-Pace-Pin': code === undefined ? '' : code};
+            // @ts-ignore
+            return {'X-Pace-Pin': code === undefined ? '' : Pinutil.encryptPin(code)};
         }
     }
 
@@ -210,6 +213,7 @@ export class EidLux implements AbstractEidLux {
         body: TokenVerifyPinData,
         callback?: (error: T1CLibException, data: T1CResponse) => void
     ): Promise<T1CResponse> {
+        body.pin = Pinutil.encryptPin(body.pin)
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidLux.VERIFY_PIN, true),
@@ -224,6 +228,7 @@ export class EidLux implements AbstractEidLux {
         body: TokenAuthenticateOrSignData,
         callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void
     ): Promise<TokenAuthenticateResponse> {
+        body.pin = Pinutil.encryptPin(body.pin)
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidLux.AUTHENTICATE, true),
@@ -240,6 +245,7 @@ export class EidLux implements AbstractEidLux {
         bulk?: boolean,
         callback?: (error: T1CLibException, data: TokenSignResponse) => void
     ): Promise<TokenSignResponse> {
+        body.pin = Pinutil.encryptPin(body.pin)
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidLux.SIGN_DATA, true),

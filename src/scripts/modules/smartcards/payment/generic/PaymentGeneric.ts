@@ -6,7 +6,7 @@ import {
     BoolDataResponse,
     DataObjectResponse,
     LocalConnection, PaymentAllCertsResponse, PaymentCertificateResponse, PaymentSignData,
-    PaymentVerifyPinData,
+    PaymentVerifyPinData, Pinutil,
     T1CLibException, TokenAuthenticateOrSignData
 } from "../../../../../index";
 import {RequestHandler} from "../../../../util/RequestHandler";
@@ -86,6 +86,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     }
 
     verifyPin(module: string, body: PaymentVerifyPinData, callback?: (error: T1CLibException, data: PaymentVerifyPinResponse) => void): Promise<PaymentVerifyPinResponse> {
+        body.pin = Pinutil.encryptPin(body.pin)
         return this.connection.post(
             this.baseUrl,
             this.paymentApp(module, PaymentGeneric.VERIFY_PIN, undefined, true),
