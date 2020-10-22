@@ -1,7 +1,7 @@
 import {
     LocalConnection, PaymentAllCertsResponse, PaymentCertificateResponse, PaymentReadApplicationDataResponse,
     PaymentReadDataResponse,
-    PaymentVerifyPinResponse,
+    PaymentVerifyPinResponse, Pinutil,
     T1CLibException
 } from "../../../../../index";
 import {
@@ -80,6 +80,7 @@ export class Emv implements AbstractEmv {
     }
 
     verifyPin(body: PaymentVerifyPinData, callback?: (error: T1CLibException, data: PaymentVerifyPinResponse) => void): Promise<PaymentVerifyPinResponse> {
+        body.pin = Pinutil.encryptPin(body.pin)
         return this.connection.post(
             this.baseUrl,
             this.paymentApp(Emv.VERIFY_PIN),

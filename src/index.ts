@@ -12,6 +12,7 @@ export * from './scripts/util/ObjectUtil';
 export * from './scripts/util/Polyfills';
 export * from './scripts/util/UrlUtil';
 export * from './scripts/util/Utils';
+export * from './scripts/util/PinUtil'
 
 export * from './scripts/modules/smartcards/payment/PaymentCard';
 export * from './scripts/modules/smartcards/token/TokenCard';
@@ -51,5 +52,6 @@ export * from './scripts/modules/smartcards/token/pki/oberthur73/OberthurModel';
 
 export * from './scripts/modules/smartcards/token/pki/aventra4/Aventra';
 export * from './scripts/modules/smartcards/token/pki/aventra4/AventraModel';
+
 
 Polyfills.check();

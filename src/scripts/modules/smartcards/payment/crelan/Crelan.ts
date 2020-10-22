@@ -2,7 +2,7 @@ import {
     BoolDataResponse,
     LocalConnection, PaymentAllCertsResponse, PaymentCertificateResponse, PaymentReadApplicationDataResponse,
     PaymentReadDataResponse, PaymentSignData, PaymentSignResponse,
-    PaymentVerifyPinResponse,
+    PaymentVerifyPinResponse, Pinutil,
     T1CLibException, TokenAuthenticateOrSignData
 } from "../../../../../index";
 import {
@@ -83,6 +83,7 @@ export class Crelan implements AbstractCrelan {
     }
 
     verifyPin(body: PaymentVerifyPinData, callback?: (error: T1CLibException, data: PaymentVerifyPinResponse) => void): Promise<PaymentVerifyPinResponse> {
+        body.pin = Pinutil.encryptPin(body.pin)
         return this.connection.post(
             this.baseUrl,
             this.paymentApp(Crelan.VERIFY_PIN, undefined, true),

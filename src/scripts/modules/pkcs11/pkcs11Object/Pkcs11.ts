@@ -9,6 +9,7 @@ import {
 } from './Pkcs11Model';
 import {ResponseHandler} from "../../../util/ResponseHandler";
 import {CertParser} from "../../../util/CertParser";
+import {Pinutil} from "../../../..";
 
 export class PKCS11 implements AbstractPkcs11 {
 
@@ -58,6 +59,7 @@ export class PKCS11 implements AbstractPkcs11 {
     // }
 
     public signData(signData: Pkcs11SignData, callback?: (error: T1CLibException, data: Pkcs11ObjectSignResponse) => void): Promise<Pkcs11ObjectSignResponse> {
+        signData.pin = Pinutil.encryptPin(signData.pin)
         return this.setLibrary().then(res => {
             let req = {
                 certificateId: signData.certificateId,
