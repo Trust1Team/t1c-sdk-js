@@ -33,6 +33,8 @@ import {AbstractPkcs11} from "./pkcs11/pkcs11Object/Pkcs11Model";
 import {PKCS11} from "./pkcs11/pkcs11Object/Pkcs11";
 import {Crelan} from "./smartcards/payment/crelan/Crelan";
 import {AbstractCrelan} from "./smartcards/payment/crelan/CrelanModel";
+import {AbstractRawPrint} from "./print/rawprint/RawPrintModel";
+import {RawPrint} from "./print/rawprint/RawPrint";
 
 export interface AbstractFactory {
     createEidGeneric(reader_id: string): AbstractEidGeneric;
@@ -57,7 +59,7 @@ export interface AbstractFactory {
     createPKCS11(modulePath: string): AbstractPkcs11;
     // createJavaKeyTool(): AbstractJavaKeyTool
     // createSsh(): AbstractSsh
-    // createRawPrint(runInUserSpace: boolean): AbstractRawPrint
+    createRawPrint(): AbstractRawPrint
 }
 
 const CONTAINER_NEW_CONTEXT_PATH = '/modules/';
@@ -139,6 +141,10 @@ export class ModuleFactory implements AbstractFactory {
 
     public createFileExchange(): AbstractFileExchange {
         return new FileExchange(this.url, CONTAINER_FILE_EXCHANGE, this.connection);
+    }
+
+    public createRawPrint(): AbstractRawPrint {
+        return new RawPrint(this.url, CONTAINER_RAW_PRINT, this.connection);
     }
 
     public createRemoteLoading(reader_id: string): AbstractRemoteLoading {

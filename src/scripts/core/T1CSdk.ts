@@ -29,6 +29,7 @@ import {AbstractCrelan} from "../modules/smartcards/payment/crelan/CrelanModel";
 import {AbstractEidLux, PinType} from "../modules/smartcards/token/eid/lux/EidLuxModel";
 import {AbstractWacom} from "../modules/wacom/WacomModel";
 import {AbstractEidDiplad} from "../modules/smartcards/token/eid/diplad/EidDipladModel";
+import {AbstractRawPrint} from "../modules/print/rawprint/RawPrintModel";
 
 const urlVersion = "/v3";
 
@@ -179,6 +180,10 @@ export class T1CClient {
 
     public fileex = (): AbstractFileExchange => {
         return this.moduleFactory.createFileExchange()
+    };
+
+    public rawprint = (): AbstractRawPrint => {
+        return this.moduleFactory.createRawPrint()
     };
 
     public beid = (reader_id: string): AbstractEidBE => {
