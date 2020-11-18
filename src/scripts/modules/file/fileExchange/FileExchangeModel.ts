@@ -27,6 +27,7 @@ export class File {
     constructor(public extension: string,
                 public name: string,
                 public path: string,
+                public relPath: string[],
                 public type: string,
                 public entity: string,
                 public size: number,
@@ -64,7 +65,7 @@ export class TypeResponse extends T1CResponse {
 }
 
 export class Type {
-    constructor(public appid?: string, public entity?: string, public name?: string, public absPath?: string, access?: string, status?: TypeStatus, public files?: number) {}
+    constructor(public entity: string, public type: string, public path: string, access: string, status: TypeStatus, public files: number, public appid?: string) {}
 }
 
 export class TypeList {

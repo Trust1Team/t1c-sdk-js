@@ -18,6 +18,7 @@ import {TokenAuthenticateOrSignData, TokenResetPinData, TokenVerifyPinData} from
 import {Options} from "../../../Card";
 import {CertParser} from "../../../../../util/CertParser";
 import {ResponseHandler} from "../../../../../util/ResponseHandler";
+import {Pinutil} from "../../../../../..";
 
 export class Aventra implements AbstractAventra {
     static CONTAINER_PREFIX = 'aventra_myid_4';
@@ -76,10 +77,14 @@ export class Aventra implements AbstractAventra {
     }
 
     public verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: TokenVerifyPinResponse) => void): Promise<TokenVerifyPinResponse> {
+        body.pin = Pinutil.encryptPin(body.pin)
         return this.connection.post(this.baseUrl, this.tokenApp(Aventra.VERIFY_PIN, true), body, undefined, undefined, callback);
     }
 
     public resetPin(body: TokenResetPinData, callback?: (error: T1CLibException, data: TokenResetPinResponse) => void): Promise<TokenResetPinResponse> {
+        body.pin = Pinutil.encryptPin(body.pin)
+        // @ts-ignore
+        body.puk = Pinutil.encryptPin(body.puk)
         return this.connection.post(this.baseUrl, this.tokenApp(Aventra.RESET_PIN, true), body, undefined, undefined, callback);
     }
 
@@ -97,6 +102,7 @@ export class Aventra implements AbstractAventra {
 
     public authenticate(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse> {
         body.algorithm = body.algorithm.toLowerCase();
+        body.pin = Pinutil.encryptPin(body.pin)
         return this.connection.post(this.baseUrl, this.tokenApp(Aventra.AUTHENTICATE, true), body, undefined, undefined, callback);
     }
 
@@ -104,6 +110,7 @@ export class Aventra implements AbstractAventra {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
+        body.pin = Pinutil.encryptPin(body.pin)
         return this.connection.post(this.baseUrl, this.tokenApp(Aventra.SIGN_DATA, true), body,  this.getBulkSignQueryParams(bulk), undefined, callback);
     }
 

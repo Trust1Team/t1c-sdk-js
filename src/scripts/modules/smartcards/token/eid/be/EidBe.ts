@@ -18,6 +18,7 @@ import {AbstractEidBE} from "./EidBeModel";
 import {Options} from "../../../Card";
 import {ResponseHandler} from "../../../../../util/ResponseHandler";
 import {CertParser} from "../../../../../util/CertParser";
+import {Pinutil} from "../../../../../..";
 
 export class EidBe implements AbstractEidBE {
     static PATH_TOKEN_APP = '/apps/token';
@@ -226,6 +227,7 @@ export class EidBe implements AbstractEidBE {
         body: TokenVerifyPinData,
         callback?: (error: T1CLibException, data: T1CResponse) => void
     ): Promise<T1CResponse> {
+        body.pin = Pinutil.encryptPin(body.pin)
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidBe.VERIFY_PIN, true),
@@ -240,6 +242,7 @@ export class EidBe implements AbstractEidBE {
         body: TokenAuthenticateOrSignData,
         callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void
     ): Promise<TokenAuthenticateResponse> {
+        body.pin = Pinutil.encryptPin(body.pin)
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidBe.AUTHENTICATE, true),
@@ -256,6 +259,7 @@ export class EidBe implements AbstractEidBE {
         bulk?: boolean,
         callback?: (error: T1CLibException, data: TokenSignResponse) => void
     ): Promise<TokenSignResponse> {
+        body.pin = Pinutil.encryptPin(body.pin)
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidBe.SIGN_DATA, true),

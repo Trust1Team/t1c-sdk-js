@@ -18,7 +18,7 @@ import {TokenAuthenticateOrSignData, TokenVerifyPinData} from '../../TokenCard';
 import {Options} from "../../../Card";
 import {CertParser} from "../../../../../util/CertParser";
 import {ResponseHandler} from "../../../../../util/ResponseHandler";
-import {PinType} from "../../../../../..";
+import {PinType, Pinutil} from "../../../../../..";
 
 export class EidGeneric implements AbstractEidGeneric {
     static PATH_TOKEN_APP = '/apps/token';
@@ -56,9 +56,11 @@ export class EidGeneric implements AbstractEidGeneric {
     private static EncryptedHeader(code?: string, pinType?: PinType): RequestHeaders | undefined {
         if (code && pinType) {
             if (pinType === PinType.CAN) {
-                return {'X-Pace-Can': code};
+                // @ts-ignore
+                return {'X-Pace-Can': Pinutil.encryptPin(code)};
             } else {
-                return {'X-Pace-Pin': code};
+                // @ts-ignore
+                return {'X-Pace-Pin': Pinutil.encryptPin(code)};
             }
         } else {
             return undefined;
@@ -214,6 +216,7 @@ export class EidGeneric implements AbstractEidGeneric {
     }
 
     public verifyPin(module: string, body: TokenVerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
+        body.pin = Pinutil.encryptPin(body.pin)
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.VERIFY_PIN, true),
@@ -225,6 +228,7 @@ export class EidGeneric implements AbstractEidGeneric {
     }
 
     public authenticate(module: string, body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse> {
+        body.pin = Pinutil.encryptPin(body.pin)
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.AUTHENTICATE, true),
@@ -237,6 +241,7 @@ export class EidGeneric implements AbstractEidGeneric {
 
 
     public sign(module: string, body: TokenAuthenticateOrSignData, bulk?: boolean, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
+        body.pin = Pinutil.encryptPin(body.pin)
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.SIGN_DATA, true),
