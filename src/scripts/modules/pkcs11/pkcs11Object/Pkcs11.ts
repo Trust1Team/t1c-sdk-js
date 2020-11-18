@@ -75,22 +75,22 @@ export class PKCS11 implements AbstractPkcs11 {
 
     public slots(callback?: (error: T1CLibException, data: Pkcs11ObjectSlotsResponse) => void): Promise<Pkcs11ObjectSlotsResponse> {
         return this.setLibrary().then(res => {
-            let req = {module: this.modulePath};
-            return this.connection.get(this.baseUrl, this.pkcs11Path(PKCS11.SLOTS), req, undefined, callback)
+            // let req = {module: this.modulePath};
+            return this.connection.get(this.baseUrl, this.pkcs11Path(PKCS11.SLOTS), undefined, undefined, callback)
         })
     }
 
     public slotsWithTokenPresent(callback?: (error: T1CLibException, data: Pkcs11ObjectSlotsResponse) => void): Promise<Pkcs11ObjectSlotsResponse> {
         return this.setLibrary().then(res => {
-            let req = {module: this.modulePath};
-            return this.connection.get(this.baseUrl, this.pkcs11Path(PKCS11.SLOTS), req, {'token-present': 'true'}, callback)
+            // let req = {module: this.modulePath};
+            return this.connection.get(this.baseUrl, this.pkcs11Path(PKCS11.SLOTS), undefined, {'token-present': 'true'}, callback)
         })
     }
 
     public token(slotId: string, callback?: (error: T1CLibException, data: Pkcs11ObjectTokenResponse) => void): Promise<Pkcs11ObjectTokenResponse> {
         return this.setLibrary().then(res => {
-            let req = Object.assign({slot_id: slotId}, {module: this.modulePath});
-            return this.connection.get(this.baseUrl, this.pkcs11Path(PKCS11.TOKEN, slotId), req, undefined, callback)
+            // let req = Object.assign({slot_id: slotId}, {module: this.modulePath});
+            return this.connection.get(this.baseUrl, this.pkcs11Path(PKCS11.TOKEN, slotId), undefined, undefined, callback)
         })
     }
 
