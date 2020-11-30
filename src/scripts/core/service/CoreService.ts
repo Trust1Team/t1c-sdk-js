@@ -28,15 +28,36 @@ export class CoreService implements AbstractCore {
     constructor(private url: string, private connection: LocalAuthConnection) {
     }
 
-    getDevicePublicKey(): Promise<string> {
-        return this.connection.get(
-            this.connection.cfg.t1cApiUrl,
-            "/device-key",
-            undefined,
-            undefined
-        ).then(res => {
-            Pinutil.setPubKey(res.data)
-            return res.data
+    getDevicePublicKey(callback?: (error?: T1CLibException, data?: string) => void): Promise<string> {
+        return new Promise((resolve, reject) => {
+            this.connection.get(
+                this.connection.cfg.t1cApiUrl,
+                "/device-key",
+                undefined,
+                undefined
+            ).then(res => {
+                Pinutil.setPubKey(res.data)
+                if (!callback || typeof callback !== 'function') {
+                    callback = function () {
+                        /* no-op */
+                    };
+                }
+                callback(undefined, res.data)
+                resolve(res.data);
+            }, err => {
+                const error = new T1CLibException(
+                    err.code,
+                    err.description,
+                    undefined
+                );
+                if (!callback || typeof callback !== 'function') {
+                    callback = function () {
+                        /* no-op */
+                    };
+                }
+                callback(error, undefined)
+                reject(error);
+            });
         });
     }
 
