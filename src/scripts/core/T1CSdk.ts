@@ -60,26 +60,30 @@ export class T1CClient {
         this.localTestConnection = new LocalTestConnection(this.localConfig);
         this.coreService = new CoreService(this.localConfig.t1cApiUrl, this.authConnection);
         this.coreService.version().then(info => console.log("Running T1C-sdk-js version: " + info))
-        this.coreService.getDevicePublicKey()
     }
 
     public static checkPolyfills() {
         Polyfills.check();
     }
 
+    // TODO clean this up
     public static initialize(cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
         return new Promise((resolve, reject) => {
-            axios.get(cfg.t1cApiUrl + "/info", {withCredentials: true,  headers: {
+            axios.get(cfg.t1cApiUrl + "/info", {
+                withCredentials: true, headers: {
                     Authorization: "Bearer " + cfg.t1cJwt,
                     "X-CSRF-Token": "t1c-js"
-                }}).then((res) => {
+                }
+            }).then((res) => {
                 if (res.status >= 200 && res.status < 300) {
                     if (res.data.t1CInfoAPI.service.deviceType && res.data.t1CInfoAPI.service.deviceType == "PROXY") {
                         console.info("Proxy detected");
-                        axios.get(cfg.t1cProxyUrl + "/consent", {withCredentials: true,  headers: {
+                        axios.get(cfg.t1cProxyUrl + "/consent", {
+                            withCredentials: true, headers: {
                                 Authorization: "Bearer " + cfg.t1cJwt,
                                 "X-CSRF-Token": "t1c-js"
-                            }}).then((res) => {
+                            }
+                        }).then((res) => {
                             cfg.t1cApiPort = res.data.data.apiPort;
                             const client = new T1CClient(cfg);
                             client.t1cInstalled = true;
@@ -90,37 +94,58 @@ export class T1CClient {
                             resolve(client);
                         }, err => {
                             const client = new T1CClient(cfg);
-                            const error = new T1CLibException(
-                                "814501",
-                                "No valid consent found.",
-                                client
-                            );
-                            if (callback && typeof callback === 'function') {
-                                callback(error, client);
-                            }
-                            reject(error);
+                            client.coreService.getDevicePublicKey().then(_ => {
+                                const error = new T1CLibException(
+                                    "814501",
+                                    "No valid consent found.",
+                                    client
+                                );
+                                if (callback && typeof callback === 'function') {
+                                    callback(error, client);
+                                }
+                                reject(error);
+                            }, err => {
+                                if (callback && typeof callback === 'function') {
+                                    callback(err, client);
+                                }
+                                reject(err);
+                            })
                         })
                     } else {
                         const client = new T1CClient(cfg);
-                        client.t1cInstalled = true;
-                        if (callback && typeof callback === 'function') {
-                            // @ts-ignore
-                            callback(null, client);
-                        }
-                        resolve(client);
+                        client.coreService.getDevicePublicKey().then(_ => {
+                            client.t1cInstalled = true;
+                            if (callback && typeof callback === 'function') {
+                                // @ts-ignore
+                                callback(null, client);
+                            }
+                            resolve(client);
+                        }, err => {
+                            if (callback && typeof callback === 'function') {
+                                callback(err, client);
+                            }
+                            reject(err);
+                        })
                     }
                 } else {
                     const client = new T1CClient(cfg);
-                    const error = new T1CLibException(
-                        "112999",
-                        res.statusText,
-                        client
-                    )
-                    if (callback && typeof callback === 'function') {
-                        // @ts-ignore
-                        callback(error, client);
-                    }
-                    reject(error)
+                    client.coreService.getDevicePublicKey().then(_ => {
+                        const error = new T1CLibException(
+                            "112999",
+                            res.statusText,
+                            client
+                        )
+                        if (callback && typeof callback === 'function') {
+                            // @ts-ignore
+                            callback(error, client);
+                        }
+                        reject(error)
+                    }, err => {
+                        if (callback && typeof callback === 'function') {
+                            callback(err, client);
+                        }
+                        reject(err);
+                    })
                 }
             }, err => {
                 const client = new T1CClient(cfg);
