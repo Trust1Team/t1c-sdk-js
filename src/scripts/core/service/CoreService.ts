@@ -8,15 +8,15 @@ import {
 } from './CoreModel';
 import {T1CLibException} from '../exceptions/CoreExceptions';
 import {T1CClient} from '../../..';
+import {ResponseHandler} from "../../util/ResponseHandler";
+import {Pinutil} from "../../util/PinUtil";
 
 const CORE_CONSENT = '/consent';
 const CORE_INFO = '/info';
 const CORE_VERSION = '/v3';
 const CORE_READERS = '/readers';
 const CORE_CONSENT_IMPLICIT = '/agents/consent';
-const CORE_RETUREVE_ENCRYPTED_PIN = '/dialog/pin';
-import {ResponseHandler} from "../../util/ResponseHandler";
-import {Pinutil} from "../../util/PinUtil";
+
 
 declare let VERSION: string;
 
@@ -48,7 +48,7 @@ export class CoreService implements AbstractCore {
                 const error = new T1CLibException(
                     err.code,
                     err.description,
-                    undefined
+                    new T1CClient(this.connection.cfg)
                 );
                 if (!callback || typeof callback !== 'function') {
                     callback = function () {
