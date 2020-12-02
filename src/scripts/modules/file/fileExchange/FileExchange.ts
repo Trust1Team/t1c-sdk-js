@@ -101,14 +101,30 @@ export class FileExchange implements AbstractFileExchange {
         );
     }
 
-    download(entity: string, type: string, file: ArrayBuffer, fileName: string, relPath?: [string], implicitCreationType?: boolean, notifyOnCompletion?: boolean, callback?: (error: T1CLibException, data: FileListResponse) => void): Promise<DataResponse> {
-        let body = {entity, type, file, fileName, relPath, implicitCreationType, notifyOnCompletion};
+    download(entity: string, type: string, file: Blob, fileName: string, relPath?: [string], implicitCreationType?: boolean, notifyOnCompletion?: boolean, callback?: (error: T1CLibException, data: FileListResponse) => void): Promise<DataResponse> {
+        var form = new FormData();
+        form.append("entity", entity)
+        form.append("type", type)
+        form.append("file", file)
+        form.append("fileName", fileName)
+        if (relPath) {
+            relPath.forEach(r => {
+                form.append("relPath", r)
+            })
+        }
+        if (implicitCreationType != null || implicitCreationType != undefined) {
+            form.append("implicitCreationType", String(implicitCreationType))
+        }
+        if (notifyOnCompletion != null || notifyOnCompletion != undefined) {
+            form.append("notifyOnCompletion", String(notifyOnCompletion))
+        }
+
         return this.connection.post(
             this.baseUrl,
             this.fileApp(FileExchange.DOWNLOAD),
-            body,
+            form,
             undefined,
-            undefined,
+            {'Content-Type': 'multipart/form-data' },
             callback
         );
     }
@@ -245,9 +261,9 @@ export class FileExchange implements AbstractFileExchange {
         );
     }
 
-    upload(entity: string, type: string, fileName: string, relPath?: [string], notifyOnCompletion?: boolean, callback?: (error: T1CLibException, data: FileListResponse) => void): Promise<ArrayBuffer> {
+    upload(entity: string, type: string, fileName: string, relPath?: [string], notifyOnCompletion?: boolean, callback?: (error: T1CLibException, data: Blob) => void): Promise<Blob> {
         let body = {entity, type, fileName, relPath, notifyOnCompletion};
-        return this.connection.post(
+        return this.connection.postFile(
             this.baseUrl,
             this.fileApp(FileExchange.UPLOAD),
             body,
