@@ -101,7 +101,7 @@ export class FileExchange implements AbstractFileExchange {
         );
     }
 
-    download(entity: string, type: string, file: ArrayBuffer, fileName: string, relPath?: [string], implicitCreationType?: boolean, notifyOnCompletion?: boolean, callback?: (error: T1CLibException, data: FileListResponse) => void): Promise<DataResponse> {
+    download(entity: string, type: string, file: Int8Array, fileName: string, relPath?: [string], implicitCreationType?: boolean, notifyOnCompletion?: boolean, callback?: (error: T1CLibException, data: FileListResponse) => void): Promise<DataResponse> {
         let body = {entity, type, file, fileName, relPath, implicitCreationType, notifyOnCompletion};
         return this.connection.post(
             this.baseUrl,
@@ -245,7 +245,7 @@ export class FileExchange implements AbstractFileExchange {
         );
     }
 
-    upload(entity: string, type: string, fileName: string, relPath?: [string], notifyOnCompletion?: boolean, callback?: (error: T1CLibException, data: FileListResponse) => void): Promise<ArrayBuffer> {
+    upload(entity: string, type: string, fileName: string, relPath?: [string], notifyOnCompletion?: boolean, callback?: (error: T1CLibException, data: FileListResponse) => void): Promise<Int8Array> {
         let body = {entity, type, fileName, relPath, notifyOnCompletion};
         return this.connection.post(
             this.baseUrl,
