@@ -124,6 +124,21 @@ export abstract class GenericConnection implements Connection {
     }
 
     /**
+     * Helper function for POST requests
+     * @param {string} basePath
+     * @param {string} suffix
+     * @param {RequestBody} body
+     * @param {QueryParams} queryParams
+     * @param {RequestHeaders} headers
+     * @param {RequestCallback} callback
+     * @returns {Promise<any>}
+     */
+    public postFile(basePath: string, suffix: string, body: RequestBody, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any> {
+        const securityConfig = this.getSecurityConfig();
+        return this.handleFileRequest(basePath, suffix, 'POST', this.cfg, securityConfig, body, queryParams, headers, callback);
+    }
+
+    /**
      * Helper function for PUT requests
      * @param {string} basePath
      * @param {string} suffix
@@ -238,6 +253,97 @@ export abstract class GenericConnection implements Connection {
             method,
             headers: this.getRequestHeaders(headers),
             responseType: 'json',
+        };
+        if (body) {
+            config.data = body;
+        }
+        if (params) {
+            config.params = params;
+        }
+        if (securityConfig.sendJWT) {
+            config.headers.Authorization = 'Bearer ' + t1cConfig.t1cJwt;
+        }
+
+        return new Promise((resolve, reject) => {
+            let securityPromise;
+            if (securityConfig.sendJWT) {
+                securityPromise = Promise.resolve(t1cConfig.t1cJwt);
+            } else {
+                securityPromise = Promise.resolve('');
+            }
+
+            securityPromise.then(
+                jwt => {
+                    if (securityConfig.sendJWT) {
+                        config.headers.Authorization = 'Bearer ' + jwt;
+                    }
+                    axios
+                        .request(config)
+                        .then((response: AxiosResponse) => {
+                            // check if access-token included in headers
+                            GenericConnection.extractAccessToken(
+                                response.headers,
+                                t1cConfig
+                            );
+
+                            // call callback function
+                            // @ts-ignore
+                            callback(undefined, response.data);
+                            // and resolve the promise
+                            return resolve(response.data);
+                        })
+                        .catch((error: AxiosError) => {
+                            // check for generic network error
+                            if (!error.code && !error.response) {
+                                const thrownError = new T1CLibException(
+                                    "112999",
+                                    'Internal error',
+                                );
+                                // @ts-ignore
+                                callback(thrownError, null);
+                                return reject(thrownError);
+                            } else {
+                                // @ts-ignore
+                                callback(
+                                    new T1CLibException(
+                                        error.response?.data.code,
+                                        error.response?.data.description
+                                    ),
+                                    null
+                                );
+                                return reject(
+                                    new T1CLibException(
+                                        error.response?.data.code,
+                                        error.response?.data.description
+                                    ),
+                                );
+                            }
+                        });
+                },
+                err => {
+                    // securityPromise will return error if JWT is expired or cannot be refreshed!
+                    return reject(err);
+                }
+            );
+        });
+    }
+    protected handleFileRequest(basePath: string, suffix: string, method: string, t1cConfig: T1CConfig, securityConfig: SecurityConfig, body?: RequestBody, params?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any> {
+        // init callback if necessary
+        if (!callback || typeof callback !== 'function') {
+            callback = function () {
+                /* no-op */
+            };
+        }
+
+        // if Citrix environment, check that agentPort was defined in config
+        const config: AxiosRequestConfig = {
+            // use UrlUtil to create correct URL based on config
+            withCredentials: true,
+            url: UrlUtil.create(basePath, suffix),
+            // @ts-ignore
+            method,
+            headers: this.getRequestHeaders(headers),
+            responseType: 'blob',
         };
         if (body) {
             config.data = body;
