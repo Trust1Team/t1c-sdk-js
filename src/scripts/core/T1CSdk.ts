@@ -87,29 +87,26 @@ export class T1CClient {
                             cfg.t1cApiPort = res.data.data.apiPort;
                             const client = new T1CClient(cfg);
                             client.t1cInstalled = true;
-                            if (callback && typeof callback === 'function') {
-                                // @ts-ignore
-                                callback(null, client);
-                            }
-                            resolve(client);
-                        }, err => {
-                            const client = new T1CClient(cfg);
                             client.coreService.getDevicePublicKey().then(_ => {
-                                const error = new T1CLibException(
-                                    "814501",
-                                    "No valid consent found.",
-                                    client
-                                );
+                                client.t1cInstalled = true;
                                 if (callback && typeof callback === 'function') {
-                                    callback(error, client);
+                                    // @ts-ignore
+                                    callback(null, client);
                                 }
-                                reject(error);
+                                resolve(client);
                             }, err => {
                                 if (callback && typeof callback === 'function') {
                                     callback(err, client);
                                 }
                                 reject(err);
                             })
+                        }, err => {
+                            const client = new T1CClient(cfg);
+                            reject(new T1CLibException(
+                                err.response?.data.code,
+                                err.response?.data.description,
+                                client
+                            ));
                         })
                     } else {
                         const client = new T1CClient(cfg);
