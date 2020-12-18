@@ -1,6 +1,6 @@
 import * as asn1js from 'asn1js';
 import Certificate from 'pkijs/src/Certificate';
-import { T1CLibException } from '../..';
+import {T1CLibException, TokenCertificateObject} from '../..';
 import {
     TokenCertificateResponse,
     TokenCertificate,
@@ -44,21 +44,23 @@ export class CertParser {
 
     private static processTokenCert(certificate: TokenCertificate, parseCert: boolean | undefined): TokenCertificate {
         if (parseCert && parseCert === true) {
-            let parsedCertificates: Array<Certificate> | undefined = undefined;
-            let parsedCertificate: Certificate | undefined = undefined;
+            let parsedCertificates: Array<TokenCertificateObject> | undefined = undefined;
+            let parsedCertificate: TokenCertificateObject | undefined = undefined;
 
             if (certificate.certificates) {
-                parsedCertificates = new Array<Certificate>();
+                parsedCertificates = new Array<TokenCertificateObject>();
                 certificate.certificates.forEach(_cert => {
                     // @ts-ignore
-                    parsedCertificates.push(CertParser.processCert(_cert))
+                    parsedCertificates.push(new TokenCertificateObject(certificate.certificate.certificate, certificate.certificate.certificateType, certificate.certificate.id, CertParser.processCert(_cert.certificate)))
+
                 })
             }
 
             if (certificate.certificate) {
-                parsedCertificate = CertParser.processCert(certificate.certificate)
+                // @ts-ignore
+                parsedCertificate = new TokenCertificateObject(certificate.certificate.certificate, certificate.certificate.certificateType, certificate.certificate.id, CertParser.processCert(certificate.certificate.certificate));
             }
-            return new TokenCertificate(certificate.certificate, certificate.certificates, certificate.certificateType, certificate.id, parsedCertificate, parsedCertificates);
+            return new TokenCertificate(parsedCertificate, parsedCertificates);
 
         } else {
             return certificate;
@@ -70,10 +72,10 @@ export class CertParser {
     public static processPaymentAllCertificates(response: PaymentAllCertsResponse, parseCerts: boolean | undefined, callback?: (error: T1CLibException, data: PaymentAllCertsResponse) => void):  Promise<PaymentAllCertsResponse> {
         let updatedCerts = new PaymentAllCerts();
         if (response.data.issuerPublicCertificate) {
-            updatedCerts = new PaymentAllCerts(this.processTokenCert(response.data.issuerPublicCertificate, parseCerts))
+            updatedCerts = new PaymentAllCerts(this.processPaymentCert(response.data.issuerPublicCertificate, parseCerts))
         }
         if (response.data.iccPublicCertificate) {
-            updatedCerts = new PaymentAllCerts(updatedCerts.issuerPublicCertificate, this.processTokenCert(response.data.iccPublicCertificate, parseCerts))
+            updatedCerts = new PaymentAllCerts(updatedCerts.issuerPublicCertificate, this.processPaymentCert(response.data.iccPublicCertificate, parseCerts))
         }
         return ResponseHandler.response(new PaymentAllCertsResponse(updatedCerts,response.success), callback)
     }
