@@ -130,15 +130,19 @@ export class TokenCertificateResponse extends T1CResponse {
 }
 
 
-// certificate: Option[String], certificates: Option[Seq[String]] = None, certificateType: Option[String] = None, id: Option[String] = None
 export class TokenCertificate {
   constructor(
-    public certificate?: string,
-    public certificates?: Array<string>,
-    public certificateType?: string,
-    public id?: string,
-    public parsedCertificate?: Certificate,
-    public parsedCertificates?: Array<Certificate>
+    public certificate?: TokenCertificateObject,
+    public certificates?: Array<TokenCertificateObject>
+  ) {}
+}
+
+export class TokenCertificateObject {
+  constructor(
+      public certificate?: string,
+      public certificateType?: string,
+      public id?: string,
+      public parsedCertificate?: Certificate,
   ) {}
 }
 
