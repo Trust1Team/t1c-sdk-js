@@ -132,17 +132,12 @@ export class TokenCertificateResponse extends T1CResponse {
 
 export class TokenCertificate {
   constructor(
-    public certificate?: TokenCertificateObject,
-    public certificates?: Array<TokenCertificateObject>
-  ) {}
-}
-
-export class TokenCertificateObject {
-  constructor(
       public certificate?: string,
+      public certificates?: Array<string>,
       public certificateType?: string,
       public id?: string,
       public parsedCertificate?: Certificate,
+      public parsedCertificates?: Array<Certificate>
   ) {}
 }
 

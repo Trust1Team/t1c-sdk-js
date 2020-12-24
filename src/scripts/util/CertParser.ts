@@ -1,6 +1,6 @@
 import * as asn1js from 'asn1js';
 import Certificate from 'pkijs/src/Certificate';
-import {T1CLibException, TokenCertificateObject} from '../..';
+import {T1CLibException} from '../..';
 import {
     TokenCertificateResponse,
     TokenCertificate,
@@ -44,24 +44,23 @@ export class CertParser {
 
     private static processTokenCert(certificate: TokenCertificate, parseCert: boolean | undefined): TokenCertificate {
         if (parseCert && parseCert === true) {
-            let parsedCertificates: Array<TokenCertificateObject> | undefined = undefined;
-            let parsedCertificate: TokenCertificateObject | undefined = undefined;
+            let parsedCertificates: Array<Certificate> | undefined = undefined;
+            let parsedCertificate: Certificate | undefined = undefined;
 
             if (certificate.certificates) {
-                parsedCertificates = new Array<TokenCertificateObject>();
+                parsedCertificates = new Array<Certificate>();
                 certificate.certificates.forEach(_cert => {
                     // @ts-ignore
-                    parsedCertificates.push(new TokenCertificateObject(certificate.certificate.certificate, certificate.certificate.certificateType, certificate.certificate.id, CertParser.processCert(_cert.certificate)))
+                    parsedCertificates.push(CertParser.processCert(_cert))
 
                 })
             }
 
             if (certificate.certificate) {
                 // @ts-ignore
-                parsedCertificate = new TokenCertificateObject(certificate.certificate.certificate, certificate.certificate.certificateType, certificate.certificate.id, CertParser.processCert(certificate.certificate.certificate));
+                parsedCertificate = CertParser.processCert(certificate.certificate)
             }
-            return new TokenCertificate(parsedCertificate, parsedCertificates);
-
+            return new TokenCertificate(certificate.certificate, certificate.certificates, certificate.certificateType, certificate.id, parsedCertificate, parsedCertificates);
         } else {
             return certificate;
         }
