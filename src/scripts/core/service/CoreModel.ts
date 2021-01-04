@@ -12,7 +12,7 @@ export interface AbstractCore {
   readersCardAvailable(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
   readersCardsUnavailable(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
   getUrl(): string;
-  getDevicePublicKey(): Promise<string>;
+  getDevicePublicKey(): void;
   version(): Promise<string>;
 }
 
