@@ -87,19 +87,13 @@ export class T1CClient {
                             cfg.t1cApiPort = res.data.data.apiPort;
                             const client = new T1CClient(cfg);
                             client.t1cInstalled = true;
-                            client.coreService.getDevicePublicKey().then(_ => {
-                                client.t1cInstalled = true;
-                                if (callback && typeof callback === 'function') {
-                                    // @ts-ignore
-                                    callback(null, client);
-                                }
-                                resolve(client);
-                            }, err => {
-                                if (callback && typeof callback === 'function') {
-                                    callback(err, client);
-                                }
-                                reject(err);
-                            })
+                            client.coreService.getDevicePublicKey();
+                            if (callback && typeof callback === 'function') {
+                                // @ts-ignore
+                                callback(null, client);
+                            }
+                            resolve(client);
+
                         }, err => {
                             const client = new T1CClient(cfg);
                             reject(new T1CLibException(
@@ -110,39 +104,26 @@ export class T1CClient {
                         })
                     } else {
                         const client = new T1CClient(cfg);
-                        client.coreService.getDevicePublicKey().then(_ => {
-                            client.t1cInstalled = true;
-                            if (callback && typeof callback === 'function') {
-                                // @ts-ignore
-                                callback(null, client);
-                            }
-                            resolve(client);
-                        }, err => {
-                            if (callback && typeof callback === 'function') {
-                                callback(err, client);
-                            }
-                            reject(err);
-                        })
+                        client.coreService.getDevicePublicKey();
+                        if (callback && typeof callback === 'function') {
+                            // @ts-ignore
+                            callback(null, client);
+                        }
+                        resolve(client);
                     }
                 } else {
                     const client = new T1CClient(cfg);
-                    client.coreService.getDevicePublicKey().then(_ => {
-                        const error = new T1CLibException(
-                            "112999",
-                            res.statusText,
-                            client
-                        )
-                        if (callback && typeof callback === 'function') {
-                            // @ts-ignore
-                            callback(error, client);
-                        }
-                        reject(error)
-                    }, err => {
-                        if (callback && typeof callback === 'function') {
-                            callback(err, client);
-                        }
-                        reject(err);
-                    })
+                    client.coreService.getDevicePublicKey();
+                    const error = new T1CLibException(
+                        "112999",
+                        res.statusText,
+                        client
+                    )
+                    if (callback && typeof callback === 'function') {
+                        // @ts-ignore
+                        callback(error, client);
+                    }
+                    reject(error)
                 }
             }, err => {
                 const client = new T1CClient(cfg);

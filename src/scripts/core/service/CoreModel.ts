@@ -12,7 +12,7 @@ export interface AbstractCore {
   readersCardAvailable(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
   readersCardsUnavailable(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
   getUrl(): string;
-  getDevicePublicKey(): Promise<string>;
+  getDevicePublicKey(): void;
   version(): Promise<string>;
 }
 
@@ -132,17 +132,12 @@ export class TokenCertificateResponse extends T1CResponse {
 
 export class TokenCertificate {
   constructor(
-    public certificate?: TokenCertificateObject,
-    public certificates?: Array<TokenCertificateObject>
-  ) {}
-}
-
-export class TokenCertificateObject {
-  constructor(
       public certificate?: string,
+      public certificates?: Array<string>,
       public certificateType?: string,
       public id?: string,
       public parsedCertificate?: Certificate,
+      public parsedCertificates?: Array<Certificate>
   ) {}
 }
 
