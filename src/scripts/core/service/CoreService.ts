@@ -36,6 +36,8 @@ export class CoreService implements AbstractCore {
             undefined
         ).then(res => {
             Pinutil.setPubKey(res.data);
+        }, err => {
+            // do nothing
         });
     }
 
