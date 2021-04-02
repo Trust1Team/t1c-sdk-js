@@ -30,6 +30,8 @@ import {AbstractEidLux, PinType} from "../modules/smartcards/token/eid/lux/EidLu
 import {AbstractWacom} from "../modules/wacom/WacomModel";
 import {AbstractEidDiplad} from "../modules/smartcards/token/eid/diplad/EidDipladModel";
 import {AbstractRawPrint} from "../modules/print/rawprint/RawPrintModel";
+import {AbstractCertigna} from "../modules/smartcards/token/pki/certigna/CertignaModel";
+import {AbstractCertinomis} from "../modules/smartcards/token/pki/certinomis/CertinomisModel";
 
 const urlVersion = "/v3";
 
@@ -230,6 +232,14 @@ export class T1CClient {
 
     public diplad = (reader_id: string): AbstractEidDiplad => {
         return this.moduleFactory.createEidDiplad(reader_id);
+    }
+
+    public certigna = (reader_id: string): AbstractCertigna => {
+        return this.moduleFactory.createCertigna(reader_id);
+    }
+
+    public certinomis = (reader_id: string): AbstractCertinomis => {
+        return this.moduleFactory.createCertinomis(reader_id);
     }
 
     set t1cInstalled(value: boolean) {

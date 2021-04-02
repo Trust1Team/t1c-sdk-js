@@ -35,6 +35,10 @@ import {Crelan} from "./smartcards/payment/crelan/Crelan";
 import {AbstractCrelan} from "./smartcards/payment/crelan/CrelanModel";
 import {AbstractRawPrint} from "./print/rawprint/RawPrintModel";
 import {RawPrint} from "./print/rawprint/RawPrint";
+import {AbstractCertigna} from "./smartcards/token/pki/certigna/CertignaModel";
+import {AbstractCertinomis} from "./smartcards/token/pki/certinomis/CertinomisModel";
+import {Certinomis} from "./smartcards/token/pki/certinomis/Certinomis";
+import {Certigna} from "./smartcards/token/pki/certigna/Certigna";
 
 export interface AbstractFactory {
     createEidGeneric(reader_id: string): AbstractEidGeneric;
@@ -60,6 +64,8 @@ export interface AbstractFactory {
     // createJavaKeyTool(): AbstractJavaKeyTool
     // createSsh(): AbstractSsh
     createRawPrint(): AbstractRawPrint
+    createCertigna(reader_id?: string): AbstractCertigna
+    createCertinomis(reader_id?: string): AbstractCertinomis
 }
 
 const CONTAINER_NEW_CONTEXT_PATH = '/modules/';
@@ -86,6 +92,8 @@ const CONTAINER_REMOTE_LOADING = CONTAINER_NEW_CONTEXT_PATH + 'remoteloading';
 const CONTAINER_JAVA_KEY_TOOL = CONTAINER_NEW_CONTEXT_PATH + 'java-keytool';
 const CONTAINER_SSH = CONTAINER_NEW_CONTEXT_PATH + 'ssh';
 const CONTAINER_RAW_PRINT = CONTAINER_NEW_CONTEXT_PATH + 'rawprint';
+const CONTAINER_CERTIGNA = CONTAINER_NEW_CONTEXT_PATH + 'certigna';
+const CONTAINER_CERTINOMIS = CONTAINER_NEW_CONTEXT_PATH + 'certinomis';
 
 
 export class ModuleFactory implements AbstractFactory {
@@ -163,7 +171,13 @@ export class ModuleFactory implements AbstractFactory {
         return new PKCS11(this.url, CONTAINER_PKCS11_Object, this.connection, modulePath);
     }
 
+    public createCertigna(reader_id: string): AbstractCertigna {
+        return new Certigna(this.url, CONTAINER_CERTIGNA, this.connection, reader_id);
+    }
 
+    public createCertinomis(reader_id: string): AbstractCertinomis {
+        return new Certinomis(this.url, CONTAINER_CERTINOMIS, this.connection, reader_id);
+    }
 
 
 /*    public createDNIe(reader_id?: string): AbstractDNIe {
