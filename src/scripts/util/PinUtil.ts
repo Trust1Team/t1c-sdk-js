@@ -1,4 +1,5 @@
 import {JSEncrypt} from 'jsencrypt';
+const semver = require('semver');
 
 export class Pinutil {
     private static pubKey: string;
@@ -11,16 +12,15 @@ export class Pinutil {
         Pinutil.pubKey = key
     }
 
-    public static encryptPin(pin: string | undefined): string | undefined {
+    public static encryptPin(pin: string | undefined, version?: string): string | undefined {
         if (pin && pin.length) {
             let pubKey = Pinutil.getPubKey();
             if (pubKey != null || pubKey != undefined) {
-                // encrypt pin with pubkey
                 let crypt = new JSEncrypt();
                 crypt.setKey(pubKey);
                 return crypt.encrypt(pin);
             } else {
-                return pin;
+                if (version != undefined && semver.gte(version, '3.4.9')) return btoa(pin); else return pin;
             }
         } else {
             return undefined;

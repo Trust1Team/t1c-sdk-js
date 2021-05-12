@@ -59,7 +59,7 @@ export class PKCS11 implements AbstractPkcs11 {
     // }
 
     public signData(signData: Pkcs11SignData, callback?: (error: T1CLibException, data: Pkcs11ObjectSignResponse) => void): Promise<Pkcs11ObjectSignResponse> {
-        signData.pin = Pinutil.encryptPin(signData.pin)
+        signData.pin = Pinutil.encryptPin(signData.pin, this.connection.cfg.version)
         return this.setLibrary().then(res => {
             let req = {
                 certificateId: signData.certificateId,

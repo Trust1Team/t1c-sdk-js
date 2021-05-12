@@ -213,7 +213,8 @@ export class EidLux implements AbstractEidLux {
         body: TokenVerifyPinData,
         callback?: (error: T1CLibException, data: T1CResponse) => void
     ): Promise<T1CResponse> {
-        body.pin = Pinutil.encryptPin(body.pin)
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidLux.VERIFY_PIN, true),
@@ -228,7 +229,8 @@ export class EidLux implements AbstractEidLux {
         body: TokenAuthenticateOrSignData,
         callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void
     ): Promise<TokenAuthenticateResponse> {
-        body.pin = Pinutil.encryptPin(body.pin)
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidLux.AUTHENTICATE, true),
@@ -245,7 +247,8 @@ export class EidLux implements AbstractEidLux {
         bulk?: boolean,
         callback?: (error: T1CLibException, data: TokenSignResponse) => void
     ): Promise<TokenSignResponse> {
-        body.pin = Pinutil.encryptPin(body.pin)
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidLux.SIGN_DATA, true),

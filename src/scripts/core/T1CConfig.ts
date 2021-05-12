@@ -17,6 +17,7 @@ export class T1CConfig {
   private _t1cProxyUrl = 'https://t1c.t1t.io';
   private _t1cProxyPort = '51983';
   private _jwt = '';
+  private _version;
 
   // constructor for DTO
   public constructor(options: T1CConfigOptions) {
@@ -62,4 +63,12 @@ export class T1CConfig {
     this._jwt = value;
   }
 
+
+  get version() {
+    return this._version;
+  }
+
+  set version(value) {
+    this._version = value;
+  }
 }

@@ -18,7 +18,7 @@ import {TokenAuthenticateOrSignData, TokenVerifyPinData} from "../../TokenCard";
 import {Options} from "../../../Card";
 import {CertParser} from "../../../../../util/CertParser";
 import {ResponseHandler} from "../../../../../util/ResponseHandler";
-import {Pinutil} from "../../../../../..";
+import {Pinutil} from "../../../../../../index";
 
 export class Certigna implements AbstractCertigna {
     static CONTAINER_PREFIX = 'certigna';
@@ -62,7 +62,8 @@ export class Certigna implements AbstractCertigna {
     }
 
     public verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: TokenVerifyPinResponse) => void): Promise<TokenVerifyPinResponse> {
-        body.pin = Pinutil.encryptPin(body.pin)
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
         return this.connection.post(this.baseUrl, this.tokenApp(Certigna.VERIFY_PIN, true), body, undefined, undefined, callback);
     }
 
@@ -80,7 +81,8 @@ export class Certigna implements AbstractCertigna {
 
     public authenticate(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse> {
         body.algorithm = body.algorithm.toLowerCase();
-        body.pin = Pinutil.encryptPin(body.pin)
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
         return this.connection.post(this.baseUrl, this.tokenApp(Certigna.AUTHENTICATE, true), body, undefined, undefined, callback);
     }
 
@@ -88,7 +90,8 @@ export class Certigna implements AbstractCertigna {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
-        body.pin = Pinutil.encryptPin(body.pin)
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
         return this.connection.post(this.baseUrl, this.tokenApp(Certigna.SIGN_DATA, true), body,  this.getBulkSignQueryParams(bulk), undefined, callback);
     }
 

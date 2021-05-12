@@ -76,9 +76,9 @@ export class T1CClient {
                     Authorization: "Bearer " + cfg.t1cJwt,
                     "X-CSRF-Token": "t1c-js"
                 }
-            }).then((res) => {
-                if (res.status >= 200 && res.status < 300) {
-                    if (res.data.t1CInfoAPI.service.deviceType && res.data.t1CInfoAPI.service.deviceType == "PROXY") {
+            }).then((infoRes) => {
+                if (infoRes.status >= 200 && infoRes.status < 300) {
+                    if (infoRes.data.t1CInfoAPI.service.deviceType && infoRes.data.t1CInfoAPI.service.deviceType == "PROXY") {
                         console.info("Proxy detected");
                         axios.get(cfg.t1cProxyUrl + "/consent", {
                             withCredentials: true, headers: {
@@ -105,6 +105,7 @@ export class T1CClient {
                             ));
                         })
                     } else {
+                        cfg.version = infoRes.data.t1CInfoAPI.version;
                         const client = new T1CClient(cfg);
                         client.coreService.getDevicePublicKey();
                         if (callback && typeof callback === 'function') {
@@ -118,7 +119,7 @@ export class T1CClient {
                     client.coreService.getDevicePublicKey();
                     const error = new T1CLibException(
                         "112999",
-                        res.statusText,
+                        infoRes.statusText,
                         client
                     )
                     if (callback && typeof callback === 'function') {
