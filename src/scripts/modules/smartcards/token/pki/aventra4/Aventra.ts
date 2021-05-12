@@ -77,12 +77,14 @@ export class Aventra implements AbstractAventra {
     }
 
     public verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: TokenVerifyPinResponse) => void): Promise<TokenVerifyPinResponse> {
-        body.pin = Pinutil.encryptPin(body.pin)
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
         return this.connection.post(this.baseUrl, this.tokenApp(Aventra.VERIFY_PIN, true), body, undefined, undefined, callback);
     }
 
     public resetPin(body: TokenResetPinData, callback?: (error: T1CLibException, data: TokenResetPinResponse) => void): Promise<TokenResetPinResponse> {
-        body.pin = Pinutil.encryptPin(body.pin)
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
         // @ts-ignore
         body.puk = Pinutil.encryptPin(body.puk)
         return this.connection.post(this.baseUrl, this.tokenApp(Aventra.RESET_PIN, true), body, undefined, undefined, callback);
@@ -102,7 +104,8 @@ export class Aventra implements AbstractAventra {
 
     public authenticate(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse> {
         body.algorithm = body.algorithm.toLowerCase();
-        body.pin = Pinutil.encryptPin(body.pin)
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
         return this.connection.post(this.baseUrl, this.tokenApp(Aventra.AUTHENTICATE, true), body, undefined, undefined, callback);
     }
 
@@ -110,7 +113,8 @@ export class Aventra implements AbstractAventra {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
-        body.pin = Pinutil.encryptPin(body.pin)
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
         return this.connection.post(this.baseUrl, this.tokenApp(Aventra.SIGN_DATA, true), body,  this.getBulkSignQueryParams(bulk), undefined, callback);
     }
 

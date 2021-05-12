@@ -231,7 +231,8 @@ export class EidDiplad implements AbstractEidDiplad {
         body: TokenVerifyPinData,
         callback?: (error: T1CLibException, data: T1CResponse) => void
     ): Promise<T1CResponse> {
-        body.pin = Pinutil.encryptPin(body.pin)
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidDiplad.VERIFY_PIN, true),
@@ -246,7 +247,8 @@ export class EidDiplad implements AbstractEidDiplad {
         body: TokenAuthenticateOrSignData,
         callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void
     ): Promise<TokenAuthenticateResponse> {
-        body.pin = Pinutil.encryptPin(body.pin)
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidDiplad.AUTHENTICATE, true),
@@ -263,7 +265,8 @@ export class EidDiplad implements AbstractEidDiplad {
         bulk?: boolean,
         callback?: (error: T1CLibException, data: TokenSignResponse) => void
     ): Promise<TokenSignResponse> {
-        body.pin = Pinutil.encryptPin(body.pin)
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
         return this.connection.post(
             this.baseUrl,
             this.tokenApp(EidDiplad.SIGN_DATA, true),
