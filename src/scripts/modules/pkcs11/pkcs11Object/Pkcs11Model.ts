@@ -63,7 +63,8 @@ export class Pkcs11SignData {
                 public algorithm: string,
                 public data: string,
                 public pin?: string,
-                public osDialog?: boolean) {}
+                public osDialog?: boolean,
+                public base64Encoded?: boolean) {}
 }
 
 export class Pkcs11ObjectTokenResponse {

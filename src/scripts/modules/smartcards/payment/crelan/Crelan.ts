@@ -83,7 +83,8 @@ export class Crelan implements AbstractCrelan {
     }
 
     verifyPin(body: PaymentVerifyPinData, callback?: (error: T1CLibException, data: PaymentVerifyPinResponse) => void): Promise<PaymentVerifyPinResponse> {
-        body.pin = Pinutil.encryptPin(body.pin)
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
         return this.connection.post(
             this.baseUrl,
             this.paymentApp(Crelan.VERIFY_PIN, undefined, true),
