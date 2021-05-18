@@ -1,6 +1,6 @@
 
 export class PaymentVerifyPinData {
-    constructor(public pin?: string, public osDialog? :boolean) {
+    constructor(public pin?: string, public osDialog? :boolean, public base64Encoded?: boolean) {
     }
 }
 
