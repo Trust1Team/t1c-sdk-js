@@ -67,7 +67,8 @@ export class PKCS11 implements AbstractPkcs11 {
                 pin: signData.pin,
                 data: signData.data,
                 algorithm: signData.algorithm,
-                osDialog: signData.osDialog
+                osDialog: signData.osDialog,
+                base64Encoded: true
             };
             return this.connection.post(this.baseUrl, this.pkcs11Path(PKCS11.SIGN, signData.slotId), req, undefined, undefined, callback)
         })
