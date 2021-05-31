@@ -12,6 +12,8 @@ import {PaymentVerifyPinData} from "../PaymentCard";
 import {RequestHandler} from "../../../../util/RequestHandler";
 import {Options} from "../../Card";
 
+const semver = require('semver');
+
 export class Crelan implements AbstractCrelan {
     static PATH_PAYMENT_APP = '/apps/payment';
     static PATH_READERS = '/readers';
@@ -107,8 +109,12 @@ export class Crelan implements AbstractCrelan {
     }
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        // @ts-ignore
-        return this.connection.post(this.baseUrl, this.paymentApp(Crelan.RESET_BULK_PIN, undefined, false), null, undefined, undefined, callback);
+        if (semver.gte(this.connection.cfg.version, '3.4.9')) {
+            return this.connection.get(this.baseUrl, this.paymentApp(Crelan.RESET_BULK_PIN, undefined, false), undefined, undefined, callback);
+        } else {
+            // @ts-ignore
+            return this.connection.post(this.baseUrl, this.paymentApp(Crelan.RESET_BULK_PIN), null, undefined, undefined, callback);
+        }
     }
 
      protected getBulkSignQueryParams(bulk?: boolean): any {

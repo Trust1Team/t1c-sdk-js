@@ -20,6 +20,8 @@ import {CertParser} from "../../../../../util/CertParser";
 import {ResponseHandler} from "../../../../../util/ResponseHandler";
 import {Pinutil} from "../../../../../../index";
 
+const semver = require('semver');
+
 export class Certigna implements AbstractCertigna {
     static CONTAINER_PREFIX = 'certigna';
     static PATH_TOKEN_APP = '/apps/token';
@@ -103,9 +105,13 @@ export class Certigna implements AbstractCertigna {
         });
     }
 
-    public resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        // @ts-ignore
-        return this.connection.post(this.baseUrl, this.tokenApp(Certigna.RESET_BULK_PIN, false), null, undefined, undefined, callback);
+    resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
+        if (semver.gte(this.connection.cfg.version, '3.4.9')) {
+            return this.connection.get(this.baseUrl, this.tokenApp(Certigna.RESET_BULK_PIN, false), undefined, undefined, callback);
+        } else {
+            // @ts-ignore
+            return this.connection.post(this.baseUrl, this.tokenApp(Certigna.RESET_BULK_PIN), null, undefined, undefined, callback);
+        }
     }
 
     // resolves the reader_id in the base URL
