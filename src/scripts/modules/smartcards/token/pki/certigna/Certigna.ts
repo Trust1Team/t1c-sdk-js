@@ -106,7 +106,7 @@ export class Certigna implements AbstractCertigna {
     }
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        if (semver.gte(this.connection.cfg.version, '3.4.9')) {
+        if (semver.gt(this.connection.cfg.version, '3.4.9')) {
             return this.connection.get(this.baseUrl, this.tokenApp(Certigna.RESET_BULK_PIN, false), undefined, undefined, callback);
         } else {
             // @ts-ignore

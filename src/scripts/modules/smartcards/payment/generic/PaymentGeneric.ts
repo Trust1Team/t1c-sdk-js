@@ -100,7 +100,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     }
 
     resetBulkPin(module: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        if (semver.gte(this.connection.cfg.version, '3.4.9')) {
+        if (semver.gt(this.connection.cfg.version, '3.4.9')) {
             return this.connection.get(this.baseUrl, this.paymentApp(module, PaymentGeneric.RESET_BULK_PIN, undefined, false), undefined, undefined, callback);
         } else {
             // @ts-ignore
