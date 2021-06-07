@@ -8,7 +8,6 @@ import {
     LocalAuthAdminConnection,
     LocalAdminConnection,
 } from './client/Connection';
-import {DataResponse,} from './service/CoreModel';
 import {T1CLibException} from './exceptions/CoreExceptions';
 import {AbstractEidGeneric} from "../modules/smartcards/token/eid/generic/EidGenericModel";
 import {AbstractEidBE} from '../modules/smartcards/token/eid/be/EidBeModel';
