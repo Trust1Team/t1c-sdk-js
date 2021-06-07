@@ -20,6 +20,8 @@ import {CertParser} from "../../../../../util/CertParser";
 import {ResponseHandler} from "../../../../../util/ResponseHandler";
 import {Pinutil} from "../../../../../..";
 
+const semver = require('semver');
+
 export class EidLux implements AbstractEidLux {
     static PATH_TOKEN_APP = '/apps/token';
     static PATH_READERS = '/readers';
@@ -260,8 +262,12 @@ export class EidLux implements AbstractEidLux {
     }
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        // @ts-ignore
-        return this.connection.post(this.baseUrl, this.tokenApp(EidLux.RESET_BULK_PIN, false), null, undefined, undefined, callback);
+        if (semver.lt(this.connection.cfg.version, '3.5.0')) {
+            return this.connection.get(this.baseUrl, this.tokenApp(EidLux.RESET_BULK_PIN, false), undefined, undefined, callback);
+        } else {
+            // @ts-ignore
+            return this.connection.post(this.baseUrl, this.tokenApp(EidLux.RESET_BULK_PIN), null, undefined, undefined, callback);
+        }
     }
 
     // resolves the reader_id in the base URL
