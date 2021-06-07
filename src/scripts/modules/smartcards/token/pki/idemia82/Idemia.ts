@@ -120,7 +120,7 @@ export class Idemia implements AbstractIdemia {
     }
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        if (semver.gt(this.connection.cfg.version, '3.4.9')) {
+        if (semver.lt(this.connection.cfg.version, '3.5.0')) {
             return this.connection.get(this.baseUrl, this.tokenApp(Idemia.RESET_BULK_PIN, false), undefined, undefined, callback);
         } else {
             // @ts-ignore

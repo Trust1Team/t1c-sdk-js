@@ -20,7 +20,7 @@ export class Pinutil {
                 crypt.setKey(pubKey);
                 return crypt.encrypt(pin);
             } else {
-                if (version != undefined && semver.gte(version, '3.4.9')) return btoa(pin); else return pin;
+                if (version != undefined && semver.lt(version, '3.5.0')) return btoa(pin); else return pin;
             }
         } else {
             return undefined;
