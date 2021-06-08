@@ -62,7 +62,7 @@ export class T1CClient {
         this.moduleFactory = new ModuleFactory(this.localConfig.t1cApiUrl + urlVersion, this.connection);
         this.localTestConnection = new LocalTestConnection(this.localConfig);
         this.coreService = new CoreService(this.localConfig.t1cApiUrl, this.authConnection);
-        this.coreService.version().then(info => console.info("Running T1C-sdk-js version: " + info))
+        // this.coreService.version().then(info => console.info("Running T1C-sdk-js version: " + info))
     }
 
     public static checkPolyfills() {
@@ -81,11 +81,9 @@ export class T1CClient {
                     this.init(resolve, reject, cfg, callback);
                 }
             }, err => {
-                if (callback && typeof callback === 'function') {
-                    // @ts-ignore
-                    callback(new T1CLibException("112999", "Failed to contact the Trust1Connector API", _client), _client);
-                }
-                reject(new T1CLibException("112999", "Failed to contact the Trust1Connector API", _client));
+                console.error(err)
+                if (callback && typeof callback === 'function') {callback(new T1CLibException("112999", "Failed to contact the Trust1Connector", _client), _client);}
+                reject(new T1CLibException("112999", "Failed to contact the Trust1Connector", _client));
             });
         });
 
@@ -199,44 +197,23 @@ export class T1CClient {
     }
 
 
-    /**
-     * 1. check if browser has consent value
-     * No key:
-     2. start consent flow application side
-     3. send random with optional duration in days to the REG (on default port)
-     4. Response b64 with the consent information
-     1. Store information on localstorage
-     2. b64 decode, read agent value
-     3. store agent values required in memory
-     4. reinitialise connector with correct agent values
-
-     Key exists:
-     2. Provide key from localstorage on Validate enpoint
-     1. Invalid, consent needed
-     2. Valid, updated b64
-     1. Store information on localstorage
-     2. b64 decode, read agent value
-     3. store agent values required in memory
-     4. reinitialise connector with correct agent values
-     */
     private static init(resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void) {
         // base client config
         let _client = new T1CClient(cfg);
         const currentConsent = ConsentUtil.getRawConsent(cfg.t1cApiUrl)
         if (currentConsent != null) {
             // Validate
-            console.log(currentConsent)
             // @ts-ignore
             _client.core().validateConsent(currentConsent).then(validateRes => {
                 resolve(validateRes);
             }, err => {
                 if (!callback || typeof callback !== 'function') { callback = function () {}; }
-                callback(new T1CLibException("814501", "No valid consent", undefined), undefined)
-                reject(new T1CLibException("814501", "No valid consent", undefined));
+                callback(new T1CLibException("814501", err.description ? err.description : "No valid consent", undefined), undefined)
+                reject(new T1CLibException("814501", err.description ? err.description : "No valid consent", undefined));
             })
 
         } else {
-            // Consent required 814501
+            // Consent required
             let error = new T1CLibException(
                 "814501",
                 "Consent required",
@@ -273,51 +250,29 @@ export class T1CClient {
                         const client = new T1CClient(cfg);
                         client.t1cInstalled = true;
                         client.coreService.getDevicePublicKey();
-                        if (callback && typeof callback === 'function') {
-                            // @ts-ignore
-                            callback(null, client);
-                        }
+                        if (callback && typeof callback === 'function') { callback(undefined, client); }
                         resolve(client);
-
                     }, err => {
                         const client = new T1CClient(cfg);
-                        reject(new T1CLibException(
-                            err.response?.data.code,
-                            err.response?.data.description,
-                            client
-                        ));
+                        reject(new T1CLibException(err.response?.data.code, err.response?.data.description, client));
                     })
                 } else {
                     cfg.version = infoRes.data.t1CInfoAPI.version;
                     const client = new T1CClient(cfg);
                     client.coreService.getDevicePublicKey();
-                    if (callback && typeof callback === 'function') {
-                        // @ts-ignore
-                        callback(null, client);
-                    }
+                    if (callback && typeof callback === 'function') { callback(undefined, client); }
                     resolve(client);
                 }
             } else {
                 const client = new T1CClient(cfg);
                 client.coreService.getDevicePublicKey();
-                const error = new T1CLibException(
-                    "112999",
-                    infoRes.statusText,
-                    client
-                )
-                if (callback && typeof callback === 'function') {
-                    // @ts-ignore
-                    callback(error, client);
-                }
+                const error = new T1CLibException("112999", infoRes.statusText, client)
+                if (callback && typeof callback === 'function') { callback(error, client); }
                 reject(error)
             }
         }, err => {
             const client = new T1CClient(cfg);
-            reject(new T1CLibException(
-                "112999",
-                "Failed to contact the Trust1Connector API",
-                client
-            ))
+            reject(new T1CLibException("112999", "Failed to contact the Trust1Connector API", client))
             console.error(err);
         })
     }

@@ -64,6 +64,7 @@ export class CoreService implements AbstractCore {
                     callback(undefined, newClient)
                     resolve(newClient)
                 } else  {
+                    console.error("Unable to parse consent")
                     if (!callback || typeof callback !== 'function') { callback = function () {}; }
                     callback(new T1CLibException("814501", "No valid consent", undefined), undefined)
                     reject(new T1CLibException("814501", "No valid consent", undefined));
@@ -115,8 +116,8 @@ export class CoreService implements AbstractCore {
                     resolve(newClient)
                 }, err => {
                     if (!callback || typeof callback !== 'function') {callback = function () {};}
-                    callback(err, undefined)
-                    reject(err);
+                    callback(new T1CLibException("814500", err.description ? err.description : "No valid consent", new T1CClient(this.connection.cfg)), undefined)
+                    reject(new T1CLibException("814500", err.description ? err.description : "No valid consent", new T1CClient(this.connection.cfg)));
                 })
             }
         });

@@ -39,6 +39,7 @@ export class ConsentUtil {
             }
 
         } else {
+            console.error("No consent present")
             return null;
         }
     }
