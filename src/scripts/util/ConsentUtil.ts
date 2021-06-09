@@ -2,6 +2,10 @@ export class ConsentUtil {
     private static consentKey: string = "t1c-consent-";
 
 
+    public static removeConsent(domain: string) {
+        localStorage.removeItem(ConsentUtil.consentKey + domain)
+    }
+
     public static getRawConsent(domain: string): string | null {
         const localConsent = localStorage.getItem(ConsentUtil.consentKey + domain)
         if (localConsent != null) {

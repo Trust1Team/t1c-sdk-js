@@ -200,7 +200,7 @@ export class T1CClient {
     private static init(resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void) {
         // base client config
         let _client = new T1CClient(cfg);
-        const currentConsent = ConsentUtil.getRawConsent(cfg.t1cApiUrl)
+        const currentConsent = ConsentUtil.getRawConsent(cfg.applicationDomain + "::" + cfg.t1cApiUrl)
         if (currentConsent != null) {
             // Validate
             // @ts-ignore
@@ -208,21 +208,14 @@ export class T1CClient {
                 resolve(validateRes);
             }, err => {
                 if (!callback || typeof callback !== 'function') { callback = function () {}; }
-                callback(new T1CLibException("814501", err.description ? err.description : "No valid consent", undefined), undefined)
-                reject(new T1CLibException("814501", err.description ? err.description : "No valid consent", undefined));
+                callback(new T1CLibException("814501", err.description ? err.description : "No valid consent", _client), undefined)
+                reject(new T1CLibException("814501", err.description ? err.description : "No valid consent", _client));
             })
 
         } else {
             // Consent required
-            let error = new T1CLibException(
-                "814501",
-                "Consent required",
-                _client
-            )
-            if (callback && typeof callback === 'function') {
-                // @ts-ignore
-                callback(error, _client);
-            }
+            let error = new T1CLibException("814501", "Consent required", _client)
+            if (callback && typeof callback === 'function') {callback(error, undefined);}
             reject(error)
         }
     }
@@ -240,7 +233,7 @@ export class T1CClient {
             if (infoRes.status >= 200 && infoRes.status < 300) {
                 if (infoRes.data.t1CInfoAPI.service.deviceType && infoRes.data.t1CInfoAPI.service.deviceType == "PROXY") {
                     console.info("Proxy detected");
-                    axios.get(cfg.t1cProxyUrl + "/consent", {
+                    axios.get(cfg.t1cApiUrl + "/consent", {
                         withCredentials: true, headers: {
                             Authorization: "Bearer " + cfg.t1cJwt,
                             "X-CSRF-Token": "t1c-js"
