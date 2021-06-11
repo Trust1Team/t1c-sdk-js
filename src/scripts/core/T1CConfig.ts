@@ -2,9 +2,10 @@ export class T1CConfigOptions {
   constructor(
     public t1cApiUrl?: string,
     public t1cApiPort?: string,
-    public t1cProxyUrl?: string,
-    public t1cProxyPort?: string,
-    public jwt?: string
+    public t1cProxyUrl?: string, // deprecated
+    public t1cProxyPort?: string, // deprecated
+    public jwt?: string,
+    public applicationDomain?: string, // "rmc.t1t.be"
   ) {}
 }
 
@@ -17,6 +18,7 @@ export class T1CConfig {
   private _t1cProxyUrl = 'https://t1c.t1t.io';
   private _t1cProxyPort = '51983';
   private _jwt = '';
+  private _applicationDomain = ''; // "rmc.t1t.be"
   private _version;
 
   // constructor for DTO
@@ -34,10 +36,22 @@ export class T1CConfig {
       if (options.t1cProxyPort) {
         this._t1cProxyPort = options.t1cProxyPort;
       }
+      if (options.applicationDomain) {
+        this._applicationDomain = options.applicationDomain;
+      }
       if (options.jwt) {
         this._jwt = options.jwt;
       }
     }
+  }
+
+
+  get applicationDomain(): string {
+    return this._applicationDomain;
+  }
+
+  set applicationDomain(value: string) {
+    this._applicationDomain = value;
   }
 
   set t1cApiPort(value: string) {

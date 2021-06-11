@@ -5,6 +5,7 @@ import Certificate from 'pkijs/src/Certificate';
 export interface AbstractCore {
   // getConsent(title: string, codeWord: string, durationInDays?: number, alertLevel?: string, alertPosition?: string, type?: string, timeoutInSeconds?: number, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
   getImplicitConsent(codeWord: string, durationInDays?: number, callback?: (error?: T1CLibException, data?: T1CClient) => void): Promise<T1CClient>;
+  validateConsent(consent: string, callback?: (error?: T1CLibException, data?: T1CClient) => void): Promise<T1CClient>;
   updateJWT(jwt: string, callback?: (error: T1CLibException, data?: T1CClient) => void): Promise<T1CClient>
   info(callback?: (error: T1CLibException, data: InfoResponse) => void): void | Promise<InfoResponse>;
   reader(reader_id: string, callback?: (error: T1CLibException, data: SingleReaderResponse) => void): Promise<SingleReaderResponse>;
@@ -45,22 +46,22 @@ export class DataObjectResponse extends T1CResponse {
 }
 
 export class InfoOS {
-  constructor(public architecture: String, public os: String, public version: String){}
+  constructor(public architecture?: String, public os?: String, public version?: String){}
 }
 export class InfoJava {
-  constructor(public runtime: String, public spec: String, public java: String){}
+  constructor(public runtime?: String, public spec?: String, public java?: String){}
 }
 export class InfoUser {
-  constructor(public timezone: String, public country: String, public language: String, public home: String, public tempDir: String) {}
+  constructor(public timezone?: String, public country?: String, public language?: String, public home?: String, public tempDir?: String, public name?: string, public username?: string, public installedDir?: string) {}
 }
 export class InfoService{
-  constructor(public url: String, public apiPort: String, public gRpcPort: String) {}
+  constructor(public url?: String, public apiPort?: String, public gRpcPort?: String, public deviceType?: string, public distributionServiceUrl?: string) {}
 }
 export class InfoApi{
-  constructor(public service: InfoService,public activated: boolean,public citrix: boolean,public uid: String, public modules: Array<String>, public version: String, public logLevel: String) {}
+  constructor(public service?: InfoService,public activated?: boolean,public citrix?: boolean, public uid?: String, public modules?: Array<String>, public version?: String, public logLevel?: String, public sharedEnvironment?: boolean) {}
 }
 export class InfoResponse { //extends T1CResponse
-  constructor(public t1CInfoOS: InfoOS, public t1CInfoJava: InfoJava, public t1CInfoUser: InfoUser, public t1CInfoAPI: InfoApi) {
+  constructor(public t1CInfoOS?: InfoOS, public t1CInfoJava?: InfoJava, public t1CInfoRuntime?: T1CInfoRuntime, public t1CInfoUser?: InfoUser, public t1CInfoAPI?: InfoApi) {
   }
 }
 
@@ -202,3 +203,11 @@ export class CheckT1CVersionResponse extends T1CResponse {
     super(success, data);
   }
 }
+
+
+export class T1CInfoRuntime {
+  constructor(public runtime?: string, public desktop?: string, public version?: string, public dateTime?: string) {
+  }
+}
+
+
