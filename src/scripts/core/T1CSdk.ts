@@ -31,8 +31,10 @@ import {AbstractEidDiplad} from "../modules/smartcards/token/eid/diplad/EidDipla
 import {AbstractRawPrint} from "../modules/print/rawprint/RawPrintModel";
 import {AbstractCertigna} from "../modules/smartcards/token/pki/certigna/CertignaModel";
 import {AbstractCertinomis} from "../modules/smartcards/token/pki/certinomis/CertinomisModel";
+import {ConsentUtil} from "../util/ConsentUtil";
 
 const urlVersion = "/v3";
+const semver = require('semver');
 
 export class T1CClient {
     private _t1cInstalled: boolean | undefined;
@@ -60,83 +62,31 @@ export class T1CClient {
         this.moduleFactory = new ModuleFactory(this.localConfig.t1cApiUrl + urlVersion, this.connection);
         this.localTestConnection = new LocalTestConnection(this.localConfig);
         this.coreService = new CoreService(this.localConfig.t1cApiUrl, this.authConnection);
-        this.coreService.version().then(info => console.log("Running T1C-sdk-js version: " + info))
+        // this.coreService.version().then(info => console.info("Running T1C-sdk-js version: " + info))
     }
 
     public static checkPolyfills() {
         Polyfills.check();
     }
 
-    // TODO clean this up
     public static initialize(cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
         return new Promise((resolve, reject) => {
-            axios.get(cfg.t1cApiUrl + "/info", {
-                withCredentials: true, headers: {
-                    Authorization: "Bearer " + cfg.t1cJwt,
-                    "X-CSRF-Token": "t1c-js"
-                }
-            }).then((infoRes) => {
-                if (infoRes.status >= 200 && infoRes.status < 300) {
-                    if (infoRes.data.t1CInfoAPI.service.deviceType && infoRes.data.t1CInfoAPI.service.deviceType == "PROXY") {
-                        console.info("Proxy detected");
-                        axios.get(cfg.t1cProxyUrl + "/consent", {
-                            withCredentials: true, headers: {
-                                Authorization: "Bearer " + cfg.t1cJwt,
-                                "X-CSRF-Token": "t1c-js"
-                            }
-                        }).then((res) => {
-                            cfg.t1cApiPort = res.data.data.apiPort;
-                            const client = new T1CClient(cfg);
-                            client.t1cInstalled = true;
-                            client.coreService.getDevicePublicKey();
-                            if (callback && typeof callback === 'function') {
-                                // @ts-ignore
-                                callback(null, client);
-                            }
-                            resolve(client);
-
-                        }, err => {
-                            const client = new T1CClient(cfg);
-                            reject(new T1CLibException(
-                                err.response?.data.code,
-                                err.response?.data.description,
-                                client
-                            ));
-                        })
-                    } else {
-                        cfg.version = infoRes.data.t1CInfoAPI.version;
-                        const client = new T1CClient(cfg);
-                        client.coreService.getDevicePublicKey();
-                        if (callback && typeof callback === 'function') {
-                            // @ts-ignore
-                            callback(null, client);
-                        }
-                        resolve(client);
-                    }
+            // Base client
+            let _client = new T1CClient(cfg);
+            _client.core().info().then(infoRes => {
+                _client.config().version = infoRes.t1CInfoAPI?.version;
+                if (infoRes.t1CInfoAPI && semver.lt(semver.coerce(infoRes.t1CInfoAPI.version).version, '3.5.0')) {
+                    this._init(resolve, reject, cfg, callback);
                 } else {
-                    const client = new T1CClient(cfg);
-                    client.coreService.getDevicePublicKey();
-                    const error = new T1CLibException(
-                        "112999",
-                        infoRes.statusText,
-                        client
-                    )
-                    if (callback && typeof callback === 'function') {
-                        // @ts-ignore
-                        callback(error, client);
-                    }
-                    reject(error)
+                    this.init(resolve, reject, cfg, callback);
                 }
             }, err => {
-                const client = new T1CClient(cfg);
-                reject(new T1CLibException(
-                    "112999",
-                    "Failed to contact the Trust1Connector API",
-                    client
-                ))
-                console.error(err);
-            })
+                console.error(err)
+                if (callback && typeof callback === 'function') {callback(new T1CLibException("112999", "Failed to contact the Trust1Connector", _client), _client);}
+                reject(new T1CLibException("112999", "Failed to contact the Trust1Connector", _client));
+            });
         });
+
     }
 
     /**
@@ -244,6 +194,80 @@ export class T1CClient {
 
     set t1cInstalled(value: boolean) {
         this._t1cInstalled = value;
+    }
+
+
+    private static init(resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void) {
+        // base client config
+        let _client = new T1CClient(cfg);
+        const currentConsent = ConsentUtil.getRawConsent(cfg.applicationDomain + "::" + cfg.t1cApiUrl)
+        if (currentConsent != null) {
+            // Validate
+            // @ts-ignore
+            _client.core().validateConsent(currentConsent).then(validateRes => {
+                resolve(validateRes);
+            }, err => {
+                if (!callback || typeof callback !== 'function') { callback = function () {}; }
+                callback(new T1CLibException("814501", err.description ? err.description : "No valid consent", _client), undefined)
+                reject(new T1CLibException("814501", err.description ? err.description : "No valid consent", _client));
+            })
+
+        } else {
+            // Consent required
+            let error = new T1CLibException("814501", "Consent required", _client)
+            if (callback && typeof callback === 'function') {callback(error, undefined);}
+            reject(error)
+        }
+    }
+
+    /**
+     * Deprecated
+     */
+    private static _init(resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void) {
+        axios.get(cfg.t1cApiUrl + "/info", {
+            withCredentials: true, headers: {
+                Authorization: "Bearer " + cfg.t1cJwt,
+                "X-CSRF-Token": "t1c-js"
+            }
+        }).then((infoRes) => {
+            if (infoRes.status >= 200 && infoRes.status < 300) {
+                if (infoRes.data.t1CInfoAPI.service.deviceType && infoRes.data.t1CInfoAPI.service.deviceType == "PROXY") {
+                    console.info("Proxy detected");
+                    axios.get(cfg.t1cApiUrl + "/consent", {
+                        withCredentials: true, headers: {
+                            Authorization: "Bearer " + cfg.t1cJwt,
+                            "X-CSRF-Token": "t1c-js"
+                        }
+                    }).then((res) => {
+                        cfg.t1cApiPort = res.data.data.apiPort;
+                        const client = new T1CClient(cfg);
+                        client.t1cInstalled = true;
+                        client.coreService.getDevicePublicKey();
+                        if (callback && typeof callback === 'function') { callback(undefined, client); }
+                        resolve(client);
+                    }, err => {
+                        const client = new T1CClient(cfg);
+                        reject(new T1CLibException(err.response?.data.code, err.response?.data.description, client));
+                    })
+                } else {
+                    cfg.version = infoRes.data.t1CInfoAPI.version;
+                    const client = new T1CClient(cfg);
+                    client.coreService.getDevicePublicKey();
+                    if (callback && typeof callback === 'function') { callback(undefined, client); }
+                    resolve(client);
+                }
+            } else {
+                const client = new T1CClient(cfg);
+                client.coreService.getDevicePublicKey();
+                const error = new T1CLibException("112999", infoRes.statusText, client)
+                if (callback && typeof callback === 'function') { callback(error, client); }
+                reject(error)
+            }
+        }, err => {
+            const client = new T1CClient(cfg);
+            reject(new T1CLibException("112999", "Failed to contact the Trust1Connector API", client))
+            console.error(err);
+        })
     }
 
 }

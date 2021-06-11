@@ -89,7 +89,7 @@ export class FileExchange implements AbstractFileExchange {
         );
     }
 
-    deleteType(entity: string, type: string, callback?: (error: T1CLibException, data: boolean) => void): Promise<boolean> {
+    deleteType(entity: string, type: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
         let body = {entity, type};
         return this.connection.post(
             this.baseUrl,
