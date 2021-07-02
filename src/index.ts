@@ -38,12 +38,6 @@ export * from './scripts/modules/smartcards/token/eid/diplad/EidDipladModel';
 export * from './scripts/modules/smartcards/token/eid/generic/EidGeneric';
 export * from './scripts/modules/smartcards/token/eid/generic/EidGenericModel';
 
-export * from './scripts/modules/pkcs11/generic/Pkcs11Generic';
-export * from './scripts/modules/pkcs11/generic/Pkcs11GenericModel';
-
-export * from './scripts/modules/pkcs11/pkcs11Object/Pkcs11';
-export * from './scripts/modules/pkcs11/pkcs11Object/Pkcs11Model';
-
 export * from './scripts/modules/smartcards/token/pki/idemia82/Idemia';
 export * from './scripts/modules/smartcards/token/pki/idemia82/IdemiaModel';
 
@@ -53,5 +47,22 @@ export * from './scripts/modules/smartcards/token/pki/oberthur73/OberthurModel';
 export * from './scripts/modules/smartcards/token/pki/aventra4/Aventra';
 export * from './scripts/modules/smartcards/token/pki/aventra4/AventraModel';
 
+export * from './scripts/modules/smartcards/token/pki/certigna/Certigna';
+export * from './scripts/modules/smartcards/token/pki/certigna/CertignaModel';
+
+export * from './scripts/modules/smartcards/token/pki/certinomis/Certinomis';
+export * from './scripts/modules/smartcards/token/pki/certinomis/CertinomisModel';
+
+export * from './scripts/modules/smartcards/token/pki/dnie/DNIe';
+export * from './scripts/modules/smartcards/token/pki/dnie/DNIeModel';
+
+export * from './scripts/modules/smartcards/token/pki/safenet/Safenet';
+export * from './scripts/modules/smartcards/token/pki/safenet/SafenetModel';
+
+export * from './scripts/modules/smartcards/token/pki/eHerkenning/eHerkenning';
+export * from './scripts/modules/smartcards/token/pki/eHerkenning/eHerkenningModel';
+
+export * from './scripts/modules/smartcards/token/pki/jcop/Jcop';
+export * from './scripts/modules/smartcards/token/pki/jcop/JcopModel';
 
 Polyfills.check();

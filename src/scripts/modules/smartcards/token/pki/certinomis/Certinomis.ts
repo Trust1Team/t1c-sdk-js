@@ -18,7 +18,7 @@ import {TokenAuthenticateOrSignData, TokenVerifyPinData} from "../../TokenCard";
 import {Options} from "../../../Card";
 import {CertParser} from "../../../../../util/CertParser";
 import {ResponseHandler} from "../../../../../util/ResponseHandler";
-import {Pinutil} from "../../../../../..";
+import {Pinutil} from "../../../../../../index";
 
 const semver = require('semver');
 
@@ -43,16 +43,6 @@ export class Certinomis implements AbstractCertinomis {
     static SUPPORTED_ALGOS = '/supported-algorithms'
 
     constructor(protected baseUrl: string, protected containerUrl: string, protected connection: LocalConnection, protected reader_id: string) {
-    }
-
-    // filters
-
-    public allCertFilters() {
-        return ['authenticationCertificate', 'nonRepudiationCertificate'];
-    }
-
-    public allKeyRefs() {
-        return ['authenticate', 'sign'];
     }
 
     public authenticationCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {

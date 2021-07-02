@@ -17,8 +17,6 @@ import {
 import {Options} from "../../../Card";
 
 export interface AbstractOberthur73 {
-    allCertFilters(): string[];
-    allKeyRefs(): string[];
     allCerts(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse>;
     tokenData(callback?: (error: T1CLibException, data: TokenDataResponse) => void): Promise<TokenDataResponse>;
     rootCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse>;
