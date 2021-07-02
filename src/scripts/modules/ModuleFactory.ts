@@ -43,6 +43,8 @@ import {AbstractEherkenning} from "./smartcards/token/pki/eHerkenning/eHerkennin
 import {EHerkenning} from "./smartcards/token/pki/eHerkenning/eHerkenning";
 import {AbstractJcop} from "./smartcards/token/pki/jcop/JcopModel";
 import {Jcop} from "./smartcards/token/pki/jcop/Jcop";
+import {AbstractAirbus} from "./smartcards/token/pki/airbus/AirbusModel";
+import {Airbus} from "./smartcards/token/pki/airbus/Airbus";
 
 export interface AbstractFactory {
     createEidGeneric(reader_id: string): AbstractEidGeneric;
@@ -63,6 +65,7 @@ export interface AbstractFactory {
     createSafenet(reader_id?: string): AbstractSafenet
     createEherkenning(reader_id?: string): AbstractEherkenning
     createJcop(reader_id?: string): AbstractJcop
+    createAirbus(reader_id?: string): AbstractAirbus
 }
 
 const CONTAINER_NEW_CONTEXT_PATH = '/modules/';
@@ -73,6 +76,7 @@ const CONTAINER_DNIE = CONTAINER_NEW_CONTEXT_PATH + 'dnie';
 const CONTAINER_SAFENET = CONTAINER_NEW_CONTEXT_PATH + 'safenet';
 const CONTAINER_EHERKENNING = CONTAINER_NEW_CONTEXT_PATH + 'eherkenning';
 const CONTAINER_JCOP = CONTAINER_NEW_CONTEXT_PATH + 'jcop3';
+const CONTAINER_AIRBUS = CONTAINER_NEW_CONTEXT_PATH + 'airbus';
 const CONTAINER_EMV = CONTAINER_NEW_CONTEXT_PATH + 'emv';
 const CONTAINER_CRELAN = CONTAINER_NEW_CONTEXT_PATH + 'crelan';
 const CONTAINER_WACOM = CONTAINER_NEW_CONTEXT_PATH + 'wacom-stu';
@@ -175,5 +179,9 @@ export class ModuleFactory implements AbstractFactory {
 
     public createJcop(reader_id: string): AbstractJcop {
         return new Jcop(this.url, CONTAINER_JCOP, this.connection, reader_id);
+    }
+
+    public createAirbus(reader_id: string): AbstractAirbus {
+        return new Airbus(this.url, CONTAINER_AIRBUS, this.connection, reader_id);
     }
 }

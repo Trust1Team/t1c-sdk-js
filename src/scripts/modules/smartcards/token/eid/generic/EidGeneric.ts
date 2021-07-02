@@ -31,6 +31,7 @@ export class EidGeneric implements AbstractEidGeneric {
     static CERT_ROOT = '/root-cert';
     static CERT_AUTHENTICATION = '/authentication-cert';
     static CERT_NON_REPUDIATION = '/nonrepudiation-cert';
+    static CERT_ISSUER = '/issuer-cert';
     static CERT_ENCRYPTION = '/encryption-cert';
     static CERT_INTERMEDIATE = '/intermediate-certs';
     static BIOMETRIC = '/biometric';
@@ -167,6 +168,20 @@ export class EidGeneric implements AbstractEidGeneric {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_NON_REPUDIATION, true),
+            undefined,
+            EidGeneric.EncryptedHeader(this.pin, this.pinType),
+            callback
+        ).then((res: TokenCertificateResponse) => {
+            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+    public issuerCertificate(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+        return this.connection.get(
+            this.baseUrl,
+            this.tokenApp(module, EidGeneric.CERT_ISSUER, true),
             undefined,
             EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback

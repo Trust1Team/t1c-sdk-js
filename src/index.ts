@@ -65,4 +65,7 @@ export * from './scripts/modules/smartcards/token/pki/eHerkenning/eHerkenningMod
 export * from './scripts/modules/smartcards/token/pki/jcop/Jcop';
 export * from './scripts/modules/smartcards/token/pki/jcop/JcopModel';
 
+export * from './scripts/modules/smartcards/token/pki/airbus/Airbus';
+export * from './scripts/modules/smartcards/token/pki/airbus/AirbusModel';
+
 Polyfills.check();
