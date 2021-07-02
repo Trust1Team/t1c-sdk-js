@@ -113,6 +113,12 @@ export class FileExchange implements AbstractFileExchange {
 
         relPath
         if (semver.lt(this.connection.cfg.version, '3.5.0')) {
+            if(relPath) {
+                relPath.forEach(r => {
+                    form.append("relPath", r)
+                })
+            }
+        } else {
             if (relPath) {
                 let paths: string[] = [];
                 relPath.forEach(p => {
@@ -123,12 +129,6 @@ export class FileExchange implements AbstractFileExchange {
                 });
                 paths.reduce((accumulator, currentValue) => accumulator + ',' + currentValue)
 
-            }
-        } else {
-            if(relPath) {
-                relPath.forEach(r => {
-                    form.append("relPath", r)
-                })
             }
         }
 
