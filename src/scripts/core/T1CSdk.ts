@@ -34,6 +34,7 @@ import {AbstractDNIe} from "../modules/smartcards/token/pki/dnie/DNIeModel";
 import {AbstractSafenet} from "../modules/smartcards/token/pki/safenet/SafenetModel";
 import {AbstractEherkenning} from "../modules/smartcards/token/pki/eHerkenning/eHerkenningModel";
 import {AbstractJcop} from "../modules/smartcards/token/pki/jcop/JcopModel";
+import {AbstractAirbus} from "../modules/smartcards/token/pki/airbus/AirbusModel";
 
 const urlVersion = "/v3";
 const semver = require('semver');
@@ -192,6 +193,10 @@ export class T1CClient {
 
     public jcop = (reader_id: string): AbstractJcop => {
         return this.moduleFactory.createJcop(reader_id);
+    }
+
+    public airbus = (reader_id: string): AbstractAirbus => {
+        return this.moduleFactory.createAirbus(reader_id);
     }
 
     set t1cInstalled(value: boolean) {
