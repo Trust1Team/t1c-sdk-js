@@ -3,7 +3,6 @@
  * @since 2020
  */
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
-import {AbstractCertigna} from './CertignaModel';
 import {LocalConnection} from '../../../../../core/client/Connection';
 import {
     BoolDataResponse, TokenAllCertsResponse,
@@ -12,18 +11,19 @@ import {
 import {
     TokenAuthenticateResponse,
     TokenSignResponse,
-    TokenVerifyPinResponse, TokenAlgorithmReferencesResponse
+    TokenDataResponse, TokenVerifyPinResponse, TokenAlgorithmReferencesResponse, TokenResetPinResponse
 } from "../../eid/generic/EidGenericModel";
-import {TokenAuthenticateOrSignData, TokenVerifyPinData} from "../../TokenCard";
+import {TokenAuthenticateOrSignData, TokenResetPinData, TokenVerifyPinData} from "../../TokenCard";
 import {Options} from "../../../Card";
 import {CertParser} from "../../../../../util/CertParser";
 import {ResponseHandler} from "../../../../../util/ResponseHandler";
-import {Pinutil} from "../../../../../../index";
+import {Pinutil} from "../../../../../..";
+import {AbstractDNIe} from "./DNIeModel";
 
 const semver = require('semver');
 
-export class Certigna implements AbstractCertigna {
-    static CONTAINER_PREFIX = 'certigna';
+export class DNIe implements AbstractDNIe {
+    static CONTAINER_PREFIX = 'dni';
     static PATH_TOKEN_APP = '/apps/token';
     static PATH_READERS = '/readers';
 
@@ -46,25 +46,25 @@ export class Certigna implements AbstractCertigna {
     }
 
     public authenticationCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
-        return this.getCertificate(Certigna.CERT_AUTHENTICATION, parseCerts, callback);
+        return this.getCertificate(DNIe.CERT_AUTHENTICATION, parseCerts, callback);
     }
 
     public nonRepudiationCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
-        return this.getCertificate(Certigna.CERT_NON_REPUDIATION, parseCerts, callback);
+        return this.getCertificate(DNIe.CERT_NON_REPUDIATION, parseCerts, callback);
     }
 
     public verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: TokenVerifyPinResponse) => void): Promise<TokenVerifyPinResponse> {
         body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
-        return this.connection.post(this.baseUrl, this.tokenApp(Certigna.VERIFY_PIN, true), body, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(DNIe.VERIFY_PIN, true), body, undefined, undefined, callback);
     }
 
     public allAlgoRefs(callback?: (error: T1CLibException, data: TokenAlgorithmReferencesResponse) => void): Promise<TokenAlgorithmReferencesResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Certigna.SUPPORTED_ALGOS, true), undefined, undefined, callback);
+        return this.connection.get(this.baseUrl, this.tokenApp(DNIe.SUPPORTED_ALGOS, true), undefined, undefined, callback);
     }
 
     public allCerts(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Certigna.ALL_CERTIFICATES, true), filters, undefined, callback).then((res: TokenAllCertsResponse) => {
+        return this.connection.get(this.baseUrl, this.tokenApp(DNIe.ALL_CERTIFICATES, true), filters, undefined, callback).then((res: TokenAllCertsResponse) => {
             return CertParser.processTokenAllCertificates(res, parseCerts, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
@@ -75,7 +75,7 @@ export class Certigna implements AbstractCertigna {
         body.algorithm = body.algorithm.toLowerCase();
         body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
-        return this.connection.post(this.baseUrl, this.tokenApp(Certigna.AUTHENTICATE, true), body, undefined, undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(DNIe.AUTHENTICATE, true), body, undefined, undefined, callback);
     }
 
     public sign(body: TokenAuthenticateOrSignData, bulk?: boolean, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
@@ -84,7 +84,7 @@ export class Certigna implements AbstractCertigna {
         }
         body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
-        return this.connection.post(this.baseUrl, this.tokenApp(Certigna.SIGN_DATA, true), body,  this.getBulkSignQueryParams(bulk), undefined, callback);
+        return this.connection.post(this.baseUrl, this.tokenApp(DNIe.SIGN_DATA, true), body,  this.getBulkSignQueryParams(bulk), undefined, callback);
     }
 
     protected getCertificate(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
@@ -97,19 +97,19 @@ export class Certigna implements AbstractCertigna {
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
         if (semver.lt(this.connection.cfg.version, '3.5.0')) {
-            return this.connection.get(this.baseUrl, this.tokenApp(Certigna.RESET_BULK_PIN, false), undefined, undefined, callback);
+            return this.connection.get(this.baseUrl, this.tokenApp(DNIe.RESET_BULK_PIN, false), undefined, undefined, callback);
         } else {
             // @ts-ignore
-            return this.connection.post(this.baseUrl, this.tokenApp(Certigna.RESET_BULK_PIN), null, undefined, undefined, callback);
+            return this.connection.post(this.baseUrl, this.tokenApp(DNIe.RESET_BULK_PIN), null, undefined, undefined, callback);
         }
     }
 
     // resolves the reader_id in the base URL
     protected tokenApp(path?: string, includeReaderId?: boolean): string {
         let suffix = this.containerUrl;
-        suffix += Certigna.PATH_TOKEN_APP
+        suffix += DNIe.PATH_TOKEN_APP
         if (this.reader_id && this.reader_id.length && includeReaderId) {
-            suffix += Certigna.PATH_READERS + '/' + this.reader_id;
+            suffix += DNIe.PATH_READERS + '/' + this.reader_id;
         }
         if (path && path.length) {
             suffix += path.startsWith('/') ? path : '/' + path;
@@ -118,9 +118,11 @@ export class Certigna implements AbstractCertigna {
     }
 
 
-     protected getBulkSignQueryParams(bulk?: boolean): any {
+    protected getBulkSignQueryParams(bulk?: boolean): any {
         if(bulk) {
             return {bulk: true};
         }
     }
+
+
 }

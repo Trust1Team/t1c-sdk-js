@@ -21,9 +21,7 @@ import {AbstractEmv} from "../modules/smartcards/payment/emv/EmvModel";
 import {AbstractFileExchange} from "../modules/file/fileExchange/FileExchangeModel";
 import {AbstractRemoteLoading} from "../modules/hsm/remoteloading/RemoteLoadingModel";
 import axios from 'axios';
-import {AbstractPkcs11Generic} from "../modules/pkcs11/generic/Pkcs11GenericModel";
 import {AbstractPaymentGeneric} from "../modules/smartcards/payment/generic/PaymentGenericModel";
-import {AbstractPkcs11} from "../modules/pkcs11/pkcs11Object/Pkcs11Model";
 import {AbstractCrelan} from "../modules/smartcards/payment/crelan/CrelanModel";
 import {AbstractEidLux, PinType} from "../modules/smartcards/token/eid/lux/EidLuxModel";
 import {AbstractWacom} from "../modules/wacom/WacomModel";
@@ -32,6 +30,11 @@ import {AbstractRawPrint} from "../modules/print/rawprint/RawPrintModel";
 import {AbstractCertigna} from "../modules/smartcards/token/pki/certigna/CertignaModel";
 import {AbstractCertinomis} from "../modules/smartcards/token/pki/certinomis/CertinomisModel";
 import {ConsentUtil} from "../util/ConsentUtil";
+import {AbstractDNIe} from "../modules/smartcards/token/pki/dnie/DNIeModel";
+import {AbstractSafenet} from "../modules/smartcards/token/pki/safenet/SafenetModel";
+import {AbstractEherkenning} from "../modules/smartcards/token/pki/eHerkenning/eHerkenningModel";
+import {AbstractJcop} from "../modules/smartcards/token/pki/jcop/JcopModel";
+import {AbstractAirbus} from "../modules/smartcards/token/pki/airbus/AirbusModel";
 
 const urlVersion = "/v3";
 const semver = require('semver');
@@ -113,24 +116,8 @@ export class T1CClient {
         return this.moduleFactory.createEidGeneric(reader_id, pin, pinType)
     };
 
-    public genericMeta = (): AbstractEidGeneric => {
-        return this.moduleFactory.createEidGenericMeta()
-    };
-
     public paymentGeneric = (reader_id: string): AbstractPaymentGeneric => {
         return this.moduleFactory.createPaymentGeneric(reader_id)
-    };
-
-    public paymentGenericMeta = (): AbstractPaymentGeneric => {
-        return this.moduleFactory.createPaymentGenericMeta()
-    };
-
-    public pkcs11Generic = (): AbstractPkcs11Generic => {
-        return this.moduleFactory.createPKCS11Generic()
-    };
-
-    public pkcs11 = (modulePath: string): AbstractPkcs11 => {
-        return this.moduleFactory.createPKCS11(modulePath);
     };
 
     public fileex = (): AbstractFileExchange => {
@@ -190,6 +177,26 @@ export class T1CClient {
 
     public certinomis = (reader_id: string): AbstractCertinomis => {
         return this.moduleFactory.createCertinomis(reader_id);
+    }
+
+    public dnie = (reader_id: string): AbstractDNIe => {
+        return this.moduleFactory.createDNIe(reader_id);
+    }
+
+    public safenet = (reader_id: string): AbstractSafenet => {
+        return this.moduleFactory.createSafenet(reader_id);
+    }
+
+    public eherkenning = (reader_id: string): AbstractEherkenning => {
+        return this.moduleFactory.createEherkenning(reader_id);
+    }
+
+    public jcop = (reader_id: string): AbstractJcop => {
+        return this.moduleFactory.createJcop(reader_id);
+    }
+
+    public airbus = (reader_id: string): AbstractAirbus => {
+        return this.moduleFactory.createAirbus(reader_id);
     }
 
     set t1cInstalled(value: boolean) {

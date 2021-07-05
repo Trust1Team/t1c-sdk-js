@@ -12,6 +12,9 @@ import {
     T1CLibException
 } from "../../../..";
 
+
+const semver = require('semver');
+
 export class FileExchange implements AbstractFileExchange {
     static PATHFILEAPP = '/apps/file';
 
@@ -107,11 +110,28 @@ export class FileExchange implements AbstractFileExchange {
         form.append("type", type)
         form.append("file", file)
         form.append("fileName", fileName)
-        if (relPath) {
-            relPath.forEach(r => {
-                form.append("relPath", r)
-            })
+
+        relPath
+        if (semver.lt(this.connection.cfg.version, '3.5.0')) {
+            if(relPath) {
+                relPath.forEach(r => {
+                    form.append("relPath", r)
+                })
+            }
+        } else {
+            if (relPath) {
+                let paths: string[] = [];
+                relPath.forEach(p => {
+                    p.replace("\\", "/")
+                    if (p.includes("/")) {
+                        paths.push(...p.split("/"))
+                    }
+                });
+                paths.reduce((accumulator, currentValue) => accumulator + ',' + currentValue)
+
+            }
         }
+
         if (implicitCreationType != null || implicitCreationType != undefined) {
             form.append("implicitCreationType", String(implicitCreationType))
         }

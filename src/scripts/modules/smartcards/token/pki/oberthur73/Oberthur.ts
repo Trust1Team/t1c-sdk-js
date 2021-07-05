@@ -42,14 +42,6 @@ export class Oberthur implements AbstractOberthur73 {
 
     constructor(protected baseUrl: string, protected containerUrl: string,protected connection: LocalConnection, protected reader_id: string) {}
 
-    public allCertFilters() {
-        return ['rootCertificate', 'authenticationCertificate', 'encryptionCertificate', 'nonRepudiationCertificate', 'issuerCertificate'];
-    }
-
-    public allKeyRefs() {
-        return ['authenticate', 'sign', 'encrypt'];
-    }
-
     public rootCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.getCertificate(Oberthur.CERT_ROOT, parseCerts, callback);
     }
