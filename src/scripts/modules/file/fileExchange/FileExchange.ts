@@ -110,7 +110,7 @@ export class FileExchange implements AbstractFileExchange {
         form.append("type", type)
         form.append("file", file)
         form.append("fileName", fileName)
-        
+
         if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.5.0')) {
             if(relPath) {
                 relPath.forEach(r => {
