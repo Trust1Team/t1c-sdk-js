@@ -109,7 +109,7 @@ export class Oberthur implements AbstractOberthur73 {
     }
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        if (semver.lt(this.connection.cfg.version, '3.5.0')) {
+        if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.5.0')) {
             return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.RESET_BULK_PIN, false), undefined, undefined, callback);
         } else {
             // @ts-ignore

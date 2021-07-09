@@ -111,8 +111,7 @@ export class FileExchange implements AbstractFileExchange {
         form.append("file", file)
         form.append("fileName", fileName)
 
-        relPath
-        if (semver.lt(this.connection.cfg.version, '3.5.0')) {
+        if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.5.0')) {
             if(relPath) {
                 relPath.forEach(r => {
                     form.append("relPath", r)
@@ -127,7 +126,8 @@ export class FileExchange implements AbstractFileExchange {
                         paths.push(...p.split("/"))
                     }
                 });
-                paths.reduce((accumulator, currentValue) => accumulator + ',' + currentValue)
+                let commafied = paths.reduce((accumulator, currentValue) => accumulator + ',' + currentValue)
+                form.append("relPath", commafied)
 
             }
         }

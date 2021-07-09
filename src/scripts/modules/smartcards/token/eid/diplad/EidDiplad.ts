@@ -280,7 +280,7 @@ export class EidDiplad implements AbstractEidDiplad {
     }
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        if (semver.lt(this.connection.cfg.version, '3.5.0')) {
+        if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.5.0')) {
             return this.connection.get(this.baseUrl, this.tokenApp(EidDiplad.RESET_BULK_PIN, false), undefined, undefined, callback);
         } else {
             // @ts-ignore
