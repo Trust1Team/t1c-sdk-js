@@ -121,14 +121,13 @@ export class FileExchange implements AbstractFileExchange {
             if (relPath) {
                 let paths: string[] = [];
                 relPath.forEach(p => {
-                    p.replace("\\", "/")
-                    if (p.includes("/")) {
-                        paths.push(...p.split("/"))
+                    const updated = p.replace("\\", "/")
+                    if (updated.includes("/")) {
+                        paths.push(...updated.split("/"))
                     }
                 });
                 let commafied = paths.reduce((accumulator, currentValue) => accumulator + ',' + currentValue)
                 form.append("relPath", commafied)
-
             }
         }
 
