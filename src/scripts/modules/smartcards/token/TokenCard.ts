@@ -2,12 +2,12 @@
 
 
 export class TokenAuthenticateOrSignData {
-    constructor(public algorithm: string, public data: string, public pin?: string, public pace?: string, public id?: string, public osDialog?: boolean, public txId?: string, public language?: string, public base64Encoded?: boolean) {
+    constructor(public algorithm: string, public data: string, public pin?: string, public pace?: string, public id?: string, public osDialog?: boolean, public txId?: string, public language?: string, public base64Encoded?: boolean, public timeout?: number) {
     }
 }
 
 export class TokenVerifyPinData {
-    constructor(public pin?: string, public pace?: string, public osDialog?: boolean, public base64Encoded?: boolean) {
+    constructor(public pin?: string, public pace?: string, public osDialog?: boolean, public base64Encoded?: boolean, public timeout?: number) {
     }
 }
 
