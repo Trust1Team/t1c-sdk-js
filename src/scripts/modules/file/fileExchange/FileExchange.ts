@@ -118,12 +118,15 @@ export class FileExchange implements AbstractFileExchange {
                 })
             }
         } else {
-            if (relPath) {
+            if (relPath && relPath.length > 0) {
                 let paths: string[] = [];
                 relPath.forEach(p => {
                     const updated = p.replace("\\", "/")
                     if (updated.includes("/")) {
                         paths.push(...updated.split("/"))
+                    }
+                    else {
+                        paths.push(updated);
                     }
                 });
                 let commafied = paths.reduce((accumulator, currentValue) => accumulator + ',' + currentValue)
