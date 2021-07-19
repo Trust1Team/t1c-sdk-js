@@ -4,6 +4,7 @@ import Certificate from 'pkijs/src/Certificate';
 
 export interface AbstractCore {
   // getConsent(title: string, codeWord: string, durationInDays?: number, alertLevel?: string, alertPosition?: string, type?: string, timeoutInSeconds?: number, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
+  generateConsentToken(): Promise<string>
   getImplicitConsent(codeWord: string, durationInDays?: number, callback?: (error?: T1CLibException, data?: T1CClient) => void): Promise<T1CClient>;
   validateConsent(consent: string, callback?: (error?: T1CLibException, data?: T1CClient) => void): Promise<T1CClient>;
   updateJWT(jwt: string, callback?: (error: T1CLibException, data?: T1CClient) => void): Promise<T1CClient>

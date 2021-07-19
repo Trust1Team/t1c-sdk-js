@@ -218,4 +218,19 @@ export class CoreService implements AbstractCore {
     public version(): Promise<string> {
         return Promise.resolve(VERSION);
     }
+
+
+    // TODO ask what prefix needs to be
+    generateConsentToken(): Promise<string> {
+        const prefix = "t1c::";
+        const length = 32;
+        let result = "";
+        const characters =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return Promise.resolve(prefix + result);
+    }
 }
