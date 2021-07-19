@@ -55,7 +55,7 @@ export class InfoUser {
   constructor(public timezone?: String, public country?: String, public language?: String, public home?: String, public tempDir?: String, public name?: string, public username?: string, public installedDir?: string) {}
 }
 export class InfoService{
-  constructor(public url?: String, public apiPort?: String, public gRpcPort?: String, public deviceType?: string, public distributionServiceUrl?: string) {}
+  constructor(public url?: String, public apiPort?: String, public gRpcPort?: String, public deviceType?: string, public distributionServiceUrl?: string, public dsRegistryActivated?: boolean) {}
 }
 export class InfoApi{
   constructor(public service?: InfoService,public activated?: boolean,public citrix?: boolean, public uid?: String, public modules?: Array<String>, public version?: String, public logLevel?: String, public sharedEnvironment?: boolean) {}
