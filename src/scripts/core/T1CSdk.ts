@@ -78,10 +78,11 @@ export class T1CClient {
             let _client = new T1CClient(cfg);
             _client.core().info().then(infoRes => {
                 _client.config().version = infoRes.t1CInfoAPI?.version;
+                // _client.config().dsUrl = infoRes.t1CInfoAPI.?.dsUrl
                 if (infoRes.t1CInfoAPI && semver.lt(semver.coerce(infoRes.t1CInfoAPI.version).version, '3.5.0')) {
-                    this._init(resolve, reject, cfg, callback);
+                    this._init(resolve, reject, _client.config(), callback);
                 } else {
-                    this.init(resolve, reject, cfg, callback);
+                    this.init(resolve, reject, _client.config(), callback);
                 }
             }, err => {
                 console.error(err)
@@ -210,7 +211,6 @@ export class T1CClient {
         const currentConsent = ConsentUtil.getRawConsent(cfg.applicationDomain + "::" + cfg.t1cApiUrl)
         if (currentConsent != null) {
             // Validate
-            // @ts-ignore
             _client.core().validateConsent(currentConsent).then(validateRes => {
                 resolve(validateRes);
             }, err => {

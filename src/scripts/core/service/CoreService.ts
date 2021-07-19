@@ -17,6 +17,7 @@ const CORE_CONSENT = '/consent';
 const CORE_VALIDATE = '/validate';
 const CORE_INFO = '/info';
 const CORE_VERSION = '/v3';
+const CORE_VERSION_DS = '/v3_5';
 const CORE_READERS = '/readers';
 const CORE_CONSENT_IMPLICIT = '/agents/consent';
 
@@ -47,9 +48,15 @@ export class CoreService implements AbstractCore {
 
     validateConsent(consent: string, callback?: (error?: T1CLibException, data?: T1CClient) => void): Promise<T1CClient> {
         return new Promise((resolve, reject) => {
+            let url = this.connection.cfg.t1cApiUrl;
+            let version = CORE_VERSION;
+            if (this.connection.cfg.dsUrl) {
+                url = this.connection.cfg.dsUrl;
+                version = CORE_VERSION_DS;
+            }
             return this.connection.post(
-                this.connection.cfg.t1cApiUrl,
-                CORE_VERSION + CORE_VALIDATE,
+                url,
+                version + CORE_VALIDATE,
                 {
                     data: consent
                 },
@@ -86,6 +93,12 @@ export class CoreService implements AbstractCore {
         durationInDays?: number,
         callback?: (error?: T1CLibException, data?: T1CClient) => void
     ): Promise<T1CClient> {
+        let url = this.connection.cfg.t1cApiUrl;
+        let version = CORE_VERSION;
+        if (this.connection.cfg.dsUrl) {
+            url = this.connection.cfg.dsUrl;
+            version = CORE_VERSION_DS;
+        }
         return new Promise((resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void) => {
             let days: number = 365;
             if (durationInDays) {
@@ -95,8 +108,8 @@ export class CoreService implements AbstractCore {
                 return this._getImplicitConsent(resolve, reject, codeWord, days, callback)
             } else {
                 return this.connection.post(
-                    this.connection.cfg.t1cApiUrl,
-                    CORE_VERSION + CORE_CONSENT,
+                    url,
+                    version + CORE_CONSENT,
                     {
                         codeWord: codeWord,
                         durationInDays: days
