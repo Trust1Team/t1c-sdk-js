@@ -4,6 +4,7 @@ import Certificate from 'pkijs/src/Certificate';
 
 export interface AbstractCore {
   // getConsent(title: string, codeWord: string, durationInDays?: number, alertLevel?: string, alertPosition?: string, type?: string, timeoutInSeconds?: number, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
+  generateConsentToken(): Promise<string>
   getImplicitConsent(codeWord: string, durationInDays?: number, callback?: (error?: T1CLibException, data?: T1CClient) => void): Promise<T1CClient>;
   validateConsent(consent: string, callback?: (error?: T1CLibException, data?: T1CClient) => void): Promise<T1CClient>;
   updateJWT(jwt: string, callback?: (error: T1CLibException, data?: T1CClient) => void): Promise<T1CClient>
@@ -55,7 +56,7 @@ export class InfoUser {
   constructor(public timezone?: String, public country?: String, public language?: String, public home?: String, public tempDir?: String, public name?: string, public username?: string, public installedDir?: string) {}
 }
 export class InfoService{
-  constructor(public url?: String, public apiPort?: String, public gRpcPort?: String, public deviceType?: string, public distributionServiceUrl?: string) {}
+  constructor(public url?: String, public apiPort?: String, public gRpcPort?: String, public deviceType?: string, public distributionServiceUrl?: string, public dsRegistryActivated?: boolean) {}
 }
 export class InfoApi{
   constructor(public service?: InfoService,public activated?: boolean,public citrix?: boolean, public uid?: String, public modules?: Array<String>, public version?: String, public logLevel?: String, public sharedEnvironment?: boolean) {}
