@@ -20,6 +20,7 @@ export class T1CConfig {
   private _jwt = '';
   private _applicationDomain = ''; // "rmc.t1t.be"
   private _version;
+  private _dsUrl;
 
   // constructor for DTO
   public constructor(options: T1CConfigOptions) {
@@ -84,5 +85,14 @@ export class T1CConfig {
 
   set version(value) {
     this._version = value;
+  }
+
+
+  get dsUrl() {
+    return this._dsUrl;
+  }
+
+  set dsUrl(value) {
+    this._dsUrl = value;
   }
 }
