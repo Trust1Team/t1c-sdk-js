@@ -77,8 +77,8 @@ export class T1CClient {
             // Base client
             let _client = new T1CClient(cfg);
             _client.core().info().then(infoRes => {
+                _client.config().version = infoRes.t1CInfoAPI?.version;
                 if (infoRes.t1CInfoAPI?.service?.deviceType === "PROXY") {
-                    _client.config().version = infoRes.t1CInfoAPI?.version;
                     if (infoRes.t1CInfoAPI?.service?.distributionServiceUrl && infoRes.t1CInfoAPI.service.dsRegistryActivated) {
                         _client.config().dsUrl = infoRes.t1CInfoAPI.service.distributionServiceUrl
                     }
@@ -88,6 +88,7 @@ export class T1CClient {
                         this.init(resolve, reject, _client.config(), callback);
                     }
                 } else {
+                    _client.coreService.getDevicePublicKey();
                     resolve(_client);
                 }
             }, err => {
