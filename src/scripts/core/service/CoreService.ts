@@ -67,6 +67,7 @@ export class CoreService implements AbstractCore {
                 if (parsed_response != null) {
                     this.connection.cfg.t1cApiPort = parsed_response?.agent.apiPort;
                     const newClient = new T1CClient(this.connection.cfg)
+                    newClient.core().getDevicePublicKey();
                     if (!callback || typeof callback !== 'function') { callback = function () {}; }
                     callback(undefined, newClient)
                     resolve(newClient)
@@ -125,7 +126,8 @@ export class CoreService implements AbstractCore {
                         callback(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)), undefined)
                         reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
                     }
-                    const newClient = new T1CClient(this.connection.cfg)
+                    const newClient = new T1CClient(this.connection.cfg);
+                    newClient.core().getDevicePublicKey();
                     if (!callback || typeof callback !== 'function') {callback = function () {};}
                     callback(undefined, newClient)
                     resolve(newClient)
