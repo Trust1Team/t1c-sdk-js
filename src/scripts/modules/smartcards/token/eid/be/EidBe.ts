@@ -276,7 +276,7 @@ export class EidBe implements AbstractEidBE {
     }
 
     resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        if (semver.lt(this.connection.cfg.version, '3.5.0')) {
+        if (semver.gte(semver.coerce(this.connection.cfg.version).version, '3.5.0')) {
             return this.connection.get(this.baseUrl, this.tokenApp(EidBe.RESET_BULK_PIN, false), undefined, undefined, callback);
         } else {
             // @ts-ignore
