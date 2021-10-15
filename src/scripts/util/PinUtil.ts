@@ -13,8 +13,6 @@ export class Pinutil {
     }
 
     public static encryptPin(pin: string | undefined, version?: string): string | undefined {
-        console.log(version)
-        console.log(semver.lt(semver.coerce(version).version, '3.5.0'))
         if (pin && pin.length) {
             let pubKey = Pinutil.getPubKey();
             if (pubKey != null || pubKey != undefined) {
