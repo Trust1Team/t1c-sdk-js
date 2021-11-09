@@ -15,7 +15,6 @@ import {Options} from "../../Card";
 const semver = require('semver');
 
 export class PaymentGeneric implements AbstractPaymentGeneric {
-    static PATH_MOD_DESC = '/desc';
     static PATH_READERS = '/readers';
     static PATH_PAYMENT_APP = '/apps/payment';
     static ALL_CERTIFICATES = '/cert-list';
@@ -150,15 +149,5 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
             suffix += path.startsWith('/') ? path : '/' + path;
         }
         return suffix;
-    }
-
-    getModuleDescription(module: string, callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
-        return this.connection.get(
-            this.baseUrl,
-            this.baseApp(module, PaymentGeneric.PATH_MOD_DESC),
-            undefined,
-            undefined,
-            callback
-        );
     }
 }
