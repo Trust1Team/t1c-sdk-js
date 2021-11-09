@@ -46,7 +46,7 @@ export class CoreService implements AbstractCore {
         });
     }
 
-    validateConsent(consent: string, callback?: (error?: T1CLibException, data?: T1CClient) => void): Promise<T1CClient> {
+    validateConsent(callback?: (error?: T1CLibException, data?: T1CClient) => void): Promise<T1CClient> {
         return new Promise((resolve, reject) => {
             let url = this.connection.cfg.t1cApiUrl;
             let version = CORE_VERSION;
@@ -54,37 +54,99 @@ export class CoreService implements AbstractCore {
                 url = this.connection.cfg.dsUrl;
                 version = CORE_VERSION_DS;
             }
-            return this.connection.post(
-                url,
-                version + CORE_VALIDATE,
-                {
-                    data: consent
-                },
-                undefined
-            ).then(res => {
-                ConsentUtil.setConsent(res.data, this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
-                const parsed_response = ConsentUtil.getConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
-                if (parsed_response != null) {
-                    this.connection.cfg.t1cApiPort = parsed_response?.agent.apiPort;
-                    const newClient = new T1CClient(this.connection.cfg)
-                    newClient.core().getDevicePublicKey();
-                    if (!callback || typeof callback !== 'function') { callback = function () {}; }
-                    callback(undefined, newClient)
-                    resolve(newClient)
-                } else  {
+            if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.5.10')) {
+                const currentConsent = ConsentUtil.getRawConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
+                return this._validateConsent(resolve, reject, currentConsent, callback);
+            } else {
+                let consent = ConsentUtil.getConsents(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
+                if (consent != null) {
+                    return this.connection.post(
+                      url,
+                      version + CORE_VALIDATE,
+                      {
+                          consents: consent
+                      },
+                      undefined
+                    ).then(res => {
+                        ConsentUtil.setConsents(res.data.consents, this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
+                        if (res.data.consentState != 'APPROVED') {
+                            if (!callback || typeof callback !== 'function') {callback = function () {};}
+                            callback(new T1CLibException("814500", "Invalid consent value, new consent is required", new T1CClient(this.connection.cfg)), undefined)
+                            reject(new T1CLibException("814500", "Invalid consent value, new consent is required", new T1CClient(this.connection.cfg)));
+                        }
+                        const activeConsent = ConsentUtil.parseConsent(res.data.consent)
+                        if (activeConsent != null) {
+                            this.connection.cfg.t1cApiPort = activeConsent.agent.apiPort;
+                            const newClient = new T1CClient(this.connection.cfg)
+                            newClient.core().getDevicePublicKey();
+                            if (!callback || typeof callback !== 'function') { callback = function () {}; }
+                            callback(undefined, newClient)
+                            resolve(newClient)
+                        } else {
+                            ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
+                            console.error("Unable to parse consent")
+                            if (!callback || typeof callback !== 'function') { callback = function () {}; }
+                            callback(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)), undefined)
+                            reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
+                        }
+                    }, err => {
+                        console.error(err)
+                        ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
+                        if (!callback || typeof callback !== 'function') { callback = function () {}; }
+                        callback(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)), undefined)
+                        reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
+                    });
+                } else {
                     ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
-                    console.error("Unable to parse consent")
                     if (!callback || typeof callback !== 'function') { callback = function () {}; }
                     callback(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)), undefined)
-                    reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
+                    return reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
                 }
-            }, err => {
-                ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
-                if (!callback || typeof callback !== 'function') { callback = function () {}; }
-                callback(new T1CLibException("814501", err.description ? err.description : "No valid consent", new T1CClient(this.connection.cfg)), undefined)
-                reject(new T1CLibException("814501", err.description ? err.description : "No valid consent", new T1CClient(this.connection.cfg)));
-            })
+            }
         });
+    }
+
+
+    private _validateConsent(
+          resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void,
+          consent: string | null, callback?: (error?: T1CLibException, data?: T1CClient) => void
+        ) {
+        let url = this.connection.cfg.t1cApiUrl;
+        let version = CORE_VERSION;
+        if (this.connection.cfg.dsUrl) {
+            url = this.connection.cfg.dsUrl;
+            version = CORE_VERSION_DS;
+        }
+        return this.connection.post(
+          url,
+          version + CORE_VALIDATE,
+          {
+              data: consent
+          },
+          undefined
+        ).then(res => {
+            ConsentUtil.setConsent(res.data, this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
+            const parsed_response = ConsentUtil.getConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
+            if (parsed_response != null) {
+                this.connection.cfg.t1cApiPort = parsed_response?.agent.apiPort;
+                const newClient = new T1CClient(this.connection.cfg)
+                newClient.core().getDevicePublicKey();
+                if (!callback || typeof callback !== 'function') { callback = function () {}; }
+                callback(undefined, newClient)
+                resolve(newClient)
+            } else  {
+                ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
+                console.error("Unable to parse consent")
+                if (!callback || typeof callback !== 'function') { callback = function () {}; }
+                callback(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)), undefined)
+                reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
+            }
+        }, err => {
+            ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
+            if (!callback || typeof callback !== 'function') { callback = function () {}; }
+            callback(new T1CLibException("814501", err.description ? err.description : "No valid consent", new T1CClient(this.connection.cfg)), undefined)
+            reject(new T1CLibException("814501", err.description ? err.description : "No valid consent", new T1CClient(this.connection.cfg)));
+        })
     }
 
 
@@ -107,37 +169,95 @@ export class CoreService implements AbstractCore {
             }
             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.5.0')) {
                 return this._getImplicitConsent(resolve, reject, codeWord, days, callback)
+            } else if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.5.10')) {
+                return this.__getImplicitConsent(resolve,reject, codeWord, days, callback)
             } else {
+                const consents = ConsentUtil.getConsents(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
                 return this.connection.post(
                     url,
                     version + CORE_CONSENT,
                     {
                         codeWord: codeWord,
-                        durationInDays: days
+                        durationInDays: days,
+                        consents: consents,
                     },
                     undefined
                 ).then(res => {
-                    ConsentUtil.setConsent(res.data, this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
-                    const parsed_response = ConsentUtil.getConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
-                    if (parsed_response != null) {
-                        this.connection.cfg.t1cApiPort = parsed_response.agent.apiPort;
-                    } else {
-                        if (!callback || typeof callback !== 'function') { callback = function () {}; }
-                        callback(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)), undefined)
-                        reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
+                    ConsentUtil.setConsents(res.data.consents, this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
+                    if (res.data.consentState != 'APPROVED') {
+                        if (!callback || typeof callback !== 'function') {callback = function () {};}
+                        callback(new T1CLibException("814500", "Invalid consent value, new consent is required", new T1CClient(this.connection.cfg)), undefined)
+                        reject(new T1CLibException("814500", "Invalid consent value, new consent is required", new T1CClient(this.connection.cfg)));
                     }
-                    const newClient = new T1CClient(this.connection.cfg);
-                    newClient.core().getDevicePublicKey();
-                    if (!callback || typeof callback !== 'function') {callback = function () {};}
-                    callback(undefined, newClient)
-                    resolve(newClient)
+                    const activeConsent = ConsentUtil.parseConsent(res.data.consent)
+                    if (activeConsent != null) {
+                        this.connection.cfg.t1cApiPort = activeConsent.agent.apiPort;
+                        const newClient = new T1CClient(this.connection.cfg);
+                        newClient.core().getDevicePublicKey();
+                        if (!callback || typeof callback !== 'function') {callback = function () {};}
+                        callback(undefined, newClient)
+                        resolve(newClient)
+                    } else {
+                        if (!callback || typeof callback !== 'function') {callback = function () {};}
+                        callback(new T1CLibException("814500", "Invalid consent value, new consent is required", new T1CClient(this.connection.cfg)), undefined)
+                        reject(new T1CLibException("814500", "Invalid consent value, new consent is required", new T1CClient(this.connection.cfg)));
+                    }
+
                 }, err => {
+                    console.log(err)
+                    ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
                     if (!callback || typeof callback !== 'function') {callback = function () {};}
-                    callback(new T1CLibException("814500", err.description ? err.description : "No valid consent", new T1CClient(this.connection.cfg)), undefined)
-                    reject(new T1CLibException("814500", err.description ? err.description : "No valid consent", new T1CClient(this.connection.cfg)));
+                    callback(new T1CLibException(err.code ? err.code : "112999", err.description ? err.description : "Error during consent.", new T1CClient(this.connection.cfg)), undefined)
+                    reject(new T1CLibException(err.code ? err.code : "112999", err.description ? err.description : "Error during consent.", new T1CClient(this.connection.cfg)));
                 })
             }
         });
+    }
+
+
+    /**
+     * Get implicit consent for version lower then 3.5.10
+     */
+    private __getImplicitConsent(
+      resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void,
+      codeWord: string,
+      days: number,
+      callback?: (error?: T1CLibException, data?: T1CClient) => void
+    ) {
+        let url = this.connection.cfg.t1cApiUrl;
+        let version = CORE_VERSION;
+        if (this.connection.cfg.dsUrl) {
+            url = this.connection.cfg.dsUrl;
+            version = CORE_VERSION_DS;
+        }
+        return this.connection.post(
+          url,
+          version + CORE_CONSENT,
+          {
+              codeWord: codeWord,
+              durationInDays: days
+          },
+          undefined
+        ).then(res => {
+            ConsentUtil.setConsent(res.data, this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
+            const parsed_response = ConsentUtil.getConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
+            if (parsed_response != null) {
+                this.connection.cfg.t1cApiPort = parsed_response.agent.apiPort;
+            } else {
+                if (!callback || typeof callback !== 'function') { callback = function () {}; }
+                callback(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)), undefined)
+                reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
+            }
+            const newClient = new T1CClient(this.connection.cfg);
+            newClient.core().getDevicePublicKey();
+            if (!callback || typeof callback !== 'function') {callback = function () {};}
+            callback(undefined, newClient)
+            resolve(newClient)
+        }, err => {
+            if (!callback || typeof callback !== 'function') {callback = function () {};}
+            callback(new T1CLibException("814500", err.description ? err.description : "No valid consent", new T1CClient(this.connection.cfg)), undefined)
+            reject(new T1CLibException("814500", err.description ? err.description : "No valid consent", new T1CClient(this.connection.cfg)));
+        })
     }
 
     /**

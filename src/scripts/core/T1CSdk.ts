@@ -218,7 +218,7 @@ export class T1CClient {
         const currentConsent = ConsentUtil.getRawConsent(cfg.applicationDomain + "::" + cfg.t1cApiUrl)
         if (currentConsent != null) {
             // Validate
-            _client.core().validateConsent(currentConsent).then(validateRes => {
+            _client.core().validateConsent().then(validateRes => {
                 resolve(validateRes);
             }, err => {
                 if (!callback || typeof callback !== 'function') { callback = function () {}; }
