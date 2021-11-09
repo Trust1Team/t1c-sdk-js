@@ -1,3 +1,5 @@
+import { local } from "store2";
+
 export class ConsentUtil {
     private static consentKey: string = "t1c-consent-";
 
@@ -15,6 +17,50 @@ export class ConsentUtil {
         }
     }
 
+    public static getConsents(domain: string): Array<string> | null {
+        const localConsent = localStorage.getItem(ConsentUtil.consentKey + domain)
+        if (localConsent != null) {
+            try {
+                return JSON.parse(localConsent);
+            } catch (error) {
+                // cleanup because not parsable
+                console.error(error)
+                return null;
+            }
+        } else {
+            console.error("No consent present")
+            return null;
+        }
+    }
+
+    public static setConsents(consentValue: Array<string> | null, domain: string) {
+        if (consentValue != null) localStorage.setItem(ConsentUtil.consentKey + domain, JSON.stringify(consentValue));
+    }
+
+    public static parseConsent(consentValue: string) : Consent | null {
+        try {
+            let obj = JSON.parse(atob(consentValue));
+            return new Consent(
+              new ConsentAgent(obj.agent.username,
+                obj.agent.apiIp,
+                obj.agent.apiPort,
+                obj.agent.apiPid,
+                obj.agent.sandboxIp,
+                obj.agent.sandboxPort,
+                obj.agent.sandboxPid,
+                obj.agent.apiLastUsed,
+                obj.agent.clientLastUsed,
+                obj.agent.validityInDays,
+                obj.agent.connectionState,
+                obj.agent.hostname),
+              obj.signedHash
+            );
+        } catch (error) {
+            // cleanup because not parsable
+            console.error(error)
+            return null;
+        }
+    }
 
     public static getConsent(domain: string): Consent | null {
         const localConsent = localStorage.getItem(ConsentUtil.consentKey + domain)
@@ -32,7 +78,8 @@ export class ConsentUtil {
                         obj.agent.apiLastUsed,
                         obj.agent.clientLastUsed,
                         obj.agent.validityInDays,
-                        obj.agent.connectionState),
+                        obj.agent.connectionState,
+                        obj.agent.hostname),
                     obj.signedHash
                 );
             } catch (error) {
@@ -69,7 +116,8 @@ export class ConsentAgent {
                 public apiLastUsed: string,
                 public clientLastUsed: string,
                 public validityInDays: string,
-                public connectionState: string) {
+                public connectionState: string,
+                public hostname: string,) {
     }
 }
 
