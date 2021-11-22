@@ -11,10 +11,10 @@
     "clean-dist": "shx rm -rf dist",
     "clean-ts": "shx rm -rf lib lib-esm",
     "clean-all": "shx rm -rf dist lib lib-esm",
-    "ts": "tsc && tsc -m es6 --outDir lib-esm",
-    "build-ts": "npm run clean-ts && npm run ts",
-    "build-dev": "npm run clean-dist && webpack --mode development --progress",
-    "build-prod": "npm run clean-dist && webpack --mode production --progress && npm run ts"
+    "ts": "export NODE_OPTIONS=--openssl-legacy-provider && tsc && tsc -m es6 --outDir lib-esm",
+    "build-ts": "export NODE_OPTIONS=--openssl-legacy-provider && npm run clean-ts && npm run ts",
+    "build-dev": "export NODE_OPTIONS=--openssl-legacy-provider && npm run clean-dist && webpack --mode development --progress",
+    "build-prod": "export NODE_OPTIONS=--openssl-legacy-provider && npm run clean-dist && webpack --mode production --progress && npm run ts"
   },
   "repository": {
     "type": "git",

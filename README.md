@@ -43,6 +43,11 @@ The outcome can be found in the folders
 * lib
 * lib-esm
 
+Starting from node 17 the OpenSSL provider has been updated. To build the SDK export the following variable
+```shell
+export NODE_OPTIONS=--openssl-legacy-provider
+```
+
 
 ## Development
 Verify the dependencies, actual vs new versions
