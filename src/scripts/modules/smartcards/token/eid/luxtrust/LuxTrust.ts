@@ -15,7 +15,7 @@ import {
 import {RequestHandler} from '../../../../../util/RequestHandler';
 import {TokenAuthenticateOrSignData, TokenVerifyPinData} from '../../TokenCard';
 import {Options} from "../../../Card";
-import {AbstractLuxTrust, PinType} from "./LuxTrustModel";
+import {AbstractLuxTrust} from "./LuxTrustModel";
 import {CertParser} from "../../../../../util/CertParser";
 import {ResponseHandler} from "../../../../../util/ResponseHandler";
 import {Pinutil} from "../../../../../..";

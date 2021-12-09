@@ -24,9 +24,3 @@ export interface AbstractLuxTrust {
   allAlgoRefs(callback?: (error: T1CLibException, data: TokenAlgorithmReferencesResponse) => void): Promise<TokenAlgorithmReferencesResponse>
   resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
 }
-
-
-export class PinType {
-  static PIN = 'Pin';
-  static CAN = 'Can';
-}
