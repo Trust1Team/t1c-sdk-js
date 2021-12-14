@@ -18,7 +18,7 @@ export class T1CConfig {
   private _t1cProxyUrl = 'https://t1c.t1t.io';
   private _t1cProxyPort = '51983';
   private _jwt = '';
-  private _applicationDomain = ''; // "rmc.t1t.be"
+  private _applicationDomain = window.location.host; // will return the host of the current loaded web-page eg; rmc.t1t.io
   private _version;
   private _dsUrl;
 
