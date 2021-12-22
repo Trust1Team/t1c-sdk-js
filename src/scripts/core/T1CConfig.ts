@@ -17,8 +17,8 @@ export class T1CConfig {
   private _t1cApiPort = '51983';
   private _t1cProxyUrl = 'https://t1c.t1t.io';
   private _t1cProxyPort = '51983';
-  private _jwt = '';
-  private _applicationDomain = '';
+  private _jwt: string | undefined = undefined;
+  private _applicationDomain: string | undefined = undefined; // "rmc.t1t.be"
   private _version;
   private _dsUrl;
 
@@ -47,11 +47,11 @@ export class T1CConfig {
   }
 
 
-  get applicationDomain(): string {
+  get applicationDomain(): string | undefined {
     return this._applicationDomain;
   }
 
-  set applicationDomain(value: string) {
+  set applicationDomain(value: string | undefined) {
     this._applicationDomain = value;
   }
 
@@ -71,10 +71,10 @@ export class T1CConfig {
     return this._t1cProxyUrl + ":" + this._t1cProxyPort;
   }
 
-  get t1cJwt(): string {
+  get t1cJwt(): string | undefined {
     return this._jwt;
   }
-  set t1cJwt(value: string) {
+  set t1cJwt(value: string | undefined) {
     this._jwt = value;
   }
 
