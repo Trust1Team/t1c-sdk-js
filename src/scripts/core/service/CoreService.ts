@@ -73,21 +73,22 @@ export class CoreService implements AbstractCore {
                             if (!callback || typeof callback !== 'function') {callback = function () {};}
                             callback(new T1CLibException("814500", "Invalid consent value, new consent is required", new T1CClient(this.connection.cfg)), undefined)
                             reject(new T1CLibException("814500", "Invalid consent value, new consent is required", new T1CClient(this.connection.cfg)));
-                        }
-                        const activeConsent = ConsentUtil.parseConsent(res.data.consent)
-                        if (activeConsent != null) {
-                            this.connection.cfg.t1cApiPort = activeConsent.agent.apiPort;
-                            const newClient = new T1CClient(this.connection.cfg)
-                            newClient.core().getDevicePublicKey();
-                            if (!callback || typeof callback !== 'function') { callback = function () {}; }
-                            callback(undefined, newClient)
-                            resolve(newClient)
                         } else {
-                            ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
-                            console.error("Unable to parse consent")
-                            if (!callback || typeof callback !== 'function') { callback = function () {}; }
-                            callback(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)), undefined)
-                            reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
+                            const activeConsent = ConsentUtil.parseConsent(res.data.consent)
+                            if (activeConsent != null) {
+                                this.connection.cfg.t1cApiPort = activeConsent.agent.apiPort;
+                                const newClient = new T1CClient(this.connection.cfg)
+                                newClient.core().getDevicePublicKey();
+                                if (!callback || typeof callback !== 'function') { callback = function () {}; }
+                                callback(undefined, newClient)
+                                resolve(newClient)
+                            } else {
+                                ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl)
+                                console.error("Unable to parse consent")
+                                if (!callback || typeof callback !== 'function') { callback = function () {}; }
+                                callback(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)), undefined)
+                                reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
+                            }
                         }
                     }, err => {
                         console.error(err)
