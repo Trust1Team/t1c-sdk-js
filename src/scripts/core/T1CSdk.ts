@@ -35,6 +35,7 @@ import {AbstractSafenet} from "../modules/smartcards/token/pki/safenet/SafenetMo
 import {AbstractEherkenning} from "../modules/smartcards/token/pki/eHerkenning/eHerkenningModel";
 import {AbstractJcop} from "../modules/smartcards/token/pki/jcop/JcopModel";
 import {AbstractAirbus} from "../modules/smartcards/token/pki/airbus/AirbusModel";
+import { AbstractLuxTrust } from "../modules/smartcards/token/eid/luxtrust/LuxTrustModel";
 
 const urlVersion = "/v3";
 const semver = require('semver');
@@ -206,6 +207,11 @@ export class T1CClient {
     public airbus = (reader_id: string): AbstractAirbus => {
         return this.moduleFactory.createAirbus(reader_id);
     }
+
+    public luxtrust = (reader_id: string): AbstractLuxTrust => {
+        return this.moduleFactory.createLuxTrust(reader_id);
+    }
+
 
     set t1cInstalled(value: boolean) {
         this._t1cInstalled = value;
