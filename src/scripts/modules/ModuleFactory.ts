@@ -45,6 +45,8 @@ import {AbstractJcop} from "./smartcards/token/pki/jcop/JcopModel";
 import {Jcop} from "./smartcards/token/pki/jcop/Jcop";
 import {AbstractAirbus} from "./smartcards/token/pki/airbus/AirbusModel";
 import {Airbus} from "./smartcards/token/pki/airbus/Airbus";
+import { AbstractLuxTrust } from "./smartcards/token/eid/luxtrust/LuxTrustModel";
+import { LuxTrust } from "./smartcards/token/eid/luxtrust/LuxTrust";
 
 export interface AbstractFactory {
     createEidGeneric(reader_id: string): AbstractEidGeneric;
@@ -183,5 +185,9 @@ export class ModuleFactory implements AbstractFactory {
 
     public createAirbus(reader_id: string): AbstractAirbus {
         return new Airbus(this.url, CONTAINER_AIRBUS, this.connection, reader_id);
+    }
+
+    public createLuxTrust(reader_id: string): AbstractLuxTrust {
+        return new LuxTrust(this.url, CONTAINER_LUXTRUST, this.connection, reader_id);
     }
 }
