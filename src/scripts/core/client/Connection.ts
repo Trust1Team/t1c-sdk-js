@@ -273,6 +273,16 @@ export abstract class GenericConnection implements Connection {
             callback(thrownError, null);
             return reject(thrownError);
           } else {
+            // check on unauthorized error
+            if (error.response?.status === 401) {
+              const thrownError = new T1CLibException(
+                "112999",
+                "Unauthorized"
+              );
+              // @ts-ignore
+              callback(thrownError, null);
+              return reject(thrownError);
+            }
             // @ts-ignore
             callback(
               new T1CLibException(
