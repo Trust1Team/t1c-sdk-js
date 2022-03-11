@@ -4,7 +4,6 @@ import Certificate from 'pkijs/src/Certificate';
 
 export interface AbstractCore {
   // getConsent(title: string, codeWord: string, durationInDays?: number, alertLevel?: string, alertPosition?: string, type?: string, timeoutInSeconds?: number, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
-  generateConsentToken(): Promise<string>
   getImplicitConsent(codeWord: string, durationInDays?: number, callback?: (error?: T1CLibException, data?: T1CClient) => void): Promise<T1CClient>;
   validateConsent(callback?: (error?: T1CLibException, data?: T1CClient) => void): Promise<T1CClient>;
   updateJWT(jwt: string, callback?: (error: T1CLibException, data?: T1CClient) => void): Promise<T1CClient>
@@ -53,7 +52,7 @@ export class InfoJava {
   constructor(public runtime?: String, public spec?: String, public java?: String){}
 }
 export class InfoUser {
-  constructor(public timezone?: String, public country?: String, public language?: String, public home?: String, public tempDir?: String, public name?: string, public username?: string, public installedDir?: string) {}
+  constructor(public timezone?: String, public country?: String, public language?: String, public home?: String, public tempDir?: String, public name?: string, public username?: string, public hostName?: string, public installedDir?: string) {}
 }
 export class InfoService{
   constructor(public url?: String, public apiPort?: String, public gRpcPort?: String, public deviceType?: string, public distributionServiceUrl?: string, public dsRegistryActivated?: boolean) {}

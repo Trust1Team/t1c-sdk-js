@@ -83,6 +83,10 @@ export class T1CClient {
                     if (infoRes.t1CInfoAPI?.service?.distributionServiceUrl && infoRes.t1CInfoAPI.service.dsRegistryActivated) {
                         _client.config().dsUrl = infoRes.t1CInfoAPI.service.distributionServiceUrl
                     }
+                    if (infoRes.t1CInfoUser?.hostName) {
+                        _client.config().deviceHostName = infoRes.t1CInfoUser.hostName
+                    }
+
                     if (infoRes.t1CInfoAPI && semver.lt(semver.coerce(infoRes.t1CInfoAPI.version).version, '3.5.0')) {
                         this._init(resolve, reject, _client.config(), callback);
                     } else {
@@ -238,6 +242,21 @@ export class T1CClient {
             if (callback && typeof callback === 'function') {callback(error, undefined);}
             reject(error)
         }
+    }
+
+
+    // Random generation for copy to clipboard
+    public static generateConsentToken(): string {
+        const prefix = "::t1c::miksa::";
+        const length = 32;
+        let result = "";
+        const characters =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        const charactersLength = characters.length;
+        for (var i = 0; i < length; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charactersLength));
+        }
+        return prefix + result;
     }
 
     /**
