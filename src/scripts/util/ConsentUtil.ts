@@ -95,8 +95,13 @@ export class ConsentUtil {
         }
     }
 
-    public static setConsent(consentValue: string, domain: string) {
-        localStorage.setItem(ConsentUtil.consentKey + domain, consentValue)
+    public static setConsent(consentValue: Array<string>, domain: string) {
+        if (consentValue.length > 0) {
+            localStorage.setItem(ConsentUtil.consentKey + domain, consentValue.toString())
+        } else {
+            this.removeConsent(domain)
+        }
+
     }
 }
 

@@ -21,6 +21,7 @@ export class T1CConfig {
   private _applicationDomain: string | undefined = undefined; // "rmc.t1t.be"
   private _version;
   private _dsUrl;
+  private _deviceHostName;
 
   // constructor for DTO
   public constructor(options: T1CConfigOptions) {
@@ -94,5 +95,14 @@ export class T1CConfig {
 
   set dsUrl(value) {
     this._dsUrl = value;
+  }
+
+
+  get deviceHostName() {
+    return this._deviceHostName;
+  }
+
+  set deviceHostName(value) {
+    this._deviceHostName = value;
   }
 }
