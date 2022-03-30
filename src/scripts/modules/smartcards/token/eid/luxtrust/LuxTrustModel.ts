@@ -5,11 +5,8 @@ import {
 } from '../../../../../core/service/CoreModel';
 import {TokenAuthenticateOrSignData} from "../../TokenCard";
 import {TokenVerifyPinData} from "../../TokenCard";
-import {
-  TokenAddressResponse,
-  TokenAllDataResponse, TokenAuthenticateResponse,
-  TokenBiometricDataResponse, TokenPictureResponse, TokenSignResponse,
-  TokenDataResponse, TokenVerifyPinResponse, TokenAlgorithmReferencesResponse
+import { TokenAuthenticateResponse, TokenSignResponse
+  , TokenVerifyPinResponse, TokenAlgorithmReferencesResponse
 } from "../generic/EidGenericModel";
 import {Options} from "../../../Card";
 

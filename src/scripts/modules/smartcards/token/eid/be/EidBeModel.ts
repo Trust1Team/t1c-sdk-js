@@ -1,15 +1,15 @@
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {
   BoolDataResponse,
-  TokenCertificateResponse, TokenAllCertsResponse,
-} from '../../../../../core/service/CoreModel';
+  TokenCertificateResponse, TokenAllCertsResponse, TokenInfoResponse
+} from "../../../../../core/service/CoreModel";
 import {TokenAuthenticateOrSignData} from "../../TokenCard";
 import {TokenVerifyPinData} from "../../TokenCard";
 import {
   TokenAddressResponse,
   TokenAllDataResponse, TokenAuthenticateResponse,
   TokenBiometricDataResponse, TokenPictureResponse, TokenSignResponse,
-  TokenDataResponse, TokenVerifyPinResponse, TokenAlgorithmReferencesResponse
+  TokenVerifyPinResponse, TokenAlgorithmReferencesResponse
 } from "../generic/EidGenericModel";
 import {Options} from "../../../Card";
 
@@ -17,7 +17,7 @@ export interface AbstractEidBE {
   allData(filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllDataResponse) => void): Promise<TokenAllDataResponse>;
   allCerts(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse>;
   biometric(callback?: (error: T1CLibException, data: TokenBiometricDataResponse) => void): Promise<TokenBiometricDataResponse>;
-  tokenData(callback?: (error: T1CLibException, data: TokenDataResponse) => void): Promise<TokenDataResponse>;
+  tokenData(callback?: (error: T1CLibException, data: TokenInfoResponse) => void): Promise<TokenInfoResponse>;
   address(callback?: (error: T1CLibException, data: TokenAddressResponse) => void): Promise<TokenAddressResponse>;
   picture(callback?: (error: T1CLibException, data: TokenPictureResponse) => void): Promise<TokenPictureResponse>;
   rootCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse>;

@@ -7,7 +7,7 @@ import {AbstractCertigna} from './CertignaModel';
 import {LocalConnection} from '../../../../../core/client/Connection';
 import {
     BoolDataResponse, TokenAllCertsResponse,
-    TokenCertificateResponse,
+    TokenCertificateResponse, TokenInfoResponse
 } from "../../../../../core/service/CoreModel";
 import {
     TokenAuthenticateResponse,
@@ -38,11 +38,23 @@ export class Certigna implements AbstractCertigna {
     static AUTHENTICATE = '/authenticate';
     static RESET_PIN = '/reset-pin';
 
+    static TOKEN_INFO = '/info'
+
     static RESET_BULK_PIN = "/reset-bulk-pin"
 
     static SUPPORTED_ALGOS = '/supported-algorithms'
 
     constructor(protected baseUrl: string, protected containerUrl: string, protected connection: LocalConnection, protected reader_id: string) {
+    }
+
+    public tokenData(callback?: ((error: T1CLibException, data: TokenInfoResponse) => void) | undefined): Promise<TokenInfoResponse> {
+        return this.connection.get(
+          this.baseUrl,
+          this.tokenApp(Certigna.TOKEN_INFO, true),
+          undefined,
+          undefined,
+          callback
+        );
     }
 
     public authenticationCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {

@@ -4,15 +4,14 @@ import {
     AbstractEidGeneric,
     TokenAddressResponse, TokenAuthenticateResponse,
     TokenBiometricDataResponse, TokenPictureResponse, TokenSignResponse,
-    TokenDataResponse, TokenAlgorithmReferencesResponse,
+    TokenAlgorithmReferencesResponse,
 } from './EidGenericModel';
 import {
     BoolDataResponse,
     TokenCertificateResponse,
-    DataArrayResponse,
     DataObjectResponse,
-    T1CResponse, TokenAllCertsResponse,
-} from '../../../../../core/service/CoreModel';
+    T1CResponse, TokenAllCertsResponse, TokenInfoResponse
+} from "../../../../../core/service/CoreModel";
 import {RequestHandler} from '../../../../../util/RequestHandler';
 import {TokenAuthenticateOrSignData, TokenVerifyPinData} from '../../TokenCard';
 import {Options} from "../../../Card";
@@ -101,7 +100,7 @@ export class EidGeneric implements AbstractEidGeneric {
         );
     }
 
-    public tokenData(module: string, callback?: (error: T1CLibException, data: TokenDataResponse) => void): Promise<TokenDataResponse> {
+    public tokenData(module: string, callback?: (error: T1CLibException, data: TokenInfoResponse) => void): Promise<TokenInfoResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.TOKEN, true),

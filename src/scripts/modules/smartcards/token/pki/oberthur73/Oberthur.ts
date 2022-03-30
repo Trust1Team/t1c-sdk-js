@@ -7,7 +7,7 @@ import {
     BoolDataResponse,
     TokenCertificateResponse,
     DataObjectResponse,
-    T1CResponse, TokenAllCertsResponse
+    T1CResponse, TokenAllCertsResponse, TokenInfoResponse
 } from "../../../../../core/service/CoreModel";
 import {
     TokenAlgorithmReferencesResponse,
@@ -104,7 +104,7 @@ export class Oberthur implements AbstractOberthur73 {
         });
     }
 
-    public tokenData(callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
+    public tokenData(callback?: (error: T1CLibException, data: TokenInfoResponse) => void): Promise<TokenInfoResponse> {
         return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.INFO, true), undefined, undefined, callback);
     }
 

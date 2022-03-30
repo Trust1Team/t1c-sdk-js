@@ -9,7 +9,7 @@ import {
     BoolDataResponse,
     TokenCertificateResponse,
     DataObjectResponse,
-    T1CResponse, TokenAllCertsResponse
+    T1CResponse, TokenAllCertsResponse, TokenInfoResponse
 } from "../../../../../core/service/CoreModel";
 import {AbstractIdemia} from "./IdemiaModel";
 import {
@@ -107,7 +107,7 @@ export class Idemia implements AbstractIdemia {
         });
     }
 
-    public tokenData(callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
+    public tokenData(callback?: (error: T1CLibException, data: TokenInfoResponse) => void): Promise<TokenInfoResponse> {
         return this.connection.get(this.baseUrl, this.tokenApp(Idemia.INFO, true), undefined, undefined, callback);
     }
 

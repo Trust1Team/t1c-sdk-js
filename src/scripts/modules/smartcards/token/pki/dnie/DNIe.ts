@@ -11,7 +11,7 @@ import {
 import {
     TokenAuthenticateResponse,
     TokenSignResponse,
-    TokenDataResponse, TokenVerifyPinResponse, TokenAlgorithmReferencesResponse, TokenResetPinResponse
+    TokenVerifyPinResponse, TokenAlgorithmReferencesResponse, TokenResetPinResponse
 } from "../../eid/generic/EidGenericModel";
 import {TokenAuthenticateOrSignData, TokenResetPinData, TokenVerifyPinData} from "../../TokenCard";
 import {Options} from "../../../Card";

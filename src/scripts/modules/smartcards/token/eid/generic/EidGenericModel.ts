@@ -1,10 +1,10 @@
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {
   BoolDataResponse,
-  TokenCertificateResponse, DataArrayResponse,
+  TokenCertificateResponse,
   DataObjectResponse,
-  TokenAllCertsResponse,
-} from '../../../../../core/service/CoreModel';
+  TokenAllCertsResponse, TokenInfoResponse
+} from "../../../../../core/service/CoreModel";
 import {TokenAuthenticateOrSignData} from "../../TokenCard";
 import {TokenVerifyPinData} from "../../TokenCard";
 import {Options} from "../../../Card";
@@ -13,7 +13,7 @@ export interface AbstractEidGeneric {
   allData(module: string, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllDataResponse) => void): Promise<TokenAllDataResponse>;
   allCerts(module: string, parseCerts?: boolean,  filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse>;
   biometric(module: string, callback?: (error: T1CLibException, data: TokenBiometricDataResponse) => void): Promise<TokenBiometricDataResponse>;
-  tokenData(module: string, callback?: (error: T1CLibException, data: TokenDataResponse) => void): Promise<TokenDataResponse>;
+  tokenData(module: string, callback?: (error: T1CLibException, data: TokenInfoResponse) => void): Promise<TokenInfoResponse>;
   address(module: string, callback?: (error: T1CLibException, data: TokenAddressResponse) => void): Promise<TokenAddressResponse>;
   picture(module: string, callback?: (error: T1CLibException, data: TokenPictureResponse) => void): Promise<TokenPictureResponse>;
   rootCertificate(module: string, parseCerts?: boolean,  callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse>;
@@ -124,29 +124,6 @@ export class TokenPictureData {
       public width?: number,
       public height?: number,
   ) {}
-}
-
-export class TokenData {
-  constructor(
-      public rawData?: string,
-      public version?: string,
-      public serialNumber?: string,
-      public label?: string,
-      public prnGeneration?: string,
-      public eidCompliant?: string,
-      public graphicalPersoVersion?: string,
-      public versionRfu?: string,
-      public electricalPersoVersion?: string,
-      public electricalPersoInterfaceVersion?: string,
-      public changeCounter?: number,
-      public activated?: string,
-  ) {}
-}
-
-export class TokenDataResponse extends DataObjectResponse {
-  constructor(public data: TokenData, public success: boolean) {
-    super(data, success);
-  }
 }
 
 export class TokenBiometricData {

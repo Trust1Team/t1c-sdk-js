@@ -3,15 +3,15 @@ import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {
     TokenAddressResponse, TokenAuthenticateResponse,
     TokenBiometricDataResponse, TokenPictureResponse, TokenSignResponse,
-    TokenDataResponse, TokenAlgorithmReferencesResponse,
+    TokenAlgorithmReferencesResponse,
 } from '../generic/EidGenericModel';
 import {
     BoolDataResponse,
     TokenCertificateResponse,
     DataArrayResponse,
     DataObjectResponse,
-    T1CResponse, TokenAllCertsResponse,
-} from '../../../../../core/service/CoreModel';
+    T1CResponse, TokenAllCertsResponse, TokenInfoResponse
+} from "../../../../../core/service/CoreModel";
 import {RequestHandler} from '../../../../../util/RequestHandler';
 import {TokenAuthenticateOrSignData, TokenVerifyPinData} from '../../TokenCard';
 import {Options} from "../../../Card";
@@ -105,8 +105,8 @@ export class EidLux implements AbstractEidLux {
     }
 
     public tokenData(
-        callback?: (error: T1CLibException, data: TokenDataResponse) => void
-    ): Promise<TokenDataResponse> {
+        callback?: (error: T1CLibException, data: TokenInfoResponse) => void
+    ): Promise<TokenInfoResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(EidLux.TOKEN, true),

@@ -1,15 +1,12 @@
-import {LocalConnection, RequestHeaders} from '../../../../../core/client/Connection';
+import {LocalConnection} from '../../../../../core/client/Connection';
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {
-    TokenAddressResponse, TokenAuthenticateResponse,
-    TokenBiometricDataResponse, TokenPictureResponse, TokenSignResponse,
-    TokenDataResponse, TokenAlgorithmReferencesResponse,
+    TokenAuthenticateResponse,
+    TokenSignResponse, TokenAlgorithmReferencesResponse,
 } from '../generic/EidGenericModel';
 import {
     BoolDataResponse,
     TokenCertificateResponse,
-    DataArrayResponse,
-    DataObjectResponse,
     T1CResponse, TokenAllCertsResponse,
 } from '../../../../../core/service/CoreModel';
 import {RequestHandler} from '../../../../../util/RequestHandler';

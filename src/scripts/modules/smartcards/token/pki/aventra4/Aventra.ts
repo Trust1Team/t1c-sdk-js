@@ -7,12 +7,12 @@ import {AbstractAventra} from './AventraModel';
 import {LocalConnection} from '../../../../../core/client/Connection';
 import {
     BoolDataResponse, TokenAllCertsResponse,
-    TokenCertificateResponse,
+    TokenCertificateResponse, TokenInfoResponse
 } from "../../../../../core/service/CoreModel";
 import {
     TokenAuthenticateResponse,
     TokenSignResponse,
-    TokenDataResponse, TokenVerifyPinResponse, TokenAlgorithmReferencesResponse, TokenResetPinResponse
+    TokenVerifyPinResponse, TokenAlgorithmReferencesResponse, TokenResetPinResponse
 } from "../../eid/generic/EidGenericModel";
 import {TokenAuthenticateOrSignData, TokenResetPinData, TokenVerifyPinData} from "../../TokenCard";
 import {Options} from "../../../Card";
@@ -118,7 +118,7 @@ export class Aventra implements AbstractAventra {
         });
     }
 
-    public tokenData(callback?: (error: T1CLibException, data: TokenDataResponse) => void): Promise<TokenDataResponse> {
+    public tokenData(callback?: (error: T1CLibException, data: TokenInfoResponse) => void): Promise<TokenInfoResponse> {
         return this.connection.get(this.baseUrl, this.tokenApp(Aventra.INFO, true), undefined, undefined, callback);
     }
 
