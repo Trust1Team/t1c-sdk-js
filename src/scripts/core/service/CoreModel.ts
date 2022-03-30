@@ -246,27 +246,26 @@ export class PKCS11TokenInfo {
   }
 }
 
-
 export class T1cTokenInfoFlags {
   constructor(
-    is_random_number_generator?: boolean,
-    is_write_protected?: boolean,
-    is_login_required?: boolean,
-    is_user_pin_initialized?: boolean,
-    is_restore_key_not_needed?: boolean,
-    is_clock_on_token?: boolean,
-    is_protected_authentication_path?: boolean,
-    is_dual_crypto_operations?: boolean,
-    is_token_initialized?: boolean,
-    is_secondary_authentication?: boolean,
-    is_user_pin_count_low?: boolean,
-    is_user_pin_final_try?: boolean,
-    is_user_pin_locked?: boolean,
-    is_user_pin_to_be_changed?: boolean,
-    is_so_pin_count_low?: boolean,
-    is_so_pin_final_try?: boolean,
-    is_so_pin_locked?: boolean,
-    is_so_pin_to_be_changed?: boolean
+    isRandomNumberGenerator?: boolean,
+    isWriteProtected?: boolean,
+    isLoginRequired?: boolean,
+    isUserPinInitialized?: boolean,
+    isRestoreKeyNotNeeded?: boolean,
+    isClockOnToken?: boolean,
+    isProtectedAuthenticationPath?: boolean,
+    isDualCryptoOperations?: boolean,
+    isTokenInitialized?: boolean,
+    isSecondaryAuthentication?: boolean,
+    isUserPinCountLow?: boolean,
+    isUserPinFinalTry?: boolean,
+    isUserPinLocked?: boolean,
+    isUserPinToBeChanged?: boolean,
+    isSoPinCountLow?: boolean,
+    isSoPinFinalTry?: boolean,
+    isSoPinLocked?: boolean,
+    isSoPinToBeChanged?: boolean
   ) {
   }
 }
@@ -275,31 +274,31 @@ export class T1cMechanismInfo {
   constructor(
     mechanism?: string,
     flags?: T1cMechanismFlags,
-    ul_min_key_size?: number,
-    ul_max_key_size?: number
+    ulMinKeySize?: number,
+    ulMaxKeySize?: number
   ) {
   }
 }
 
 export class T1cMechanismFlags {
   constructor(
-    is_hardware?: boolean,
-    is_encrypt?: boolean,
-    is_decrypt?: boolean,
-    is_digest?: boolean,
-    is_sign?: boolean,
-    is_sign_recover?: boolean,
-    is_verify?: boolean,
-    is_verify_recover?: boolean,
-    is_generate?: boolean,
-    is_generate_key_pair?: boolean,
-    is_wrap?: boolean,
-    is_unwrap?: boolean,
-    is_extension?: boolean,
-    is_ec_f_p?: boolean,
-    is_ec_namedcurve?: boolean,
-    is_ec_uncompress?: boolean,
-    is_ec_compress?: boolean
+    isHardware?: boolean,
+    isEncrypt?: boolean,
+    isDecrypt?: boolean,
+    isDigest?: boolean,
+    isSign?: boolean,
+    isSignRecover?: boolean,
+    isVerify?: boolean,
+    isVerifyRecover?: boolean,
+    isGenerate?: boolean,
+    isGenerateKeyPair?: boolean,
+    isWrap?: boolean,
+    isUnwrap?: boolean,
+    isExtension?: boolean,
+    isEcFP?: boolean,
+    isEcNamedcurve?: boolean,
+    isEcUncompress?: boolean,
+    isEcCompress?: boolean
   ) {
   }
 }

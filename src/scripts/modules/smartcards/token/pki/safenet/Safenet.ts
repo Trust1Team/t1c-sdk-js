@@ -6,7 +6,7 @@ import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {LocalConnection} from '../../../../../core/client/Connection';
 import {
     BoolDataResponse, TokenAllCertsResponse,
-    TokenCertificateResponse,
+    TokenCertificateResponse, TokenInfoResponse
 } from "../../../../../core/service/CoreModel";
 import {
     TokenAuthenticateResponse,
@@ -33,6 +33,8 @@ export class Safenet implements AbstractSafenet {
     static CERT_AUTHENTICATION = '/authentication-cert';
     static CERT_NON_REPUDIATION = '/nonrepudiation-cert';
 
+    static TOKEN_INFO = '/info'
+
     static SIGN_DATA = '/sign';
     static VERIFY_PIN = '/verify-pin';
     static AUTHENTICATE = '/authenticate';
@@ -43,6 +45,16 @@ export class Safenet implements AbstractSafenet {
     static SUPPORTED_ALGOS = '/supported-algorithms'
 
     constructor(protected baseUrl: string, protected containerUrl: string, protected connection: LocalConnection, protected reader_id: string) {
+    }
+
+    public tokenData(callback?: ((error: T1CLibException, data: TokenInfoResponse) => void) | undefined): Promise<TokenInfoResponse> {
+        return this.connection.get(
+          this.baseUrl,
+          this.tokenApp(Safenet.TOKEN_INFO, true),
+          undefined,
+          undefined,
+          callback
+        );
     }
 
     public authenticationCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
