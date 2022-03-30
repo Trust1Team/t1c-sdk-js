@@ -184,9 +184,9 @@ export class T1CInfoRuntime {
 }
 
 
-
 export class TokenInfoResponse extends T1CResponse {
-  constructor(public data: TokenInfo, public success: boolean) {
+  // use union type to be backwards compatible with versions before 3.6.0
+  constructor(public data: TokenInfo | BaseTokenInfo, public success: boolean) {
     super(success, data);
   }
 }
