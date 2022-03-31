@@ -166,7 +166,7 @@ export class CertParser {
                     // @ts-ignore
                     const parsedCert = CertParser.processCert(_cert.certificate)
                     // @ts-ignore
-                    parsedCertificates.push(new T1CCertificate(_cert.certificate, _cert.certificateType, _cert.id, _cert.subject, _cert.issuer, _cert.serialNumber, _cert.url, _cert.hashSubPubKey, _cert.hashIssPubKey, parsedCert))
+                    parsedCertificates.push(new T1CCertificate(_cert.certificate, _cert.certificateType, _cert.id, _cert.subject, _cert.issuer, _cert.serialNumber, _cert.url, _cert.hashSubPubKey, _cert.hashIssPubKey, _cert.exponent, _cert.remainder, parsedCert))
                 })
             }
             return new TokenCertificateExtended(parsedCertificates);
