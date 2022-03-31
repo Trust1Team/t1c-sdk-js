@@ -3,7 +3,7 @@ import {
     LocalConnection, PaymentAllCertsResponse, PaymentCertificateResponse, PaymentReadApplicationDataResponse,
     PaymentReadDataResponse, PaymentSignData, PaymentSignResponse,
     PaymentVerifyPinResponse, Pinutil,
-    T1CLibException, TokenAuthenticateOrSignData
+    T1CLibException, TokenAllCertsExtendedResponse, TokenAuthenticateOrSignData, TokenCertificateExtendedResponse
 } from "../../../../../index";
 import {
     AbstractCrelan
@@ -34,7 +34,7 @@ export class Crelan implements AbstractCrelan {
     ) {
     }
 
-    allCerts(aid: string, filters: string[] | Options, callback?: (error: T1CLibException, data: PaymentAllCertsResponse) => void): Promise<PaymentAllCertsResponse> {
+    allCerts(aid: string, filters: string[] | Options, callback?: (error: T1CLibException, data: PaymentAllCertsResponse | TokenAllCertsExtendedResponse) => void): Promise<PaymentAllCertsResponse | TokenAllCertsExtendedResponse> {
         const reqOptions = RequestHandler.determineOptionsWithFilter(filters);
         return this.connection.get(
             this.baseUrl,
@@ -44,7 +44,7 @@ export class Crelan implements AbstractCrelan {
         );
     }
 
-    iccPublicCertificate(aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
+    iccPublicCertificate(aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse | TokenCertificateExtendedResponse) => void): Promise<PaymentCertificateResponse | TokenCertificateExtendedResponse> {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(Crelan.CERT_ICC, aid, true),
@@ -54,7 +54,7 @@ export class Crelan implements AbstractCrelan {
         );
     }
 
-    issuerPublicCertificate(aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
+    issuerPublicCertificate(aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse | TokenCertificateExtendedResponse) => void): Promise<PaymentCertificateResponse | TokenCertificateExtendedResponse> {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(Crelan.CERT_ISSUER, aid, true),

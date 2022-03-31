@@ -177,6 +177,8 @@ export class T1CCertificate {
     public url?: string,
     public hashSubPubKey?: string,
     public hashIssPubKey?: string,
+    public exponent?: string,
+    public remainder?: string,
     public parsedCertificate?: Certificate,
   ) {
   }
@@ -190,7 +192,9 @@ export class TokenAllCertsExtended {
     public nonRepudiationCertificate?: TokenCertificateExtended,
     public rootCertificate?: TokenCertificateExtended,
     public encryptionCertificate?: TokenCertificateExtended,
-    public issuerCertificate?: TokenCertificateExtended
+    public issuerCertificate?: TokenCertificateExtended,
+    public issuerPublicCertificate?: TokenCertificateExtended,
+    public iccPublicCertificate?: TokenCertificateExtended
   ) {
   }
 }
