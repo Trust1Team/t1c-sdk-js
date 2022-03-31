@@ -10,8 +10,8 @@ import {
     TokenCertificateResponse,
     DataArrayResponse,
     DataObjectResponse,
-    T1CResponse, TokenAllCertsResponse,
-} from '../../../../../core/service/CoreModel';
+    T1CResponse, TokenAllCertsResponse, TokenCertificateExtendedResponse, TokenAllCertsExtendedResponse
+} from "../../../../../core/service/CoreModel";
 import {RequestHandler} from '../../../../../util/RequestHandler';
 import {TokenAuthenticateOrSignData, TokenVerifyPinData} from '../../TokenCard';
 import {AbstractEidBE} from "./EidBeModel";
@@ -123,7 +123,15 @@ export class EidBe implements AbstractEidBE {
             undefined,
             undefined,
             callback
-        );
+        ).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
+            if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+            }
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
 
     public intermediateCertificates(
@@ -136,8 +144,12 @@ export class EidBe implements AbstractEidBE {
             undefined,
             undefined,
             callback
-        ).then((res: TokenCertificateResponse) => {
-            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        ).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
+             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+            }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -153,8 +165,12 @@ export class EidBe implements AbstractEidBE {
             undefined,
             undefined,
             callback
-        ).then((res: TokenCertificateResponse) => {
-            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        ).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
+            if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+            }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -170,8 +186,12 @@ export class EidBe implements AbstractEidBE {
             undefined,
             undefined,
             callback
-        ).then((res: TokenCertificateResponse) => {
-            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        ).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
+             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+            }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -187,12 +207,145 @@ export class EidBe implements AbstractEidBE {
             undefined,
             undefined,
             callback
-        ).then((res: TokenCertificateResponse) => {
-            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        ).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
+             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+            }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
+
+    public allCerts(
+      parseCerts?: boolean,
+      options?: string[] | Options,
+      callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void
+    ): Promise<TokenAllCertsResponse> {
+        // @ts-ignore
+        const reqOptions = RequestHandler.determineOptionsWithFilter(options);
+        return this.connection.get(
+          this.baseUrl,
+          this.tokenApp(EidBe.ALL_CERTIFICATES, true),
+          reqOptions.params,
+          callback
+        ).then((res: TokenAllCertsResponse | TokenAllCertsExtendedResponse) => {
+             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenAllCertificates(<TokenAllCertsResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenAllCertificates36(<TokenAllCertsExtendedResponse>res, parseCerts, callback)
+            }
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+
+    public rootCertificateExtended(
+      parseCerts?: boolean,
+      callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
+    ): Promise<TokenCertificateExtendedResponse> {
+        return this.connection.get(
+          this.baseUrl,
+          this.tokenApp(EidBe.CERT_ROOT, true),
+          undefined,
+          undefined,
+          callback
+        ).then((res: TokenCertificateExtendedResponse) => {
+            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+    public intermediateCertificatesExtended(
+      parseCerts?: boolean,
+      callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
+    ): Promise<TokenCertificateExtendedResponse> {
+        return this.connection.get(
+          this.baseUrl,
+          this.tokenApp(EidBe.CERT_INTERMEDIATE, true),
+          undefined,
+          undefined,
+          callback
+        ).then((res: TokenCertificateExtendedResponse) => {
+           return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+    public authenticationCertificateExtended(
+      parseCerts?: boolean,
+      callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
+    ): Promise<TokenCertificateExtendedResponse> {
+        return this.connection.get(
+          this.baseUrl,
+          this.tokenApp(EidBe.CERT_AUTHENTICATION, true),
+          undefined,
+          undefined,
+          callback
+        ).then((res: TokenCertificateExtendedResponse) => {
+           return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+    public nonRepudiationCertificateExtended(
+      parseCerts?: boolean,
+      callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
+    ): Promise<TokenCertificateExtendedResponse> {
+        return this.connection.get(
+          this.baseUrl,
+          this.tokenApp(EidBe.CERT_NON_REPUDIATION, true),
+          undefined,
+          undefined,
+          callback
+        ).then((res: TokenCertificateExtendedResponse) => {
+           return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+    public encryptionCertificateExtended(
+      parseCerts?: boolean,
+      callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
+    ): Promise<TokenCertificateExtendedResponse> {
+        return this.connection.get(
+          this.baseUrl,
+          this.tokenApp(EidBe.CERT_ENCRYPTION, true),
+          undefined,
+          undefined,
+          callback
+        ).then((res: TokenCertificateExtendedResponse) => {
+           return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+    public allCertsExtended(
+      parseCerts?: boolean,
+      options?: string[] | Options,
+      callback?: (error: T1CLibException, data: TokenAllCertsExtendedResponse) => void
+    ): Promise<TokenAllCertsExtendedResponse> {
+        // @ts-ignore
+        const reqOptions = RequestHandler.determineOptionsWithFilter(options);
+        return this.connection.get(
+          this.baseUrl,
+          this.tokenApp(EidBe.ALL_CERTIFICATES, true),
+          reqOptions.params,
+          callback
+        ).then((res: TokenAllCertsExtendedResponse ) => {
+            return CertParser.processExtendedTokenAllCertificates(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
 
     public allAlgoRefs(
         callback?: (error: T1CLibException, data: TokenAlgorithmReferencesResponse) => void
@@ -204,25 +357,6 @@ export class EidBe implements AbstractEidBE {
             undefined,
             callback
         );
-    }
-
-    public allCerts(
-        parseCerts?: boolean,
-        options?: string[] | Options,
-        callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void
-    ): Promise<TokenAllCertsResponse> {
-        // @ts-ignore
-        const reqOptions = RequestHandler.determineOptionsWithFilter(options);
-        return this.connection.get(
-            this.baseUrl,
-            this.tokenApp(EidBe.ALL_CERTIFICATES, true),
-            reqOptions.params,
-            callback
-        ).then((res: TokenAllCertsResponse) => {
-            return CertParser.processTokenAllCertificates(res, parseCerts, callback)
-        }).catch(error => {
-            return ResponseHandler.error(error, callback);
-        });
     }
 
     public verifyPin(
