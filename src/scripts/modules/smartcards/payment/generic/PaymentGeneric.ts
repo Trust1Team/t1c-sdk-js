@@ -36,7 +36,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     ) {
     }
 
-    allCertsExtended(module: string, aid: string, parseCerts: boolean, filters: string[] | Options, callback?: ((error: T1CLibException, data: TokenAllCertsExtendedResponse) => void) | undefined): Promise<TokenAllCertsExtendedResponse> {
+    allCertsExtended(module: string, aid: string, filters: string[] | Options, callback?: ((error: T1CLibException, data: TokenAllCertsExtendedResponse) => void) | undefined): Promise<TokenAllCertsExtendedResponse> {
         const reqOptions = RequestHandler.determineOptionsWithFilter(filters);
         return this.connection.get(
           this.baseUrl,
@@ -44,13 +44,13 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
           reqOptions.params,
           callback
         ).then((res: TokenAllCertsExtendedResponse) => {
-            return CertParser.processExtendedTokenAllCertificates(res, parseCerts, callback)
+            return CertParser.processExtendedTokenAllCertificates(res, false, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
 
-    issuerPublicCertificateExtended(module: string, aid: string, parseCerts: boolean, callback?: ((error: T1CLibException, data: TokenCertificateExtendedResponse) => void) | undefined): Promise<TokenCertificateExtendedResponse> {
+    issuerPublicCertificateExtended(module: string, aid: string, callback?: ((error: T1CLibException, data: TokenCertificateExtendedResponse) => void) | undefined): Promise<TokenCertificateExtendedResponse> {
         return this.connection.get(
           this.baseUrl,
           this.paymentApp(module, PaymentGeneric.CERT_ISSUER, aid, true),
@@ -58,12 +58,12 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
           undefined,
           callback
         ).then((res: TokenCertificateExtendedResponse) => {
-            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+            return CertParser.processExtendedTokenCertificate(res, false, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
-    iccPublicCertificateExtended(module: string, aid: string, parseCerts: boolean, callback?: ((error: T1CLibException, data: TokenCertificateExtendedResponse) => void) | undefined): Promise<TokenCertificateExtendedResponse> {
+    iccPublicCertificateExtended(module: string, aid: string, callback?: ((error: T1CLibException, data: TokenCertificateExtendedResponse) => void) | undefined): Promise<TokenCertificateExtendedResponse> {
         return this.connection.get(
           this.baseUrl,
           this.paymentApp(module, PaymentGeneric.CERT_ICC, aid, true),
@@ -71,14 +71,14 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
           undefined,
           callback
         ).then((res: TokenCertificateExtendedResponse) => {
-                return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+                return CertParser.processExtendedTokenCertificate(res, false, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
 
 
-    allCerts(module: string, aid: string, parseCerts: boolean, filters: string[] | Options, callback?: (error: T1CLibException, data: PaymentAllCertsResponse) => void): Promise<PaymentAllCertsResponse> {
+    allCerts(module: string, aid: string, filters: string[] | Options, callback?: (error: T1CLibException, data: PaymentAllCertsResponse) => void): Promise<PaymentAllCertsResponse> {
         const reqOptions = RequestHandler.determineOptionsWithFilter(filters);
         return this.connection.get(
             this.baseUrl,
@@ -87,16 +87,16 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
             callback
         ).then((res: PaymentAllCertsResponse | TokenAllCertsExtendedResponse) => {
             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
-                return CertParser.processPaymentAllCertificates(<PaymentAllCertsResponse>res, parseCerts, callback)
+                return CertParser.processPaymentAllCertificates(<PaymentAllCertsResponse>res, false, callback)
             } else {
-                return CertParser.processPaymentAllCertificates36(<TokenAllCertsExtendedResponse>res, parseCerts, callback)
+                return CertParser.processPaymentAllCertificates36(<TokenAllCertsExtendedResponse>res, false, callback)
             }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
 
-    iccPublicCertificate(module: string, aid: string, parseCerts: boolean, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
+    iccPublicCertificate(module: string, aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(module, PaymentGeneric.CERT_ICC, aid, true),
@@ -105,16 +105,16 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
             callback
         ).then((res: PaymentCertificateResponse | TokenCertificateExtendedResponse) => {
             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
-                return CertParser.processPaymentCertificate(<PaymentCertificateResponse>res, parseCerts, callback)
+                return CertParser.processPaymentCertificate(<PaymentCertificateResponse>res, false, callback)
             } else {
-                return CertParser.processPaymentCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+                return CertParser.processPaymentCertificate36(<TokenCertificateExtendedResponse>res, false, callback)
             }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
 
-    issuerPublicCertificate(module: string, aid: string, parseCerts: boolean, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
+    issuerPublicCertificate(module: string, aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(module, PaymentGeneric.CERT_ISSUER, aid, true),
@@ -123,9 +123,9 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
             callback
         ).then((res: PaymentCertificateResponse | TokenCertificateExtendedResponse) => {
             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
-                return CertParser.processPaymentCertificate(<PaymentCertificateResponse>res, parseCerts, callback)
+                return CertParser.processPaymentCertificate(<PaymentCertificateResponse>res, false, callback)
             } else {
-                return CertParser.processPaymentCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+                return CertParser.processPaymentCertificate36(<TokenCertificateExtendedResponse>res, false, callback)
             }
         }).catch(error => {
             return ResponseHandler.error(error, callback);

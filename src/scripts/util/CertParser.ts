@@ -48,6 +48,12 @@ export class CertParser {
         if (response.data.issuerCertificate) {
             updatedCerts = new TokenAllCertsExtended(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, updatedCerts.nonRepudiationCertificate, updatedCerts.rootCertificate, updatedCerts.encryptionCertificate, this.processExtendedTokenCert(response.data.issuerCertificate, parseCerts))
         }
+        if (response.data.issuerPublicCertificate) {
+            updatedCerts = new TokenAllCertsExtended(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, updatedCerts.nonRepudiationCertificate, updatedCerts.rootCertificate, updatedCerts.encryptionCertificate, updatedCerts.issuerCertificate, this.processExtendedTokenCert(response.data.issuerPublicCertificate, parseCerts))
+        }
+        if (response.data.ICCPublicCertificate) {
+            updatedCerts = new TokenAllCertsExtended(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, updatedCerts.nonRepudiationCertificate, updatedCerts.rootCertificate, updatedCerts.encryptionCertificate, updatedCerts.issuerCertificate, updatedCerts.issuerPublicCertificate, this.processExtendedTokenCert(response.data.ICCPublicCertificate, parseCerts))
+        }
 
         return ResponseHandler.response(new TokenAllCertsExtendedResponse(updatedCerts, response.success), callback)
     }
@@ -181,8 +187,8 @@ export class CertParser {
         if (response.data.issuerPublicCertificate) {
             updatedCerts = new PaymentAllCerts(this.processPaymentCert(response.data.issuerPublicCertificate, parseCerts))
         }
-        if (response.data.iccPublicCertificate) {
-            updatedCerts = new PaymentAllCerts(updatedCerts.issuerPublicCertificate, this.processPaymentCert(response.data.iccPublicCertificate, parseCerts))
+        if (response.data.ICCPublicCertificate) {
+            updatedCerts = new PaymentAllCerts(updatedCerts.issuerPublicCertificate, this.processPaymentCert(response.data.ICCPublicCertificate, parseCerts))
         }
         return ResponseHandler.response(new PaymentAllCertsResponse(updatedCerts,response.success), callback)
     }
@@ -193,8 +199,8 @@ export class CertParser {
         if (response.data.issuerPublicCertificate) {
             updatedCerts = new PaymentAllCerts(this.processPaymentCert36(response.data.issuerPublicCertificate.certificates, parseCerts))
         }
-        if (response.data.iccPublicCertificate) {
-            updatedCerts = new PaymentAllCerts(updatedCerts.issuerPublicCertificate, this.processPaymentCert36(response.data.iccPublicCertificate.certificates, parseCerts))
+        if (response.data.ICCPublicCertificate) {
+            updatedCerts = new PaymentAllCerts(updatedCerts.issuerPublicCertificate, this.processPaymentCert36(response.data.ICCPublicCertificate.certificates, parseCerts))
         }
         return ResponseHandler.response(new PaymentAllCertsResponse(updatedCerts,response.success), callback)
     }
@@ -217,13 +223,7 @@ export class CertParser {
 
     private static processPaymentCert(certificate: PaymentCertificate, parseCert: boolean | undefined): PaymentCertificate {
         if (parseCert && parseCert === true) {
-            let parsedCertificate: Certificate | undefined = undefined;
-
-            if (certificate.certificate) {
-                parsedCertificate = CertParser.processCert(certificate.certificate)
-            }
-            return new PaymentCertificate(certificate.certificate, certificate.exponent, certificate.remainder, parsedCertificate);
-
+            return new PaymentCertificate(certificate.certificate, certificate.exponent, certificate.remainder);
         } else {
             return certificate;
         }
@@ -232,17 +232,7 @@ export class CertParser {
     // @ts-ignore
     private static processPaymentCert36(certificate?: Array<T1CCertificate>, parseCert: boolean | undefined): PaymentCertificate| undefined {
         if (certificate) {
-            if (parseCert && parseCert === true) {
-                let parsedCertificate: Certificate | undefined = undefined;
-
-                if (certificate[0].certificate) {
-                    parsedCertificate = CertParser.processCert(certificate[0].certificate)
-                }
-                return new PaymentCertificate(certificate[0].certificate, certificate[0].exponent, certificate[0].remainder, parsedCertificate);
-
-            } else {
-                return certificate[0];
-            }
+            return certificate[0];
         } else {
             return undefined
         }

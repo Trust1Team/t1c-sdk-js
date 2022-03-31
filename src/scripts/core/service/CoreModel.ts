@@ -199,7 +199,7 @@ export class TokenAllCertsExtended {
     public encryptionCertificate?: TokenCertificateExtended,
     public issuerCertificate?: TokenCertificateExtended,
     public issuerPublicCertificate?: TokenCertificateExtended,
-    public iccPublicCertificate?: TokenCertificateExtended
+    public ICCPublicCertificate?: TokenCertificateExtended
   ) {
   }
 }
@@ -256,8 +256,7 @@ export class PaymentCertificateResponse extends DataObjectResponse {
 export class PaymentCertificate {
   constructor(public certificate?: string,
               public exponent?: string,
-              public remainder?: string,
-              public parsed?: Certificate) {
+              public remainder?: string) {
   }
 }
 
@@ -270,7 +269,7 @@ export class PaymentAllCertsResponse extends DataObjectResponse {
 export class PaymentAllCerts {
   constructor(
     public issuerPublicCertificate?: PaymentCertificate,
-    public iccPublicCertificate?: PaymentCertificate
+    public ICCPublicCertificate?: PaymentCertificate
   ) {
   }
 }
