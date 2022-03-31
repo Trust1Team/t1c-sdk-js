@@ -36,6 +36,8 @@ import {AbstractEherkenning} from "../modules/smartcards/token/pki/eHerkenning/e
 import {AbstractJcop} from "../modules/smartcards/token/pki/jcop/JcopModel";
 import {AbstractAirbus} from "../modules/smartcards/token/pki/airbus/AirbusModel";
 import { AbstractLuxTrust } from "../modules/smartcards/token/eid/luxtrust/LuxTrustModel";
+import { AbstractCamerfirma } from "../modules/smartcards/token/pki/camerfirma/CamerfirmaModel";
+import { AbstractChambersign } from "../modules/smartcards/token/pki/chambersign/ChambersignModel";
 
 const urlVersion = "/v3";
 const semver = require('semver');
@@ -214,6 +216,14 @@ export class T1CClient {
 
     public luxtrust = (reader_id: string): AbstractLuxTrust => {
         return this.moduleFactory.createLuxTrust(reader_id);
+    }
+
+    public camerfirma = (reader_id: string): AbstractCamerfirma => {
+        return this.moduleFactory.createCamerfirma(reader_id);
+    }
+
+    public chambersign = (reader_id: string): AbstractChambersign => {
+        return this.moduleFactory.createChambersign(reader_id);
     }
 
 
