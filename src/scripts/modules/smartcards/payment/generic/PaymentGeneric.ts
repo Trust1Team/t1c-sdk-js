@@ -7,7 +7,7 @@ import {
     DataObjectResponse,
     LocalConnection, PaymentAllCertsResponse, PaymentCertificateResponse, PaymentSignData,
     PaymentVerifyPinData, Pinutil,
-    T1CLibException, TokenAuthenticateOrSignData
+    T1CLibException, TokenAllCertsExtendedResponse, TokenAuthenticateOrSignData, TokenCertificateExtendedResponse
 } from "../../../../../index";
 import {RequestHandler} from "../../../../util/RequestHandler";
 import {Options} from "../../Card";
@@ -35,7 +35,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     }
 
 
-    allCerts(module: string, aid: string, filters: string[] | Options, callback?: (error: T1CLibException, data: PaymentAllCertsResponse) => void): Promise<PaymentAllCertsResponse> {
+    allCerts(module: string, aid: string, filters: string[] | Options, callback?: (error: T1CLibException, data: PaymentAllCertsResponse | TokenAllCertsExtendedResponse) => void): Promise<PaymentAllCertsResponse | TokenAllCertsExtendedResponse> {
         const reqOptions = RequestHandler.determineOptionsWithFilter(filters);
         return this.connection.get(
             this.baseUrl,
@@ -45,7 +45,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
         );
     }
 
-    iccPublicCertificate(module: string, aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
+    iccPublicCertificate(module: string, aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse | TokenCertificateExtendedResponse) => void): Promise<PaymentCertificateResponse | TokenCertificateExtendedResponse> {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(module, PaymentGeneric.CERT_ICC, aid, true),
@@ -55,7 +55,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
         );
     }
 
-    issuerPublicCertificate(module: string, aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
+    issuerPublicCertificate(module: string, aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse | TokenCertificateExtendedResponse) => void): Promise<PaymentCertificateResponse | TokenCertificateExtendedResponse> {
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(module, PaymentGeneric.CERT_ISSUER, aid, true),
