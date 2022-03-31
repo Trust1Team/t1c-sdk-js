@@ -5,8 +5,8 @@
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {LocalConnection} from '../../../../../core/client/Connection';
 import {
-    BoolDataResponse, TokenAllCertsResponse,
-    TokenCertificateResponse,
+    BoolDataResponse, TokenAllCertsExtendedResponse, TokenAllCertsResponse, TokenCertificateExtendedResponse,
+    TokenCertificateResponse
 } from "../../../../../core/service/CoreModel";
 import {
     TokenAuthenticateResponse,
@@ -53,6 +53,24 @@ export class DNIe implements AbstractDNIe {
         return this.getCertificate(DNIe.CERT_NON_REPUDIATION, parseCerts, callback);
     }
 
+
+    public authenticationCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(DNIe.CERT_AUTHENTICATION, parseCerts, callback);
+    }
+
+    public nonRepudiationCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(DNIe.CERT_NON_REPUDIATION, parseCerts, callback);
+    }
+
+
+    public allCertsExtended(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsExtendedResponse) => void): Promise<TokenAllCertsExtendedResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(DNIe.ALL_CERTIFICATES, true), filters, undefined, callback).then((res: TokenAllCertsExtendedResponse) => {
+            return CertParser.processExtendedTokenAllCertificates(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
     public verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: TokenVerifyPinResponse) => void): Promise<TokenVerifyPinResponse> {
         body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
@@ -88,8 +106,20 @@ export class DNIe implements AbstractDNIe {
     }
 
     protected getCertificate(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined,undefined, callback).then((res: TokenCertificateResponse) => {
-            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined,undefined, callback).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
+            if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+            }
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+    protected getCertificateExtended(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined,undefined, callback).then((res: TokenCertificateExtendedResponse) => {
+            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });

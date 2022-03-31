@@ -1,7 +1,6 @@
 import { T1CLibException } from "../exceptions/CoreExceptions";
 import { T1CClient } from "../T1CSdk";
 import Certificate from "pkijs/src/Certificate";
-import exp from "constants";
 
 export interface AbstractCore {
   // getConsent(title: string, codeWord: string, durationInDays?: number, alertLevel?: string, alertPosition?: string, type?: string, timeoutInSeconds?: number, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
@@ -77,6 +76,34 @@ export class InfoService {
   }
 }
 
+export class T1CInfo {
+  constructor(
+    public activated: boolean,
+    public citrix: boolean,
+    public managed: boolean,
+    public arch: string,
+    public os: string,
+    public uid: string,
+    public containers: T1CContainer[],
+    public version: string
+  ) {
+  }
+}
+
+export class T1CContainer {
+  constructor(
+    public name: string,
+    public version: string,
+    public status: string
+  ) {
+  }
+}
+
+export class T1CContainerid {
+  constructor(public name: string) {
+  }
+}
+
 export class InfoApi {
   constructor(public service?: InfoService, public activated?: boolean, public citrix?: boolean, public uid?: String, public modules?: Array<String>, public version?: String, public logLevel?: String, public sharedEnvironment?: boolean) {
   }
@@ -84,6 +111,15 @@ export class InfoApi {
 
 export class InfoResponse { //extends T1CResponse
   constructor(public t1CInfoOS?: InfoOS, public t1CInfoJava?: InfoJava, public t1CInfoRuntime?: T1CInfoRuntime, public t1CInfoUser?: InfoUser, public t1CInfoAPI?: InfoApi) {
+  }
+}
+export class BrowserInfo {
+  constructor(
+    public browser: { name: string; version: string },
+    public manufacturer: string,
+    public os: { name: string; version: string; architecture: string },
+    public ua: string
+  ) {
   }
 }
 
@@ -107,6 +143,57 @@ export class CardReadersResponse extends T1CResponse {
     super(success, data);
   }
 }
+
+export class TokenCertificateExtendedResponse extends T1CResponse {
+  constructor(public data: TokenCertificateExtended, public success: boolean) {
+    super(success, data);
+  }
+}
+
+
+export class TokenCertificateExtended {
+  constructor(
+    public certificates?: Array<T1CCertificate>
+  ) {
+  }
+}
+
+
+export class T1CCertificate {
+  constructor(
+    public certificate?: string,
+    public certificateType?: string,
+    public id?: string,
+    public subject?: string,
+    public issuer?: string,
+    public serialNumber?: string,
+    public url?: string,
+    public hashSubPubKey?: string,
+    public hashIssPubKey?: string,
+    public parsedCertificate?: Certificate,
+  ) {
+  }
+}
+
+
+export class TokenAllCertsExtended {
+  constructor(
+    public authenticationCertificate?: TokenCertificateExtended,
+    public intermediateCertificates?: TokenCertificateExtended,
+    public nonRepudiationCertificate?: TokenCertificateExtended,
+    public rootCertificate?: TokenCertificateExtended,
+    public encryptionCertificate?: TokenCertificateExtended,
+    public issuerCertificate?: TokenCertificateExtended
+  ) {
+  }
+}
+
+export class TokenAllCertsExtendedResponse extends DataObjectResponse {
+  constructor(public data: TokenAllCertsExtended, public success: boolean) {
+    super(data, success);
+  }
+}
+
 
 export class TokenCertificateResponse extends T1CResponse {
   constructor(public data: TokenCertificate, public success: boolean) {
@@ -171,7 +258,6 @@ export class PaymentAllCerts {
   ) {
   }
 }
-
 export class SingleReaderResponse extends T1CResponse {
   constructor(public data: CardReader, public success: boolean) {
     super(success, data);
@@ -180,6 +266,10 @@ export class SingleReaderResponse extends T1CResponse {
 
 export class T1CInfoRuntime {
   constructor(public runtime?: string, public desktop?: string, public version?: string, public dateTime?: string) {
+  }
+}
+export class CheckT1CVersion {
+  constructor(public outDated: boolean, public downloadLink?: string) {
   }
 }
 
@@ -205,100 +295,99 @@ export class TokenInfo {
 
 export class BaseTokenInfo {
   constructor(
-    rawData?: string,
-    version?: string,
-    serialNumber?: string,
-    label?: string,
-    prnGeneration?: string,
-    eidCompliant?: string,
-    graphicalPersoVersion?: string,
-    versionRfu?: string,
-    electricalPersoVersion?: string,
-    electricalPersoInterfaceVersion?: string,
-    changeCounter?: number,
-    activated?: string
+    public rawData?: string,
+    public version?: string,
+    public serialNumber?: string,
+    public label?: string,
+    public prnGeneration?: string,
+    public eidCompliant?: string,
+    public graphicalPersoVersion?: string,
+    public versionRfu?: string,
+    public electricalPersoVersion?: string,
+    public electricalPersoInterfaceVersion?: string,
+    public changeCounter?: number,
+    public activated?: string
   ) {
   }
 }
 
-
 export class PKCS11TokenInfo {
   constructor(
-    slot?: string,
-    label?: string,
-    manufacturerId?: string,
-    model?: string,
-    serialNumber?: string,
-    flags?: T1cTokenInfoFlags,
-    mechanisms?: Array<T1cMechanismInfo>,
-    ulMaxSessionCount?: number,
-    ulSessionCount?: number,
-    ulMaxRwSessionCount?: number,
-    ulMaxPinLen?: number,
-    ulMinPinLen?: number,
-    ulTotalPubLicMemory?: number,
-    ulFreePubMemory?: number,
-    ulTotalPrivateMemory?: number,
-    ulFreePrivateMemory?: number,
-    hardwareVersion?: string,
-    firmwareVersion?: string
+    public slot?: string,
+    public label?: string,
+    public manufacturerId?: string,
+    public model?: string,
+    public serialNumber?: string,
+    public flags?: T1cTokenInfoFlags,
+    public mechanisms?: Array<T1cMechanismInfo>,
+    public ulMaxSessionCount?: number,
+    public ulSessionCount?: number,
+    public ulMaxRwSessionCount?: number,
+    public ulMaxPinLen?: number,
+    public ulMinPinLen?: number,
+    public ulTotalPubLicMemory?: number,
+    public ulFreePubMemory?: number,
+    public ulTotalPrivateMemory?: number,
+    public ulFreePrivateMemory?: number,
+    public hardwareVersion?: string,
+    public firmwareVersion?: string
   ) {
   }
 }
 
 export class T1cTokenInfoFlags {
   constructor(
-    isRandomNumberGenerator?: boolean,
-    isWriteProtected?: boolean,
-    isLoginRequired?: boolean,
-    isUserPinInitialized?: boolean,
-    isRestoreKeyNotNeeded?: boolean,
-    isClockOnToken?: boolean,
-    isProtectedAuthenticationPath?: boolean,
-    isDualCryptoOperations?: boolean,
-    isTokenInitialized?: boolean,
-    isSecondaryAuthentication?: boolean,
-    isUserPinCountLow?: boolean,
-    isUserPinFinalTry?: boolean,
-    isUserPinLocked?: boolean,
-    isUserPinToBeChanged?: boolean,
-    isSoPinCountLow?: boolean,
-    isSoPinFinalTry?: boolean,
-    isSoPinLocked?: boolean,
-    isSoPinToBeChanged?: boolean
+    public isRandomNumberGenerator?: boolean,
+    public isWriteProtected?: boolean,
+    public isLoginRequired?: boolean,
+    public isUserPinInitialized?: boolean,
+    public isRestoreKeyNotNeeded?: boolean,
+    public isClockOnToken?: boolean,
+    public isProtectedAuthenticationPath?: boolean,
+    public isDualCryptoOperations?: boolean,
+    public isTokenInitialized?: boolean,
+    public isSecondaryAuthentication?: boolean,
+    public isUserPinCountLow?: boolean,
+    public isUserPinFinalTry?: boolean,
+    public isUserPinLocked?: boolean,
+    public isUserPinToBeChanged?: boolean,
+    public isSoPinCountLow?: boolean,
+    public isSoPinFinalTry?: boolean,
+    public isSoPinLocked?: boolean,
+    public isSoPinToBeChanged?: boolean
   ) {
   }
 }
 
 export class T1cMechanismInfo {
   constructor(
-    mechanism?: string,
-    flags?: T1cMechanismFlags,
-    ulMinKeySize?: number,
-    ulMaxKeySize?: number
+    public mechanism?: string,
+    public flags?: T1cMechanismFlags,
+    public ulMinKeySize?: number,
+    public ulMaxKeySize?: number
   ) {
   }
 }
 
 export class T1cMechanismFlags {
   constructor(
-    isHardware?: boolean,
-    isEncrypt?: boolean,
-    isDecrypt?: boolean,
-    isDigest?: boolean,
-    isSign?: boolean,
-    isSignRecover?: boolean,
-    isVerify?: boolean,
-    isVerifyRecover?: boolean,
-    isGenerate?: boolean,
-    isGenerateKeyPair?: boolean,
-    isWrap?: boolean,
-    isUnwrap?: boolean,
-    isExtension?: boolean,
-    isEcFP?: boolean,
-    isEcNamedcurve?: boolean,
-    isEcUncompress?: boolean,
-    isEcCompress?: boolean
+    public isHardware?: boolean,
+    public isEncrypt?: boolean,
+    public isDecrypt?: boolean,
+    public isDigest?: boolean,
+    public isSign?: boolean,
+    public isSignRecover?: boolean,
+    public isVerify?: boolean,
+    public isVerifyRecover?: boolean,
+    public isGenerate?: boolean,
+    public isGenerateKeyPair?: boolean,
+    public isWrap?: boolean,
+    public isUnwrap?: boolean,
+    public isExtension?: boolean,
+    public isEcFP?: boolean,
+    public isEcNamedcurve?: boolean,
+    public isEcUncompress?: boolean,
+    public isEcCompress?: boolean
   ) {
   }
 }

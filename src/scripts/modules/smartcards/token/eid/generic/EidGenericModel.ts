@@ -3,7 +3,7 @@ import {
   BoolDataResponse,
   TokenCertificateResponse,
   DataObjectResponse,
-  TokenAllCertsResponse, TokenInfoResponse
+  TokenAllCertsResponse, TokenInfoResponse, TokenCertificateExtendedResponse, TokenAllCertsExtendedResponse
 } from "../../../../../core/service/CoreModel";
 import {TokenAuthenticateOrSignData} from "../../TokenCard";
 import {TokenVerifyPinData} from "../../TokenCard";
@@ -22,6 +22,15 @@ export interface AbstractEidGeneric {
   nonRepudiationCertificate(module: string, parseCerts?: boolean,  callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse>;
   encryptionCertificate(module: string, parseCerts?: boolean,  callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse>;
   issuerCertificate(module: string, parseCerts?: boolean,  callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse>;
+
+  allCertsExtended(module: string, parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsExtendedResponse) => void): Promise<TokenAllCertsExtendedResponse>;
+  rootCertificateExtended(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse>;
+  intermediateCertificatesExtended(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse>;
+  authenticationCertificateExtended(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse>;
+  nonRepudiationCertificateExtended(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse>;
+  encryptionCertificateExtended(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse>;
+  issuerCertificateExtended(module: string, parseCerts?: boolean,  callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse>;
+
   verifyPin(module: string, body: TokenVerifyPinData, callback?: (error: T1CLibException, data: TokenVerifyPinResponse) => void): Promise<TokenVerifyPinResponse>;
   authenticate(module: string, body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse>;
   sign(module: string, body: TokenAuthenticateOrSignData, bulk?: boolean, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse>;
