@@ -32,6 +32,17 @@ export class T1CResponse {
   }
 }
 
+export class TokenValidateSignatureResponse extends T1CResponse {
+  constructor(public data: TokenValidateSignature, public success: boolean) {
+    super(success, data);
+  }
+}
+
+export class TokenValidateSignature {
+  constructor(public valid: boolean) {
+  }
+}
+
 export class BoolDataResponse extends T1CResponse {
   constructor(public data: boolean, public success: boolean) {
     super(success, data);
@@ -113,6 +124,7 @@ export class InfoResponse { //extends T1CResponse
   constructor(public t1CInfoOS?: InfoOS, public t1CInfoJava?: InfoJava, public t1CInfoRuntime?: T1CInfoRuntime, public t1CInfoUser?: InfoUser, public t1CInfoAPI?: InfoApi) {
   }
 }
+
 export class BrowserInfo {
   constructor(
     public browser: { name: string; version: string },
@@ -172,7 +184,7 @@ export class T1CCertificate {
     public hashIssPubKey?: string,
     public exponent?: string,
     public remainder?: string,
-    public parsedCertificate?: Certificate,
+    public parsedCertificate?: Certificate
   ) {
   }
 }
@@ -262,6 +274,7 @@ export class PaymentAllCerts {
   ) {
   }
 }
+
 export class SingleReaderResponse extends T1CResponse {
   constructor(public data: CardReader, public success: boolean) {
     super(success, data);
@@ -272,6 +285,7 @@ export class T1CInfoRuntime {
   constructor(public runtime?: string, public desktop?: string, public version?: string, public dateTime?: string) {
   }
 }
+
 export class CheckT1CVersion {
   constructor(public outDated: boolean, public downloadLink?: string) {
   }
@@ -404,4 +418,20 @@ export enum TokenInfoType {
   HSM,
   Vault,
   Wallet,
+}
+
+
+export class TokenValidateSignatureRequest {
+  constructor(
+    public algorithm: string,
+    public hash: string,
+    public signedHash: string,
+    public osDialog?: boolean,
+    public id?: string,
+    public pin?: string,
+    public timeout?: number,
+    public txId?: string,
+    public language?: string
+  ) {
+  }
 }

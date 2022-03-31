@@ -7,7 +7,10 @@ import {
     BoolDataResponse,
     TokenCertificateResponse,
     TokenInfoResponse,
-    TokenAllCertsResponse, TokenAllCertsExtendedResponse, TokenCertificateExtendedResponse
+    TokenAllCertsResponse,
+    TokenAllCertsExtendedResponse,
+    TokenCertificateExtendedResponse,
+    TokenValidateSignatureRequest, TokenValidateSignatureResponse
 } from "../../../../../core/service/CoreModel";
 import {TokenAuthenticateOrSignData, TokenVerifyPinData} from "../../TokenCard";
 import {
@@ -31,6 +34,8 @@ export interface AbstractOberthur73 {
     nonRepudiationCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse>;
     encryptionCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse>;
     issuerCertificateExtended(parseCerts?: boolean,  callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse>;
+
+    validateSignature(body: TokenValidateSignatureRequest, callback?: (error: T1CLibException, data: TokenValidateSignatureResponse) => void): Promise<TokenValidateSignatureResponse>;
 
     verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: TokenVerifyPinResponse) => void): Promise<TokenVerifyPinResponse>;
     authenticate(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse>;

@@ -5,8 +5,13 @@
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {LocalConnection} from '../../../../../core/client/Connection';
 import {
-    TokenCertificateResponse, TokenInfoResponse,
-    BoolDataResponse, TokenAllCertsExtendedResponse, TokenAllCertsResponse, TokenCertificateExtendedResponse,
+    TokenCertificateResponse,
+    TokenInfoResponse,
+    BoolDataResponse,
+    TokenAllCertsExtendedResponse,
+    TokenAllCertsResponse,
+    TokenCertificateExtendedResponse,
+    TokenValidateSignatureRequest, TokenValidateSignatureResponse
 } from "../../../../../core/service/CoreModel";
 import {
     TokenAuthenticateResponse,
@@ -35,6 +40,8 @@ export class Safenet implements AbstractSafenet {
 
     static TOKEN_INFO = '/info'
 
+    static VALIDATE_SIGNATURE = '/validate';
+
     static SIGN_DATA = '/sign';
     static VERIFY_PIN = '/verify-pin';
     static AUTHENTICATE = '/authenticate';
@@ -45,6 +52,14 @@ export class Safenet implements AbstractSafenet {
     static SUPPORTED_ALGOS = '/supported-algorithms'
 
     constructor(protected baseUrl: string, protected containerUrl: string, protected connection: LocalConnection, protected reader_id: string) {
+    }
+
+    validateSignature(body: TokenValidateSignatureRequest, callback?: (error: T1CLibException, data: TokenValidateSignatureResponse) => void): Promise<TokenValidateSignatureResponse> {
+        if (body.algorithm) {
+            body.algorithm = body.algorithm.toLowerCase();
+        }
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        return this.connection.post(this.baseUrl, this.tokenApp(Safenet.VALIDATE_SIGNATURE, true), body,  undefined, undefined, callback);
     }
 
     public tokenData(callback?: ((error: T1CLibException, data: TokenInfoResponse) => void) | undefined): Promise<TokenInfoResponse> {

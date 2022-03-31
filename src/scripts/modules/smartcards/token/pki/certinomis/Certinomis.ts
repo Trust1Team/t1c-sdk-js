@@ -6,8 +6,13 @@ import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {AbstractCertinomis} from './CertinomisModel';
 import {LocalConnection} from '../../../../../core/client/Connection';
 import {
-    TokenCertificateResponse, TokenInfoResponse,
-    BoolDataResponse, TokenAllCertsExtendedResponse, TokenAllCertsResponse, TokenCertificateExtendedResponse,
+    TokenCertificateResponse,
+    TokenInfoResponse,
+    BoolDataResponse,
+    TokenAllCertsExtendedResponse,
+    TokenAllCertsResponse,
+    TokenCertificateExtendedResponse,
+    TokenValidateSignatureResponse, TokenValidateSignatureRequest
 } from "../../../../../core/service/CoreModel";
 import {
     TokenAuthenticateResponse,
@@ -38,6 +43,8 @@ export class Certinomis implements AbstractCertinomis {
     static AUTHENTICATE = '/authenticate';
     static RESET_PIN = '/reset-pin';
 
+    static VALIDATE_SIGNATURE = '/validate';
+
     static TOKEN_INFO = '/info'
 
     static RESET_BULK_PIN = "/reset-bulk-pin"
@@ -45,6 +52,14 @@ export class Certinomis implements AbstractCertinomis {
     static SUPPORTED_ALGOS = '/supported-algorithms'
 
     constructor(protected baseUrl: string, protected containerUrl: string, protected connection: LocalConnection, protected reader_id: string) {
+    }
+
+    validateSignature(body: TokenValidateSignatureRequest, callback?: (error: T1CLibException, data: TokenValidateSignatureResponse) => void): Promise<TokenValidateSignatureResponse> {
+        if (body.algorithm) {
+            body.algorithm = body.algorithm.toLowerCase();
+        }
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        return this.connection.post(this.baseUrl, this.tokenApp(Certinomis.VALIDATE_SIGNATURE, true), body,  undefined, undefined, callback);
     }
 
     public tokenData(callback?: ((error: T1CLibException, data: TokenInfoResponse) => void) | undefined): Promise<TokenInfoResponse> {

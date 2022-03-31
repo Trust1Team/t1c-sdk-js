@@ -1,7 +1,7 @@
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {
     BoolDataResponse, TokenAllCertsExtendedResponse, TokenAllCertsResponse, TokenCertificateExtendedResponse,
-    TokenCertificateResponse
+    TokenCertificateResponse, TokenValidateSignatureRequest, TokenValidateSignatureResponse
 } from "../../../../../core/service/CoreModel";
 import {TokenAuthenticateOrSignData} from "../../TokenCard";
 import {TokenVerifyPinData} from "../../TokenCard";
@@ -26,6 +26,8 @@ export interface AbstractAirbus {
     nonRepudiationCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse>;
     encryptionCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse>;
     issuerCertificateExtended(parseCerts?: boolean,  callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse>;
+
+    validateSignature(body: TokenValidateSignatureRequest, callback?: (error: T1CLibException, data: TokenValidateSignatureResponse) => void): Promise<TokenValidateSignatureResponse>;
 
     verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: TokenVerifyPinResponse) => void): Promise<TokenVerifyPinResponse>;
     authenticate(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse>;

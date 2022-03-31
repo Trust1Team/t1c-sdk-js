@@ -6,7 +6,12 @@ import {LocalConnection} from '../../../../../core/client/Connection';
 import {
     BoolDataResponse,
     TokenCertificateResponse,
-    T1CResponse, TokenAllCertsResponse, TokenInfoResponse, TokenAllCertsExtendedResponse, TokenCertificateExtendedResponse
+    T1CResponse,
+    TokenAllCertsResponse,
+    TokenInfoResponse,
+    TokenAllCertsExtendedResponse,
+    TokenCertificateExtendedResponse,
+    TokenValidateSignatureRequest, TokenValidateSignatureResponse
 } from "../../../../../core/service/CoreModel";
 import {
     TokenAlgorithmReferencesResponse,
@@ -26,6 +31,9 @@ export class Oberthur implements AbstractOberthur73 {
     static CONTAINER_PREFIX = 'oberthur_73';
     static RESET_PIN = '/reset-pin';
     static INFO = '/info';
+
+    static VALIDATE_SIGNATURE = '/validate';
+
     static ALL_CERTIFICATES = '/cert-list';
     static AUTHENTICATE = '/authenticate';
     static CERT_ROOT = '/root-cert';
@@ -40,6 +48,14 @@ export class Oberthur implements AbstractOberthur73 {
     static RESET_BULK_PIN = "/reset-bulk-pin"
 
     constructor(protected baseUrl: string, protected containerUrl: string,protected connection: LocalConnection, protected reader_id: string) {}
+
+    validateSignature(body: TokenValidateSignatureRequest, callback?: (error: T1CLibException, data: TokenValidateSignatureResponse) => void): Promise<TokenValidateSignatureResponse> {
+        if (body.algorithm) {
+            body.algorithm = body.algorithm.toLowerCase();
+        }
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.VALIDATE_SIGNATURE, true), body,  undefined, undefined, callback);
+    }
 
     public rootCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.getCertificate(Oberthur.CERT_ROOT, parseCerts, callback);

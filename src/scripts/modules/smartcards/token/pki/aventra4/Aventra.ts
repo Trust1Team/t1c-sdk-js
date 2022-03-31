@@ -6,8 +6,13 @@ import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {AbstractAventra} from './AventraModel';
 import {LocalConnection} from '../../../../../core/client/Connection';
 import {
-    TokenCertificateResponse, TokenInfoResponse,
-    BoolDataResponse, TokenAllCertsExtendedResponse, TokenAllCertsResponse, TokenCertificateExtendedResponse,
+    TokenCertificateResponse,
+    TokenInfoResponse,
+    BoolDataResponse,
+    TokenAllCertsExtendedResponse,
+    TokenAllCertsResponse,
+    TokenCertificateExtendedResponse,
+    TokenValidateSignatureRequest, TokenValidateSignatureResponse
 } from "../../../../../core/service/CoreModel";
 import {
     TokenAuthenticateResponse,
@@ -36,6 +41,8 @@ export class Aventra implements AbstractAventra {
     static CERT_ISSUER = '/issuer-cert';
     static CERT_ENCRYPTION = '/encryption-cert';
 
+    static VALIDATE_SIGNATURE = '/validate';
+
     static SIGN_DATA = '/sign';
     static VERIFY_PIN = '/verify-pin';
     static AUTHENTICATE = '/authenticate';
@@ -46,6 +53,14 @@ export class Aventra implements AbstractAventra {
     static SUPPORTED_ALGOS = '/supported-algorithms'
 
     constructor(protected baseUrl: string, protected containerUrl: string, protected connection: LocalConnection, protected reader_id: string) {
+    }
+
+    validateSignature(body: TokenValidateSignatureRequest, callback?: (error: T1CLibException, data: TokenValidateSignatureResponse) => void): Promise<TokenValidateSignatureResponse> {
+        if (body.algorithm) {
+            body.algorithm = body.algorithm.toLowerCase();
+        }
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        return this.connection.post(this.baseUrl, this.tokenApp(Aventra.VALIDATE_SIGNATURE, true), body,  undefined, undefined, callback);
     }
 
     public rootCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {

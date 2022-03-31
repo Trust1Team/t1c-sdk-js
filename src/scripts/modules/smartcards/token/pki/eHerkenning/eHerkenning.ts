@@ -6,7 +6,7 @@ import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {LocalConnection} from '../../../../../core/client/Connection';
 import {
     BoolDataResponse, TokenAllCertsExtendedResponse, TokenAllCertsResponse, TokenCertificateExtendedResponse,
-    TokenCertificateResponse
+    TokenCertificateResponse, TokenValidateSignatureRequest, TokenValidateSignatureResponse
 } from "../../../../../core/service/CoreModel";
 import {
     TokenAuthenticateResponse,
@@ -33,6 +33,8 @@ export class EHerkenning implements AbstractEherkenning {
     static CERT_AUTHENTICATION = '/authentication-cert';
     static CERT_NON_REPUDIATION = '/nonrepudiation-cert';
 
+    static VALIDATE_SIGNATURE = '/validate';
+
     static SIGN_DATA = '/sign';
     static VERIFY_PIN = '/verify-pin';
     static AUTHENTICATE = '/authenticate';
@@ -43,6 +45,14 @@ export class EHerkenning implements AbstractEherkenning {
     static SUPPORTED_ALGOS = '/supported-algorithms'
 
     constructor(protected baseUrl: string, protected containerUrl: string, protected connection: LocalConnection, protected reader_id: string) {
+    }
+
+    validateSignature(body: TokenValidateSignatureRequest, callback?: (error: T1CLibException, data: TokenValidateSignatureResponse) => void): Promise<TokenValidateSignatureResponse> {
+        if (body.algorithm) {
+            body.algorithm = body.algorithm.toLowerCase();
+        }
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        return this.connection.post(this.baseUrl, this.tokenApp(EHerkenning.VALIDATE_SIGNATURE, true), body,  undefined, undefined, callback);
     }
 
     public authenticationCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {

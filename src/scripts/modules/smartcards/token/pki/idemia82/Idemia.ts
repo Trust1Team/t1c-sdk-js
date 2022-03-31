@@ -9,7 +9,11 @@ import {
     BoolDataResponse,
     TokenCertificateResponse,
     TokenInfoResponse,
-    T1CResponse, TokenAllCertsResponse, TokenAllCertsExtendedResponse, TokenCertificateExtendedResponse
+    T1CResponse,
+    TokenAllCertsResponse,
+    TokenAllCertsExtendedResponse,
+    TokenCertificateExtendedResponse,
+    TokenValidateSignatureRequest, TokenValidateSignatureResponse
 } from "../../../../../core/service/CoreModel";
 import {AbstractIdemia} from "./IdemiaModel";
 import {
@@ -30,6 +34,9 @@ export class Idemia implements AbstractIdemia {
     static PATH_READERS = '/readers';
     static RESET_PIN = '/reset-pin';
     static INFO = '/info';
+
+    static VALIDATE_SIGNATURE = '/validate';
+
     static ALL_CERTIFICATES = '/cert-list';
     static AUTHENTICATE = '/authenticate';
     static CERT_ROOT = '/root-cert';
@@ -44,6 +51,14 @@ export class Idemia implements AbstractIdemia {
     static RESET_BULK_PIN = "/reset-bulk-pin"
 
     constructor(protected baseUrl: string, protected containerUrl: string,protected connection: LocalConnection, protected reader_id: string) {}
+
+    validateSignature(body: TokenValidateSignatureRequest, callback?: (error: T1CLibException, data: TokenValidateSignatureResponse) => void): Promise<TokenValidateSignatureResponse> {
+        if (body.algorithm) {
+            body.algorithm = body.algorithm.toLowerCase();
+        }
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        return this.connection.post(this.baseUrl, this.tokenApp(Idemia.VALIDATE_SIGNATURE, true), body,  undefined, undefined, callback);
+    }
 
     public rootCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.getCertificate(Idemia.CERT_ROOT,parseCerts, callback);
