@@ -36,6 +36,8 @@ import {AbstractEherkenning} from "../modules/smartcards/token/pki/eHerkenning/e
 import {AbstractJcop} from "../modules/smartcards/token/pki/jcop/JcopModel";
 import {AbstractAirbus} from "../modules/smartcards/token/pki/airbus/AirbusModel";
 import { AbstractLuxTrust } from "../modules/smartcards/token/eid/luxtrust/LuxTrustModel";
+import { AbstractCamerfirma } from "../modules/smartcards/token/pki/camerfirma/CamerfirmaModel";
+import { AbstractChambersign } from "../modules/smartcards/token/pki/chambersign/ChambersignModel";
 
 const urlVersion = "/v3";
 const semver = require('semver');
@@ -216,6 +218,14 @@ export class T1CClient {
         return this.moduleFactory.createLuxTrust(reader_id);
     }
 
+    public camerfirma = (reader_id: string): AbstractCamerfirma => {
+        return this.moduleFactory.createCamerfirma(reader_id);
+    }
+
+    public chambersign = (reader_id: string): AbstractChambersign => {
+        return this.moduleFactory.createChambersign(reader_id);
+    }
+
 
     set t1cInstalled(value: boolean) {
         this._t1cInstalled = value;
@@ -232,13 +242,13 @@ export class T1CClient {
                 resolve(validateRes);
             }, err => {
                 if (!callback || typeof callback !== 'function') { callback = function () {}; }
-                callback(new T1CLibException("814501", err.description ? err.description : "No valid consent", _client), undefined)
-                reject(new T1CLibException("814501", err.description ? err.description : "No valid consent", _client));
+                callback(new T1CLibException("114501", err.description ? err.description : "No valid consent", _client), undefined)
+                reject(new T1CLibException("114501", err.description ? err.description : "No valid consent", _client));
             })
 
         } else {
             // Consent required
-            let error = new T1CLibException("814501", "Consent required", _client)
+            let error = new T1CLibException("114501", "Consent required", _client)
             if (callback && typeof callback === 'function') {callback(error, undefined);}
             reject(error)
         }

@@ -1,17 +1,14 @@
-import {LocalConnection, RequestHeaders} from '../../../../../core/client/Connection';
+import {LocalConnection} from '../../../../../core/client/Connection';
 import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {
-    TokenAddressResponse, TokenAuthenticateResponse,
-    TokenBiometricDataResponse, TokenPictureResponse, TokenSignResponse,
-    TokenDataResponse, TokenAlgorithmReferencesResponse,
+    TokenAuthenticateResponse,
+    TokenSignResponse, TokenAlgorithmReferencesResponse,
 } from '../generic/EidGenericModel';
 import {
     BoolDataResponse,
     TokenCertificateResponse,
-    DataArrayResponse,
-    DataObjectResponse,
-    T1CResponse, TokenAllCertsResponse,
-} from '../../../../../core/service/CoreModel';
+    T1CResponse, TokenAllCertsResponse, TokenAllCertsExtendedResponse, TokenCertificateExtendedResponse
+} from "../../../../../core/service/CoreModel";
 import {RequestHandler} from '../../../../../util/RequestHandler';
 import {TokenAuthenticateOrSignData, TokenVerifyPinData} from '../../TokenCard';
 import {Options} from "../../../Card";
@@ -58,8 +55,12 @@ export class LuxTrust implements AbstractLuxTrust {
             undefined,
             undefined,
             callback
-        ).then((res: TokenCertificateResponse) => {
-            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        ).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
+             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+            }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -75,8 +76,12 @@ export class LuxTrust implements AbstractLuxTrust {
             undefined,
             undefined,
             callback
-        ).then((res: TokenCertificateResponse) => {
-            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        ).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
+             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+            }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -92,12 +97,90 @@ export class LuxTrust implements AbstractLuxTrust {
             undefined,
             undefined,
             callback
-        ).then((res: TokenCertificateResponse) => {
-            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        ).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
+             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+            }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
+
+
+
+
+    public rootCertificateExtended(
+      parseCerts?: boolean,
+      callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
+    ): Promise<TokenCertificateExtendedResponse> {
+        return this.connection.get(
+          this.baseUrl,
+          this.tokenApp(LuxTrust.CERT_ROOT, true),
+          undefined,
+          undefined,
+          callback
+        ).then((res: TokenCertificateExtendedResponse) => {
+            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+    public authenticationCertificateExtended(
+      parseCerts?: boolean,
+      callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
+    ): Promise<TokenCertificateExtendedResponse> {
+        return this.connection.get(
+          this.baseUrl,
+          this.tokenApp(LuxTrust.CERT_AUTHENTICATION, true),
+          undefined,
+          undefined,
+          callback
+        ).then((res: TokenCertificateExtendedResponse) => {
+            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+    public nonRepudiationCertificateExtended(
+      parseCerts?: boolean,
+      callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
+    ): Promise<TokenCertificateExtendedResponse> {
+        return this.connection.get(
+          this.baseUrl,
+          this.tokenApp(LuxTrust.CERT_NON_REPUDIATION, true),
+          undefined,
+          undefined,
+          callback
+        ).then((res: TokenCertificateExtendedResponse) => {
+            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+    public allCertsExtended(
+      parseCerts?: boolean,
+      options?: string[] | Options,
+      callback?: (error: T1CLibException, data: TokenAllCertsExtendedResponse) => void
+    ): Promise<TokenAllCertsExtendedResponse> {
+        // @ts-ignore
+        const reqOptions = RequestHandler.determineOptionsWithFilter(options);
+        return this.connection.get(
+          this.baseUrl,
+          this.tokenApp(LuxTrust.ALL_CERTIFICATES, true),
+          reqOptions.params,
+          callback
+        ).then((res: TokenAllCertsExtendedResponse ) => {
+            return CertParser.processExtendedTokenAllCertificates(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
 
     public allAlgoRefs(
         callback?: (error: T1CLibException, data: TokenAlgorithmReferencesResponse) => void
@@ -124,8 +207,12 @@ export class LuxTrust implements AbstractLuxTrust {
             reqOptions.params,
             undefined,
             callback
-        ).then((res: TokenAllCertsResponse) => {
-            return CertParser.processTokenAllCertificates(res, parseCerts, callback)
+        ).then((res: TokenAllCertsResponse | TokenAllCertsExtendedResponse) => {
+             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenAllCertificates(<TokenAllCertsResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenAllCertificates36(<TokenAllCertsExtendedResponse>res, parseCerts, callback)
+            }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });

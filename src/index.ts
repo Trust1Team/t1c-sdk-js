@@ -68,4 +68,10 @@ export * from './scripts/modules/smartcards/token/pki/jcop/JcopModel';
 export * from './scripts/modules/smartcards/token/pki/airbus/Airbus';
 export * from './scripts/modules/smartcards/token/pki/airbus/AirbusModel';
 
+export * from './scripts/modules/smartcards/token/pki/camerfirma/Camerfirma';
+export * from './scripts/modules/smartcards/token/pki/camerfirma/CamerfirmaModel';
+
+export * from './scripts/modules/smartcards/token/pki/chambersign/Chambersign';
+export * from './scripts/modules/smartcards/token/pki/chambersign/ChambersignModel';
+
 Polyfills.check();

@@ -6,8 +6,12 @@ import {LocalConnection} from '../../../../../core/client/Connection';
 import {
     BoolDataResponse,
     TokenCertificateResponse,
-    DataObjectResponse,
-    T1CResponse, TokenAllCertsResponse
+    T1CResponse,
+    TokenAllCertsResponse,
+    TokenInfoResponse,
+    TokenAllCertsExtendedResponse,
+    TokenCertificateExtendedResponse,
+    TokenValidateSignatureRequest, TokenValidateSignatureResponse
 } from "../../../../../core/service/CoreModel";
 import {
     TokenAlgorithmReferencesResponse,
@@ -27,6 +31,9 @@ export class Oberthur implements AbstractOberthur73 {
     static CONTAINER_PREFIX = 'oberthur_73';
     static RESET_PIN = '/reset-pin';
     static INFO = '/info';
+
+    static VALIDATE_SIGNATURE = '/validate';
+
     static ALL_CERTIFICATES = '/cert-list';
     static AUTHENTICATE = '/authenticate';
     static CERT_ROOT = '/root-cert';
@@ -41,6 +48,14 @@ export class Oberthur implements AbstractOberthur73 {
     static RESET_BULK_PIN = "/reset-bulk-pin"
 
     constructor(protected baseUrl: string, protected containerUrl: string,protected connection: LocalConnection, protected reader_id: string) {}
+
+    validateSignature(body: TokenValidateSignatureRequest, callback?: (error: T1CLibException, data: TokenValidateSignatureResponse) => void): Promise<TokenValidateSignatureResponse> {
+        if (body.algorithm) {
+            body.algorithm = body.algorithm.toLowerCase();
+        }
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        return this.connection.post(this.baseUrl, this.tokenApp(Oberthur.VALIDATE_SIGNATURE, true), body,  undefined, undefined, callback);
+    }
 
     public rootCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.getCertificate(Oberthur.CERT_ROOT, parseCerts, callback);
@@ -62,6 +77,34 @@ export class Oberthur implements AbstractOberthur73 {
         return this.getCertificate(Oberthur.CERT_ENCRYPTION, parseCerts, callback);
     }
 
+    public authenticationCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(Oberthur.CERT_AUTHENTICATION, parseCerts, callback);
+    }
+
+    public nonRepudiationCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(Oberthur.CERT_NON_REPUDIATION, parseCerts, callback);
+    }
+
+    public encryptionCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(Oberthur.CERT_ENCRYPTION, parseCerts, callback);
+    }
+
+    public rootCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(Oberthur.CERT_ROOT, parseCerts, callback);
+    }
+
+    public issuerCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(Oberthur.CERT_ISSUER, parseCerts, callback);
+    }
+
+    public allCertsExtended(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsExtendedResponse) => void): Promise<TokenAllCertsExtendedResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.ALL_CERTIFICATES, true), filters, undefined, callback).then((res: TokenAllCertsExtendedResponse) => {
+            return CertParser.processExtendedTokenAllCertificates(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
     public verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
         body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
@@ -73,8 +116,12 @@ export class Oberthur implements AbstractOberthur73 {
     }
 
     allCerts(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.ALL_CERTIFICATES, true), filters, undefined, callback).then((res: TokenAllCertsResponse) => {
-            return CertParser.processTokenAllCertificates(res, parseCerts, callback)
+        return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.ALL_CERTIFICATES, true), filters, undefined, callback).then((res: TokenAllCertsResponse | TokenAllCertsExtendedResponse) => {
+             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenAllCertificates(<TokenAllCertsResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenAllCertificates36(<TokenAllCertsExtendedResponse>res, parseCerts, callback)
+            }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -97,14 +144,26 @@ export class Oberthur implements AbstractOberthur73 {
     }
 
     protected getCertificate(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined, undefined, callback).then((res: TokenCertificateResponse) => {
-            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined, undefined, callback).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
+            if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+            }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
 
-    public tokenData(callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
+    protected getCertificateExtended(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined,undefined, callback).then((res: TokenCertificateExtendedResponse) => {
+            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+    public tokenData(callback?: (error: T1CLibException, data: TokenInfoResponse) => void): Promise<TokenInfoResponse> {
         return this.connection.get(this.baseUrl, this.tokenApp(Oberthur.INFO, true), undefined, undefined, callback);
     }
 

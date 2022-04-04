@@ -6,7 +6,7 @@ import {
     TokenAllCertsExtendedResponse,
     TokenAllCertsResponse,
     TokenCertificateExtendedResponse,
-    TokenValidateSignatureResponse, TokenValidateSignatureRequest
+    TokenValidateSignatureRequest, TokenValidateSignatureResponse
 } from "../../../../../core/service/CoreModel";
 import {TokenAuthenticateOrSignData} from "../../TokenCard";
 import {TokenVerifyPinData} from "../../TokenCard";
@@ -17,7 +17,7 @@ import {
 import {Options} from "../../../Card";
 
 
-export interface AbstractCertinomis {
+export interface AbstractCamerfirma {
     allCerts(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse>;
     authenticationCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse>;
     nonRepudiationCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse>;

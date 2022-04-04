@@ -8,8 +8,12 @@ import {LocalConnection} from '../../../../../core/client/Connection';
 import {
     BoolDataResponse,
     TokenCertificateResponse,
-    DataObjectResponse,
-    T1CResponse, TokenAllCertsResponse
+    TokenInfoResponse,
+    T1CResponse,
+    TokenAllCertsResponse,
+    TokenAllCertsExtendedResponse,
+    TokenCertificateExtendedResponse,
+    TokenValidateSignatureRequest, TokenValidateSignatureResponse
 } from "../../../../../core/service/CoreModel";
 import {AbstractIdemia} from "./IdemiaModel";
 import {
@@ -30,6 +34,9 @@ export class Idemia implements AbstractIdemia {
     static PATH_READERS = '/readers';
     static RESET_PIN = '/reset-pin';
     static INFO = '/info';
+
+    static VALIDATE_SIGNATURE = '/validate';
+
     static ALL_CERTIFICATES = '/cert-list';
     static AUTHENTICATE = '/authenticate';
     static CERT_ROOT = '/root-cert';
@@ -44,6 +51,14 @@ export class Idemia implements AbstractIdemia {
     static RESET_BULK_PIN = "/reset-bulk-pin"
 
     constructor(protected baseUrl: string, protected containerUrl: string,protected connection: LocalConnection, protected reader_id: string) {}
+
+    validateSignature(body: TokenValidateSignatureRequest, callback?: (error: T1CLibException, data: TokenValidateSignatureResponse) => void): Promise<TokenValidateSignatureResponse> {
+        if (body.algorithm) {
+            body.algorithm = body.algorithm.toLowerCase();
+        }
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        return this.connection.post(this.baseUrl, this.tokenApp(Idemia.VALIDATE_SIGNATURE, true), body,  undefined, undefined, callback);
+    }
 
     public rootCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.getCertificate(Idemia.CERT_ROOT,parseCerts, callback);
@@ -65,6 +80,35 @@ export class Idemia implements AbstractIdemia {
         return this.getCertificate(Idemia.CERT_ENCRYPTION, parseCerts, callback);
     }
 
+
+    public authenticationCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(Idemia.CERT_AUTHENTICATION, parseCerts, callback);
+    }
+
+    public nonRepudiationCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(Idemia.CERT_NON_REPUDIATION, parseCerts, callback);
+    }
+
+    public encryptionCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(Idemia.CERT_ENCRYPTION, parseCerts, callback);
+    }
+
+    public rootCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(Idemia.CERT_ROOT, parseCerts, callback);
+    }
+
+    public issuerCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(Idemia.CERT_ISSUER, parseCerts, callback);
+    }
+
+    public allCertsExtended(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsExtendedResponse) => void): Promise<TokenAllCertsExtendedResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(Idemia.ALL_CERTIFICATES, true), filters, undefined, callback).then((res: TokenAllCertsExtendedResponse) => {
+            return CertParser.processExtendedTokenAllCertificates(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
     public verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
         body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
@@ -76,8 +120,12 @@ export class Idemia implements AbstractIdemia {
     }
 
     allCerts(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Idemia.ALL_CERTIFICATES, true), filters, undefined, callback).then((res: TokenAllCertsResponse) => {
-            return CertParser.processTokenAllCertificates(res, parseCerts, callback)
+        return this.connection.get(this.baseUrl, this.tokenApp(Idemia.ALL_CERTIFICATES, true), filters, undefined, callback).then((res: TokenAllCertsResponse | TokenAllCertsExtendedResponse) => {
+             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenAllCertificates(<TokenAllCertsResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenAllCertificates36(<TokenAllCertsExtendedResponse>res, parseCerts, callback)
+            }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -100,14 +148,26 @@ export class Idemia implements AbstractIdemia {
     }
 
     protected getCertificate(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined, undefined, callback).then((res: TokenCertificateResponse) => {
-            return CertParser.processTokenCertificate(res, parseCerts, callback)
+        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined, undefined, callback).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
+            if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+            }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
 
-    public tokenData(callback?: (error: T1CLibException, data: DataObjectResponse) => void): Promise<DataObjectResponse> {
+    protected getCertificateExtended(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined,undefined, callback).then((res: TokenCertificateExtendedResponse) => {
+            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+    public tokenData(callback?: (error: T1CLibException, data: TokenInfoResponse) => void): Promise<TokenInfoResponse> {
         return this.connection.get(this.baseUrl, this.tokenApp(Idemia.INFO, true), undefined, undefined, callback);
     }
 

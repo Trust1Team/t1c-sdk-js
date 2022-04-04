@@ -6,8 +6,13 @@ import {T1CLibException} from '../../../../../core/exceptions/CoreExceptions';
 import {AbstractCertigna} from './CertignaModel';
 import {LocalConnection} from '../../../../../core/client/Connection';
 import {
-    BoolDataResponse, TokenAllCertsResponse,
     TokenCertificateResponse,
+    TokenInfoResponse,
+    BoolDataResponse,
+    TokenAllCertsExtendedResponse,
+    TokenAllCertsResponse,
+    TokenCertificateExtendedResponse,
+    TokenValidateSignatureRequest, TokenValidateSignatureResponse
 } from "../../../../../core/service/CoreModel";
 import {
     TokenAuthenticateResponse,
@@ -33,16 +38,38 @@ export class Certigna implements AbstractCertigna {
     static CERT_AUTHENTICATION = '/authentication-cert';
     static CERT_NON_REPUDIATION = '/nonrepudiation-cert';
 
+    static VALIDATE_SIGNATURE = '/validate';
+
     static SIGN_DATA = '/sign';
     static VERIFY_PIN = '/verify-pin';
     static AUTHENTICATE = '/authenticate';
     static RESET_PIN = '/reset-pin';
+
+    static TOKEN_INFO = '/info'
 
     static RESET_BULK_PIN = "/reset-bulk-pin"
 
     static SUPPORTED_ALGOS = '/supported-algorithms'
 
     constructor(protected baseUrl: string, protected containerUrl: string, protected connection: LocalConnection, protected reader_id: string) {
+    }
+
+    validateSignature(body: TokenValidateSignatureRequest, callback?: (error: T1CLibException, data: TokenValidateSignatureResponse) => void): Promise<TokenValidateSignatureResponse> {
+        if (body.algorithm) {
+            body.algorithm = body.algorithm.toLowerCase();
+        }
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        return this.connection.post(this.baseUrl, this.tokenApp(Certigna.VALIDATE_SIGNATURE, true), body,  undefined, undefined, callback);
+    }
+
+    public tokenData(callback?: ((error: T1CLibException, data: TokenInfoResponse) => void) | undefined): Promise<TokenInfoResponse> {
+        return this.connection.get(
+          this.baseUrl,
+          this.tokenApp(Certigna.TOKEN_INFO, true),
+          undefined,
+          undefined,
+          callback
+        );
     }
 
     public authenticationCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
@@ -52,6 +79,24 @@ export class Certigna implements AbstractCertigna {
     public nonRepudiationCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.getCertificate(Certigna.CERT_NON_REPUDIATION, parseCerts, callback);
     }
+
+
+    public authenticationCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(Certigna.CERT_AUTHENTICATION, parseCerts, callback);
+    }
+
+    public nonRepudiationCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(Certigna.CERT_NON_REPUDIATION, parseCerts, callback);
+    }
+
+    public allCertsExtended(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsExtendedResponse) => void): Promise<TokenAllCertsExtendedResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(Certigna.ALL_CERTIFICATES, true), filters, undefined, callback).then((res: TokenAllCertsExtendedResponse) => {
+            return CertParser.processExtendedTokenAllCertificates(res, parseCerts, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
 
     public verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: TokenVerifyPinResponse) => void): Promise<TokenVerifyPinResponse> {
         body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
@@ -64,11 +109,16 @@ export class Certigna implements AbstractCertigna {
     }
 
     public allCerts(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(Certigna.ALL_CERTIFICATES, true), filters, undefined, callback).then((res: TokenAllCertsResponse) => {
-            return CertParser.processTokenAllCertificates(res, parseCerts, callback)
-        }).catch(error => {
-            return ResponseHandler.error(error, callback);
-        });
+        return this.connection.get(this.baseUrl, this.tokenApp(Certigna.ALL_CERTIFICATES, true), filters, undefined, callback)
+          .then((res: TokenAllCertsResponse | TokenAllCertsExtendedResponse) => {
+              if (res instanceof TokenAllCertsResponse) {
+                  return CertParser.processTokenAllCertificates(res, parseCerts, callback)
+              } else {
+                  return CertParser.processTokenAllCertificates36(res, parseCerts, callback)
+              }
+          }).catch(error => {
+              return ResponseHandler.error(error, callback);
+          });
     }
 
     public authenticate(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse> {
@@ -87,9 +137,21 @@ export class Certigna implements AbstractCertigna {
         return this.connection.post(this.baseUrl, this.tokenApp(Certigna.SIGN_DATA, true), body,  this.getBulkSignQueryParams(bulk), undefined, callback);
     }
 
-    protected getCertificate(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
-        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined,undefined, callback).then((res: TokenCertificateResponse) => {
-            return CertParser.processTokenCertificate(res, parseCerts, callback)
+protected getCertificate(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined,undefined, callback).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
+            if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+            } else {
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+            }
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+    protected getCertificateExtended(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined,undefined, callback).then((res: TokenCertificateExtendedResponse) => {
+            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });

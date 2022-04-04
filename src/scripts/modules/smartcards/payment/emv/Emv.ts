@@ -1,8 +1,16 @@
 import {
-    LocalConnection, PaymentAllCertsResponse, PaymentCertificateResponse, PaymentReadApplicationDataResponse,
+    LocalConnection,
+    PaymentAllCertsResponse,
+    PaymentCertificateResponse,
+    PaymentReadApplicationDataResponse,
     PaymentReadDataResponse,
-    PaymentVerifyPinResponse, Pinutil,
-    T1CLibException
+    PaymentVerifyPinResponse,
+    Pinutil,
+    T1CLibException,
+    TokenAllCertsExtendedResponse,
+    TokenAllCertsResponse,
+    TokenCertificateExtendedResponse,
+    TokenCertificateResponse
 } from "../../../../../index";
 import {
     AbstractEmv,
@@ -10,6 +18,10 @@ import {
 import {PaymentVerifyPinData} from "../PaymentCard";
 import {RequestHandler} from "../../../../util/RequestHandler";
 import {Options} from "../../Card";
+import { CertParser } from "../../../../util/CertParser";
+import { ResponseHandler } from "../../../../util/ResponseHandler";
+
+const semver = require('semver');
 
 export class Emv implements AbstractEmv {
     static PATH_PAYMENT_APP = '/apps/payment';
@@ -29,14 +41,36 @@ export class Emv implements AbstractEmv {
     ) {
     }
 
-    allCerts(aid: string, filters: string[] | Options, callback?: (error: T1CLibException, data: PaymentAllCertsResponse) => void): Promise<PaymentAllCertsResponse> {
+    allCertsExtended(aid: string, filters: string[] | Options, callback?: ((error: T1CLibException, data: TokenAllCertsExtendedResponse) => void) | undefined): Promise<TokenAllCertsExtendedResponse> {
+        const reqOptions = RequestHandler.determineOptionsWithFilter(filters);
+        return this.connection.get(
+          this.baseUrl,
+          this.paymentApp(Emv.ALL_CERTIFICATES, aid),
+          reqOptions.params,
+          callback
+        ).then((res: TokenAllCertsExtendedResponse) => {
+            return CertParser.processExtendedTokenAllCertificates(res, false, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+    allCerts(aid: string, filters: string[] | Options, callback?: (error: T1CLibException, data: PaymentAllCertsResponse | TokenAllCertsExtendedResponse) => void): Promise<PaymentAllCertsResponse | TokenAllCertsExtendedResponse> {
         const reqOptions = RequestHandler.determineOptionsWithFilter(filters);
         return this.connection.get(
             this.baseUrl,
             this.paymentApp(Emv.ALL_CERTIFICATES, aid),
             reqOptions.params,
             callback
-        );
+        ).then((res: PaymentAllCertsResponse | TokenAllCertsExtendedResponse) => {
+            if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processPaymentAllCertificates(<PaymentAllCertsResponse>res, false, callback)
+            } else {
+                return CertParser.processPaymentAllCertificates36(<TokenAllCertsExtendedResponse>res, false, callback)
+            }
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
 
     iccPublicCertificate(aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
@@ -46,7 +80,15 @@ export class Emv implements AbstractEmv {
             undefined,
             undefined,
             callback
-        );
+        ).then((res: PaymentCertificateResponse | TokenCertificateExtendedResponse) => {
+            if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processPaymentCertificate(<PaymentCertificateResponse>res, false, callback)
+            } else {
+                return CertParser.processPaymentCertificate36(<TokenCertificateExtendedResponse>res, false, callback)
+            }
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
 
     issuerPublicCertificate(aid: string, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void): Promise<PaymentCertificateResponse> {
@@ -56,8 +98,45 @@ export class Emv implements AbstractEmv {
             undefined,
             undefined,
             callback
-        );
+        ).then((res: PaymentCertificateResponse | TokenCertificateExtendedResponse) => {
+            if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+                return CertParser.processPaymentCertificate(<PaymentCertificateResponse>res, false, callback)
+            } else {
+                return CertParser.processPaymentCertificate36(<TokenCertificateExtendedResponse>res, false, callback)
+            }
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
     }
+
+    iccPublicCertificateExtended(aid: string, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.connection.get(
+          this.baseUrl,
+          this.paymentApp(Emv.CERT_ICC, aid),
+          undefined,
+          undefined,
+          callback
+        ).then((res: TokenCertificateExtendedResponse) => {
+            return CertParser.processExtendedTokenCertificate(res, false, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
+    issuerPublicCertificateExtended(aid: string, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.connection.get(
+          this.baseUrl,
+          this.paymentApp(Emv.CERT_ISSUER, aid),
+          undefined,
+          undefined,
+          callback
+        ).then((res: TokenCertificateExtendedResponse) => {
+            return CertParser.processExtendedTokenCertificate(res, false, callback)
+        }).catch(error => {
+            return ResponseHandler.error(error, callback);
+        });
+    }
+
 
     readApplicationData(callback?: (error: T1CLibException, data: PaymentReadApplicationDataResponse) => void): Promise<PaymentReadApplicationDataResponse> {
         return this.connection.get(

@@ -47,6 +47,10 @@ import {AbstractAirbus} from "./smartcards/token/pki/airbus/AirbusModel";
 import {Airbus} from "./smartcards/token/pki/airbus/Airbus";
 import { AbstractLuxTrust } from "./smartcards/token/eid/luxtrust/LuxTrustModel";
 import { LuxTrust } from "./smartcards/token/eid/luxtrust/LuxTrust";
+import { AbstractCamerfirma } from "./smartcards/token/pki/camerfirma/CamerfirmaModel";
+import { AbstractChambersign } from "./smartcards/token/pki/chambersign/ChambersignModel";
+import { Camerfirma } from "./smartcards/token/pki/camerfirma/Camerfirma";
+import { Chambersign } from "./smartcards/token/pki/chambersign/Chambersign";
 
 export interface AbstractFactory {
     createEidGeneric(reader_id: string): AbstractEidGeneric;
@@ -79,6 +83,8 @@ const CONTAINER_SAFENET = CONTAINER_NEW_CONTEXT_PATH + 'safenet';
 const CONTAINER_EHERKENNING = CONTAINER_NEW_CONTEXT_PATH + 'eherkenning';
 const CONTAINER_JCOP = CONTAINER_NEW_CONTEXT_PATH + 'jcop3';
 const CONTAINER_AIRBUS = CONTAINER_NEW_CONTEXT_PATH + 'airbus';
+const CONTAINER_CAMERFIRMA = CONTAINER_NEW_CONTEXT_PATH + 'camerfirma';
+const CONTAINER_CHAMBERSIGN = CONTAINER_NEW_CONTEXT_PATH + 'chambersign';
 const CONTAINER_EMV = CONTAINER_NEW_CONTEXT_PATH + 'emv';
 const CONTAINER_CRELAN = CONTAINER_NEW_CONTEXT_PATH + 'crelan';
 const CONTAINER_WACOM = CONTAINER_NEW_CONTEXT_PATH + 'wacom-stu';
@@ -189,5 +195,13 @@ export class ModuleFactory implements AbstractFactory {
 
     public createLuxTrust(reader_id: string): AbstractLuxTrust {
         return new LuxTrust(this.url, CONTAINER_LUXTRUST, this.connection, reader_id);
+    }
+
+    public createCamerfirma(reader_id: string): AbstractCamerfirma {
+        return new Camerfirma(this.url, CONTAINER_CAMERFIRMA, this.connection, reader_id);
+    }
+
+    public createChambersign(reader_id: string): AbstractChambersign {
+        return new Chambersign(this.url, CONTAINER_CHAMBERSIGN, this.connection, reader_id);
     }
 }
