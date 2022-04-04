@@ -48,6 +48,12 @@ export class CertParser {
         if (response.data.issuerCertificate) {
             updatedCerts = new TokenAllCertsExtended(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, updatedCerts.nonRepudiationCertificate, updatedCerts.rootCertificate, updatedCerts.encryptionCertificate, this.processExtendedTokenCert(response.data.issuerCertificate, parseCerts))
         }
+        if (response.data.issuerPublicCertificate) {
+            updatedCerts = new TokenAllCertsExtended(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, updatedCerts.nonRepudiationCertificate, updatedCerts.rootCertificate, updatedCerts.encryptionCertificate, updatedCerts.issuerCertificate, this.processExtendedTokenCert(response.data.issuerPublicCertificate, parseCerts))
+        }
+        if (response.data.ICCPublicCertificate) {
+            updatedCerts = new TokenAllCertsExtended(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, updatedCerts.nonRepudiationCertificate, updatedCerts.rootCertificate, updatedCerts.encryptionCertificate, updatedCerts.issuerCertificate, updatedCerts.issuerPublicCertificate, this.processExtendedTokenCert(response.data.ICCPublicCertificate, parseCerts))
+        }
 
         return ResponseHandler.response(new TokenAllCertsExtendedResponse(updatedCerts, response.success), callback)
     }
@@ -181,29 +187,58 @@ export class CertParser {
         if (response.data.issuerPublicCertificate) {
             updatedCerts = new PaymentAllCerts(this.processPaymentCert(response.data.issuerPublicCertificate, parseCerts))
         }
-        if (response.data.iccPublicCertificate) {
-            updatedCerts = new PaymentAllCerts(updatedCerts.issuerPublicCertificate, this.processPaymentCert(response.data.iccPublicCertificate, parseCerts))
+        if (response.data.ICCPublicCertificate) {
+            updatedCerts = new PaymentAllCerts(updatedCerts.issuerPublicCertificate, this.processPaymentCert(response.data.ICCPublicCertificate, parseCerts))
         }
         return ResponseHandler.response(new PaymentAllCertsResponse(updatedCerts,response.success), callback)
     }
+
+    // certificate parse function for version 3.6.0 or later
+    public static processPaymentAllCertificates36(response: TokenAllCertsExtendedResponse, parseCerts: boolean | undefined, callback?: (error: T1CLibException, data: PaymentAllCertsResponse) => void):  Promise<PaymentAllCertsResponse> {
+        let updatedCerts = new PaymentAllCerts();
+        if (response.data.issuerPublicCertificate) {
+            updatedCerts = new PaymentAllCerts(this.processPaymentCert36(response.data.issuerPublicCertificate.certificates, parseCerts))
+        }
+        if (response.data.ICCPublicCertificate) {
+            updatedCerts = new PaymentAllCerts(updatedCerts.issuerPublicCertificate, this.processPaymentCert36(response.data.ICCPublicCertificate.certificates, parseCerts))
+        }
+        return ResponseHandler.response(new PaymentAllCertsResponse(updatedCerts,response.success), callback)
+    }
+
+
 
     public static processPaymentCertificate(response: PaymentCertificateResponse, parseCerts: boolean | undefined, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void):  Promise<PaymentCertificateResponse> {
         return ResponseHandler.response(new PaymentCertificateResponse(this.processPaymentCert(response.data, parseCerts), response.success), callback);
     }
 
+    public static processPaymentCertificate36(response: TokenCertificateExtendedResponse, parseCerts: boolean | undefined, callback?: (error: T1CLibException, data: PaymentCertificateResponse) => void):  Promise<PaymentCertificateResponse> {
+        if (response.data.certificates) {
+            const cert = response.data.certificates[0];
+            const tokenCert = new PaymentCertificate(cert.certificate, cert.exponent, cert.remainder)
+            return ResponseHandler.response(new PaymentCertificateResponse(this.processPaymentCert(tokenCert, parseCerts), response.success), callback);
+        } else {
+            return ResponseHandler.error(new T1CLibException('302102', "Certificates not found"), callback)
+        }
+    }
+
     private static processPaymentCert(certificate: PaymentCertificate, parseCert: boolean | undefined): PaymentCertificate {
         if (parseCert && parseCert === true) {
-            let parsedCertificate: Certificate | undefined = undefined;
-
-            if (certificate.certificate) {
-                parsedCertificate = CertParser.processCert(certificate.certificate)
-            }
-            return new PaymentCertificate(certificate.certificate, certificate.exponent, certificate.remainder, parsedCertificate);
-
+            return new PaymentCertificate(certificate.certificate, certificate.exponent, certificate.remainder);
         } else {
             return certificate;
         }
     }
+
+    // @ts-ignore
+    private static processPaymentCert36(certificate?: Array<T1CCertificate>, parseCert: boolean | undefined): PaymentCertificate| undefined {
+        if (certificate) {
+            return certificate[0];
+        } else {
+            return undefined
+        }
+
+    }
+
 
 
 
