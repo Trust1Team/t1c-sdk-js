@@ -136,8 +136,7 @@ export class BrowserInfo {
 }
 
 export class SmartCard {
-  constructor(public atr?: string, public description?: string[]) {
-  }
+  constructor(public atr?: string | undefined, public description?: string[] | undefined, public modules?: string[] | undefined) {}
 }
 
 export class CardReader {
