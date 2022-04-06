@@ -242,13 +242,13 @@ export class T1CClient {
                 resolve(validateRes);
             }, err => {
                 if (!callback || typeof callback !== 'function') { callback = function () {}; }
-                callback(new T1CLibException("114501", err.description ? err.description : "No valid consent", _client), undefined)
-                reject(new T1CLibException("114501", err.description ? err.description : "No valid consent", _client));
+                callback(new T1CLibException("814501", err.description ? err.description : "No valid consent", _client), undefined)
+                reject(new T1CLibException("814501", err.description ? err.description : "No valid consent", _client));
             })
 
         } else {
             // Consent required
-            let error = new T1CLibException("114501", "Consent required", _client)
+            let error = new T1CLibException("814501", "Consent required", _client)
             if (callback && typeof callback === 'function') {callback(error, undefined);}
             reject(error)
         }
