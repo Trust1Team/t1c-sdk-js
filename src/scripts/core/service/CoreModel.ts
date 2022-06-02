@@ -20,6 +20,8 @@ export interface AbstractCore {
 
   readersCardsUnavailable(callback?: (error: T1CLibException, data: CardReadersResponse) => void): Promise<CardReadersResponse>;
 
+  getAgents(): Promise<AgentsResponse>
+
   getUrl(): string;
 
   getDevicePublicKey(): void;
@@ -115,13 +117,24 @@ export class T1CContainerid {
   }
 }
 
+
 export class InfoApi {
-  constructor(public service?: InfoService, public activated?: boolean, public citrix?: boolean, public uid?: String, public modules?: Array<String>, public version?: String, public logLevel?: String, public sharedEnvironment?: boolean) {
-  }
+  constructor(public service?: InfoService,
+              public activated?: boolean,
+              public status?: String,
+              public environment?:String,
+              public uid?: String,
+              public modules?: Array<String>,
+              public cors?: Array<String>,
+              public version?: String,
+              public logLevel?: String,
+              public jwtEnabled?: boolean,
+              public optionalConsent?: boolean) {}
 }
 
 export class InfoResponse { //extends T1CResponse
-  constructor(public t1CInfoOS?: InfoOS, public t1CInfoJava?: InfoJava, public t1CInfoRuntime?: T1CInfoRuntime, public t1CInfoUser?: InfoUser, public t1CInfoAPI?: InfoApi) {
+  constructor(public t1CInfoOS?: InfoOS,
+              public t1CInfoJava?: InfoJava, public t1CInfoRuntime?: T1CInfoRuntime, public t1CInfoUser?: InfoUser, public t1CInfoAPI?: InfoApi) {
   }
 }
 
@@ -139,6 +152,23 @@ export class SmartCard {
   constructor(public atr?: string | undefined, public description?: string[] | undefined, public modules?: string[] | undefined) {}
 }
 
+
+export class Agent {
+  constructor(
+    public username: string,
+    public apiIp: string,
+    public apiPort: string,
+    public apiPid: string,
+    public sandboxIp: string,
+    public sandboxPort: string,
+    public sandboxPid: string,
+    public apiLastUsed: string,
+    public validityInDays: string,
+    public connectionState: string,
+  ) {
+  }
+}
+
 export class CardReader {
   constructor(
     public id: string,
@@ -146,6 +176,12 @@ export class CardReader {
     public pinpad: boolean,
     public card?: SmartCard
   ) {
+  }
+}
+
+export class AgentsResponse extends T1CResponse {
+  constructor(public data: Agent[], public success: boolean) {
+    super(success, data);
   }
 }
 

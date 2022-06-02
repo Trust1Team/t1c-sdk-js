@@ -38,6 +38,7 @@ import {AbstractAirbus} from "../modules/smartcards/token/pki/airbus/AirbusModel
 import { AbstractLuxTrust } from "../modules/smartcards/token/eid/luxtrust/LuxTrustModel";
 import { AbstractCamerfirma } from "../modules/smartcards/token/pki/camerfirma/CamerfirmaModel";
 import { AbstractChambersign } from "../modules/smartcards/token/pki/chambersign/ChambersignModel";
+import { InfoResponse } from "./service/CoreModel";
 
 const urlVersion = "/v3";
 const semver = require('semver');
@@ -75,7 +76,15 @@ export class T1CClient {
         Polyfills.check();
     }
 
-    public static initialize(cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
+
+    /**
+     * Initializing the TrustConnector can be done with both requiring explicit consent or having it optional
+     * The optional consent is a feature that is available in the Trust1Connector and must be enabled there.
+     *
+     * This function does not take into account this optional value. It will require a consent to be present
+     * or to be done to function
+     */
+    public static initializeExplicitConsent(cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
         return new Promise((resolve, reject) => {
             // Base client
             let _client = new T1CClient(cfg);
@@ -92,6 +101,8 @@ export class T1CClient {
                     if (infoRes.t1CInfoAPI && semver.lt(semver.coerce(infoRes.t1CInfoAPI.version).version, '3.5.0')) {
                         this._init(resolve, reject, _client.config(), callback);
                     } else {
+                        // we do not provide the optional consent value, even if it's set to false
+                        // because we explicitly want the consent flow to be triggered
                         this.init(resolve, reject, _client.config(), callback);
                     }
                 } else {
@@ -104,8 +115,50 @@ export class T1CClient {
                 reject(new T1CLibException("112999", "Failed to contact the Trust1Connector", _client));
             });
         });
-
     }
+
+
+
+
+    /**
+     * Initializing the TrustConnector can be done with both requiring explicit consent or having it optional
+     * The optional consent is a feature that is available in the Trust1Connector and must be enabled there.
+     *
+     * This function takes into account this optional value. When this is enabled it will implicitly use the first
+     * agent that is available in the registry. To support multiple agents a consent flow is required
+     */
+    public static initialize(cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
+        return new Promise((resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void) => {
+            // Base client
+            let _client = new T1CClient(cfg);
+            _client.core().info().then(infoRes => {
+                _client.config().version = infoRes.t1CInfoAPI?.version;
+                if (infoRes.t1CInfoAPI?.service?.deviceType === "PROXY") {
+                    if (infoRes.t1CInfoAPI?.service?.distributionServiceUrl && infoRes.t1CInfoAPI.service.dsRegistryActivated) {
+                        _client.config().dsUrl = infoRes.t1CInfoAPI.service.distributionServiceUrl
+                    }
+                    if (infoRes.t1CInfoUser?.hostName) {
+                        _client.config().deviceHostName = infoRes.t1CInfoUser.hostName
+                    }
+
+                    if (infoRes.t1CInfoAPI && semver.lt(semver.coerce(infoRes.t1CInfoAPI.version).version, '3.5.0')) {
+                        this._init(resolve, reject, _client.config(), callback);
+                    } else {
+                        // we provide the optional consent value to check if we need to consent flow or not
+                        this.init(resolve, reject, _client.config(), callback, infoRes.t1CInfoAPI.optionalConsent);
+                    }
+                } else {
+                    _client.coreService.getDevicePublicKey();
+                    resolve(_client);
+                }
+            }, err => {
+                console.error(err)
+                if (callback && typeof callback === 'function') {callback(new T1CLibException("112999", "Failed to contact the Trust1Connector", _client), _client);}
+                reject(new T1CLibException("112999", "Failed to contact the Trust1Connector", _client));
+            });
+        });
+    }
+
 
     /**
      * Init security context
@@ -232,7 +285,10 @@ export class T1CClient {
     }
 
 
-    private static init(resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void) {
+    /**
+     * Initialise function that is used by versions higher than 3.5.0
+     */
+    private static init(resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void, optionalConsent?: boolean) {
         // base client config
         let _client = new T1CClient(cfg);
         const currentConsent = ConsentUtil.getRawConsent(cfg.applicationDomain + "::" + cfg.t1cApiUrl)
@@ -245,15 +301,35 @@ export class T1CClient {
                 callback(new T1CLibException("814501", err.description ? err.description : "No valid consent", _client), undefined)
                 reject(new T1CLibException("814501", err.description ? err.description : "No valid consent", _client));
             })
-
         } else {
-            // Consent required
-            let error = new T1CLibException("814501", "Consent required", _client)
-            if (callback && typeof callback === 'function') {callback(error, undefined);}
-            reject(error)
+            if (optionalConsent) {
+                // create a client based upon the first agent it can find.
+                _client.core().getAgents().then(agentResponse => {
+                    if (agentResponse.data.length > 0) {
+                        _client.connection.cfg.t1cApiPort = agentResponse.data[0].apiPort
+                        const newClient = new T1CClient(_client.connection.cfg);
+                        newClient.core().getDevicePublicKey();
+                        if (callback && typeof callback === 'function') {callback(undefined, newClient);}
+                        resolve(newClient)
+                    } else {
+                        let error = new T1CLibException("12999", "No agents connected", _client)
+                        if (callback && typeof callback === 'function') {callback(error, undefined);}
+                        reject(error)
+                    }
+
+                }, err => {
+                    let error = new T1CLibException("12999", "Could not retrieve agent information", _client)
+                    if (callback && typeof callback === 'function') {callback(error, undefined);}
+                    reject(error)
+                })
+            } else {
+                // Consent required
+                let error = new T1CLibException("814501", "Consent required", _client)
+                if (callback && typeof callback === 'function') {callback(error, undefined);}
+                reject(error)
+            }
         }
     }
-
 
     // Random generation for copy to clipboard
     public static generateConsentToken(): string {
@@ -270,7 +346,8 @@ export class T1CClient {
     }
 
     /**
-     * Deprecated
+     * @Deprecated
+     * Initialise function for Trust1Connector versions lower then 3.5.0
      */
     private static _init(resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void) {
         axios.get(cfg.t1cApiUrl + "/info", {
