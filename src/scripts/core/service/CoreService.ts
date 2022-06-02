@@ -1,11 +1,5 @@
 import { LocalAuthConnection } from "../client/Connection";
-import {
-  AbstractCore,
-  CardReadersResponse,
-  DataResponse,
-  InfoResponse,
-  SingleReaderResponse
-} from "./CoreModel";
+import { AbstractCore, CardReadersResponse, InfoResponse, SingleReaderResponse } from "./CoreModel";
 import { T1CLibException } from "../exceptions/CoreExceptions";
 import { T1CClient } from "../../..";
 import { ResponseHandler } from "../../util/ResponseHandler";
@@ -47,18 +41,63 @@ export class CoreService implements AbstractCore {
   }
 
   validateConsent(callback?: (error?: T1CLibException, data?: T1CClient) => void): Promise<T1CClient> {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void) => {
+      this._validateConsent(0, resolve, reject, callback)
+    });
+  }
+
+  // Recursive retry of consent for 3 times then it will fail.
+  private _validateConsent(retries: number, resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, callback?: (error?: T1CLibException, data?: T1CClient) => void) {
+    if (retries < 3) {
       let url = this.connection.cfg.t1cApiUrl;
-      let suffixValue = CORE_VERSION;
       if (semver.lt(semver.coerce(this.connection.cfg.version).version, "3.5.10")) {
         const currentConsent = ConsentUtil.getRawConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
-        return this._validateConsent(resolve, reject, currentConsent, callback);
+        let url = this.connection.cfg.t1cApiUrl;
+        let suffixValue = CORE_VERSION;
+        if (this.connection.cfg.dsUrl) {
+          url = this.connection.cfg.dsUrl;
+          suffixValue = CORE_DS_AGENTS;
+        }
+        return this.connection.post(
+          url,
+          suffixValue + CORE_VALIDATE,
+          {
+            data: currentConsent
+          },
+          undefined
+        ).then(res => {
+          ConsentUtil.setConsent(res.data, this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
+          const parsed_response = ConsentUtil.getConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
+          if (parsed_response != null) {
+            this.connection.cfg.t1cApiPort = parsed_response?.agent.apiPort;
+            const newClient = new T1CClient(this.connection.cfg);
+            newClient.core().getDevicePublicKey();
+            if (!callback || typeof callback !== "function") {
+              callback = function() {
+              };
+            }
+            callback(undefined, newClient);
+            resolve(newClient);
+          } else {
+            ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
+            if (!callback || typeof callback !== "function") {
+              callback = function() {
+              };
+            }
+            callback(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)), undefined);
+            reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
+          }
+        }, _ => {
+          setTimeout(() => {
+            this._validateConsent(retries + 1, resolve, reject, callback)
+          }, 1000)
+        });
       } else {
         let consent = ConsentUtil.getConsents(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
         if (consent != null) {
           return this.connection.post(
             url,
-            suffixValue + CORE_VALIDATE,
+            CORE_VERSION + CORE_VALIDATE,
             {
               consents: consent
             },
@@ -72,14 +111,10 @@ export class CoreService implements AbstractCore {
               // use local registry for validation
               this.handleValidateConsent(res, resolve, reject, callback)
             }
-          }, err => {
-            ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
-            if (!callback || typeof callback !== "function") {
-              callback = function() {
-              };
-            }
-            callback(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)), undefined);
-            reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
+          }, _ => {
+            setTimeout(() => {
+              this._validateConsent(retries + 1, resolve, reject, callback)
+            }, 1000)
           });
         } else {
           ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
@@ -91,7 +126,14 @@ export class CoreService implements AbstractCore {
           return reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
         }
       }
-    });
+    } else {
+      if (!callback || typeof callback !== "function") {
+        callback = function() {
+        };
+      }
+      callback(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)), undefined);
+      return reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
+    }
   }
 
   // Handler for contacting the central DS registry for a valid consent
@@ -180,58 +222,6 @@ export class CoreService implements AbstractCore {
   }
 
 
-  // Validate consent function for versions before 3.5.10
-  private _validateConsent(
-    resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void,
-    consent: string | null, callback?: (error?: T1CLibException, data?: T1CClient) => void
-  ) {
-    let url = this.connection.cfg.t1cApiUrl;
-    let suffixValue = CORE_VERSION;
-    if (this.connection.cfg.dsUrl) {
-      url = this.connection.cfg.dsUrl;
-      suffixValue = CORE_DS_AGENTS;
-    }
-    return this.connection.post(
-      url,
-      suffixValue + CORE_VALIDATE,
-      {
-        data: consent
-      },
-      undefined
-    ).then(res => {
-      ConsentUtil.setConsent(res.data, this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
-      const parsed_response = ConsentUtil.getConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
-      if (parsed_response != null) {
-        this.connection.cfg.t1cApiPort = parsed_response?.agent.apiPort;
-        const newClient = new T1CClient(this.connection.cfg);
-        newClient.core().getDevicePublicKey();
-        if (!callback || typeof callback !== "function") {
-          callback = function() {
-          };
-        }
-        callback(undefined, newClient);
-        resolve(newClient);
-      } else {
-        ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
-        if (!callback || typeof callback !== "function") {
-          callback = function() {
-          };
-        }
-        callback(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)), undefined);
-        reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
-      }
-    }, err => {
-      ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
-      if (!callback || typeof callback !== "function") {
-        callback = function() {
-        };
-      }
-      callback(new T1CLibException("814501", err.description ? err.description : "No valid consent", new T1CClient(this.connection.cfg)), undefined);
-      reject(new T1CLibException("814501", err.description ? err.description : "No valid consent", new T1CClient(this.connection.cfg)));
-    });
-  }
-
-
   /*NOTE: The application is responsible to copy the codeWord on the clipboard BEFORE calling this function*/
   public getImplicitConsent(
     codeWord: string,
@@ -241,6 +231,20 @@ export class CoreService implements AbstractCore {
     let url = this.connection.cfg.t1cApiUrl;
     let suffixValue = CORE_VERSION;
     return new Promise((resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void) => {
+      this.getImplicitConsentHandler(0, codeWord, resolve, reject, durationInDays, callback)
+    });
+  }
+
+  private getImplicitConsentHandler(
+    retries: number,
+    codeWord: string,
+    resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void,
+    durationInDays?: number,
+    callback?: (error?: T1CLibException, data?: T1CClient) => void,
+  ) {
+    if (retries < 3) {
+      let url = this.connection.cfg.t1cApiUrl;
+      let suffixValue = CORE_VERSION;
       let days: number = 365;
       if (durationInDays) {
         days = durationInDays;
@@ -248,7 +252,43 @@ export class CoreService implements AbstractCore {
       if (semver.lt(semver.coerce(this.connection.cfg.version).version, "3.5.0")) {
         return this._getImplicitConsent(resolve, reject, codeWord, days, callback);
       } else if (semver.lt(semver.coerce(this.connection.cfg.version).version, "3.5.10")) {
-        return this.__getImplicitConsent(resolve, reject, codeWord, days, callback);
+        let version = CORE_VERSION;
+        if (this.connection.cfg.dsUrl) {
+          url = this.connection.cfg.dsUrl;
+          version = CORE_DS_AGENTS;
+        }
+        return this.connection.post(
+          url,
+          version + CORE_CONSENT,
+          {
+            codeWord: codeWord,
+            durationInDays: days
+          },
+          undefined
+        ).then(res => {
+          ConsentUtil.setConsent(res.data, this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
+          const parsed_response = ConsentUtil.getConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
+          if (parsed_response != null) {
+            this.connection.cfg.t1cApiPort = parsed_response.agent.apiPort;
+          } else {
+            if (!callback || typeof callback !== "function") {
+              callback = function() {
+              };
+            }
+            callback(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)), undefined);
+            reject(new T1CLibException("814501", "No valid consent", new T1CClient(this.connection.cfg)));
+          }
+          const newClient = new T1CClient(this.connection.cfg);
+          newClient.core().getDevicePublicKey();
+          if (!callback || typeof callback !== "function") {
+            callback = function() {
+            };
+          }
+          callback(undefined, newClient);
+          resolve(newClient);
+        }, err => {
+          this.getImplicitConsentHandler(retries + 1, codeWord, resolve, reject, durationInDays, callback)
+        });
       } else {
         const consents = ConsentUtil.getConsents(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
         return this.connection.post(
@@ -350,16 +390,19 @@ export class CoreService implements AbstractCore {
             }
           }
         }, err => {
-          ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
-          if (!callback || typeof callback !== "function") {
-            callback = function() {
-            };
-          }
-          callback(new T1CLibException(err.code ? err.code : "112999", err.description ? err.description : "Error during consent.", new T1CClient(this.connection.cfg)), undefined);
-          return reject(new T1CLibException(err.code ? err.code : "112999", err.description ? err.description : "Error during consent.", new T1CClient(this.connection.cfg)));
+          this.getImplicitConsentHandler(retries + 1, codeWord, resolve, reject, durationInDays, callback)
         });
       }
-    });
+
+    } else {
+      ConsentUtil.removeConsent(this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
+      if (!callback || typeof callback !== "function") {
+        callback = function() {
+        };
+      }
+      callback(new T1CLibException("814501", "Invalid consent, new consent is required", new T1CClient(this.connection.cfg)), undefined);
+      return reject(new T1CLibException("814501", "Invalid consent, new consent is required", new T1CClient(this.connection.cfg)));
+    }
   }
 
 
