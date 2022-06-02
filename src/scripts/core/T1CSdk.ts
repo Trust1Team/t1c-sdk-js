@@ -312,13 +312,13 @@ export class T1CClient {
                         if (callback && typeof callback === 'function') {callback(undefined, newClient);}
                         resolve(newClient)
                     } else {
-                        let error = new T1CLibException("12999", "No agents connected", _client)
+                        let error = new T1CLibException("112999", "No agents connected", _client)
                         if (callback && typeof callback === 'function') {callback(error, undefined);}
                         reject(error)
                     }
 
                 }, err => {
-                    let error = new T1CLibException("12999", "Could not retrieve agent information", _client)
+                    let error = new T1CLibException("112999", "Could not retrieve agent information", _client)
                     if (callback && typeof callback === 'function') {callback(error, undefined);}
                     reject(error)
                 })
