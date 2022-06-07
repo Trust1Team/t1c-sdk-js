@@ -38,6 +38,7 @@ export class Airbus implements AbstractAirbus {
 
     static VALIDATE_SIGNATURE = '/validate';
 
+    static SIGN_RAW_DATA = '/sign_raw';
     static SIGN_DATA = '/sign';
     static VERIFY_PIN = '/verify-pin';
     static AUTHENTICATE = '/authenticate';
@@ -48,6 +49,15 @@ export class Airbus implements AbstractAirbus {
     static SUPPORTED_ALGOS = '/supported-algorithms'
 
     constructor(protected baseUrl: string, protected containerUrl: string, protected connection: LocalConnection, protected reader_id: string) {
+    }
+
+    sign_raw(body: TokenAuthenticateOrSignData, bulk?: boolean | undefined, callback?: ((error: T1CLibException, data: TokenSignResponse) => void) | undefined): Promise<TokenSignResponse> {
+        if (body.algorithm) {
+            body.algorithm = body.algorithm.toLowerCase();
+        }
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
+        return this.connection.post(this.baseUrl, this.tokenApp(Airbus.SIGN_RAW_DATA, true), body,  this.getBulkSignQueryParams(bulk), undefined, callback);
     }
 
     validateSignature(body: TokenValidateSignatureRequest, callback?: (error: T1CLibException, data: TokenValidateSignatureResponse) => void): Promise<TokenValidateSignatureResponse> {
