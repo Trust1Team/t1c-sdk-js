@@ -27,6 +27,18 @@ export class CoreService implements AbstractCore {
   constructor(private url: string, private connection: LocalAuthConnection) {
   }
 
+  /**
+   * This function is only available for the registry
+   */
+  getAgents(): Promise<AgentsResponse> {
+    return this.connection.get(
+      this.connection.cfg.t1cApiUrl,
+      CORE_VERSION + CORE_DS_AGENTS,
+      undefined,
+      undefined
+    );
+  }
+
   getDevicePublicKey(callback?: (error?: T1CLibException, data?: string) => void): void {
     this.connection.get(
       this.connection.cfg.t1cApiUrl,
@@ -106,10 +118,10 @@ export class CoreService implements AbstractCore {
             ConsentUtil.setConsents(res.data.consents, this.connection.cfg.applicationDomain + "::" + this.connection.cfg.t1cApiUrl);
             if (res.data.consentState === "USE_DS_CENTRAL_REG") {
               // use central registry for validation
-              this.handleValidateConsentCentral(consent, resolve, reject, callback, 1)
+              this.handleValidateConsentCentral(consent, resolve, reject, callback, 1);
             } else {
               // use local registry for validation
-              this.handleValidateConsent(res, resolve, reject, callback)
+              this.handleValidateConsent(res, resolve, reject, callback);
             }
           }, _ => {
             setTimeout(() => {
@@ -170,10 +182,10 @@ export class CoreService implements AbstractCore {
             callback(new T1CLibException("814500", "Invalid consent, no agent found", new T1CClient(this.connection.cfg)), undefined);
             return reject(new T1CLibException("814500", "Invalid consent, no agent found", new T1CClient(this.connection.cfg)));
           } else {
-            return this.handleValidateConsentCentral(consent, resolve, reject, callback, timeout * 2)
+            return this.handleValidateConsentCentral(consent, resolve, reject, callback, timeout * 2);
           }
         } else {
-          return this.handleValidateConsent(dsRes, resolve, reject, callback)
+          return this.handleValidateConsent(dsRes, resolve, reject, callback);
         }
       }, dsErr => {
         if (!callback || typeof callback !== "function") {
@@ -182,8 +194,8 @@ export class CoreService implements AbstractCore {
         }
         callback(new T1CLibException("814501", dsErr.description ? dsErr.description : "Invalid Consent", new T1CClient(this.connection.cfg)), undefined);
         return reject(new T1CLibException("814501", dsErr.description ? dsErr.description : "Invalid Consent", new T1CClient(this.connection.cfg)));
-      })
-    }, timeout)
+      });
+    }, timeout);
   }
 
 
