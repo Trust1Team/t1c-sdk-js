@@ -42,6 +42,7 @@ export class EidGeneric implements AbstractEidGeneric {
     static TOKEN = '/info';
     static VERIFY_PIN = '/verify-pin';
     static SIGN_DATA = '/sign';
+    static SIGN_RAW_DATA = '/sign_raw';
     static AUTHENTICATE = '/authenticate';
     static VERIFY_PRIV_KEY_REF = 'non-repudiation';
     static SUPPORTED_ALGOS = '/supported-algorithms';
@@ -55,6 +56,19 @@ export class EidGeneric implements AbstractEidGeneric {
         protected pin?: string,
         protected pinType?: PinType
     ) {
+    }
+
+    public signRaw(module: string, body: TokenAuthenticateOrSignData, bulk?: boolean | undefined, callback?: ((error: T1CLibException, data: TokenSignResponse) => void) | undefined): Promise<TokenSignResponse> {
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
+        return this.connection.post(
+          this.baseUrl,
+          this.tokenApp(module, EidGeneric.SIGN_RAW_DATA, true),
+          body,
+          this.getBulkSignQueryParams(bulk),
+          EidGeneric.EncryptedHeader(this.pin, this.pinType),
+          callback
+        );
     }
 
     // by default using Pace-PIN

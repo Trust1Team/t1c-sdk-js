@@ -37,6 +37,7 @@ export class EidBe implements AbstractEidBE {
     static TOKEN = '/info';
     static VERIFY_PIN = '/verify-pin';
     static SIGN_DATA = '/sign';
+    static SIGN_RAW_DATA = '/sign_raw';
     static AUTHENTICATE = '/authenticate';
     static VERIFY_PRIV_KEY_REF = 'non-repudiation';
     static SUPPORTED_ALGOS = '/supported-algorithms';
@@ -48,6 +49,19 @@ export class EidBe implements AbstractEidBE {
         protected connection: LocalConnection,
         protected reader_id: string
     ) {
+    }
+
+    signRaw(body: TokenAuthenticateOrSignData, bulk?: boolean | undefined, callback?: ((error: T1CLibException, data: TokenSignResponse) => void) | undefined): Promise<TokenSignResponse> {
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
+        return this.connection.post(
+          this.baseUrl,
+          this.tokenApp(EidBe.SIGN_RAW_DATA, true),
+          body,
+          this.getBulkSignQueryParams(bulk),
+          undefined,
+          callback
+        );
     }
 
     public allData(

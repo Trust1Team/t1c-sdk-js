@@ -45,12 +45,22 @@ export class Idemia implements AbstractIdemia {
     static CERT_ISSUER = '/issuer-cert';
     static CERT_ENCRYPTION = '/encryption-cert';
     static CERT_RRN = '/encryption-cert';
+    static SIGN_RAW_DATA = '/sign_raw';
     static SIGN_DATA = '/sign';
     static VERIFY_PIN = '/verify-pin';
     static SUPPORTED_ALGOS = '/supported-algorithms'
     static RESET_BULK_PIN = "/reset-bulk-pin"
 
     constructor(protected baseUrl: string, protected containerUrl: string,protected connection: LocalConnection, protected reader_id: string) {}
+
+    sign_raw(body: TokenAuthenticateOrSignData, bulk?: boolean | undefined, callback?: ((error: T1CLibException, data: TokenSignResponse) => void) | undefined): Promise<TokenSignResponse> {
+        if (body.algorithm) {
+            body.algorithm = body.algorithm.toLowerCase();
+        }
+        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.base64Encoded = true;
+        return this.connection.post(this.baseUrl, this.tokenApp(Idemia.SIGN_RAW_DATA, true), body,  this.getBulkSignQueryParams(bulk), undefined, callback);
+    }
 
     validateSignature(body: TokenValidateSignatureRequest, callback?: (error: T1CLibException, data: TokenValidateSignatureResponse) => void): Promise<TokenValidateSignatureResponse> {
         if (body.algorithm) {
