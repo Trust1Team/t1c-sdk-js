@@ -1,5 +1,5 @@
 import { LocalAuthConnection } from "../client/Connection";
-import { AbstractCore, CardReadersResponse, InfoResponse, SingleReaderResponse } from "./CoreModel";
+import { AbstractCore, AgentsResponse, CardReadersResponse, InfoResponse, SingleReaderResponse } from "./CoreModel";
 import { T1CLibException } from "../exceptions/CoreExceptions";
 import { T1CClient } from "../../..";
 import { ResponseHandler } from "../../util/ResponseHandler";
