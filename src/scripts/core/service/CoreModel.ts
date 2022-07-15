@@ -26,6 +26,8 @@ export interface AbstractCore {
 
   getDevicePublicKey(): void;
 
+  dsCorsSync(): Promise<boolean>;
+
   version(): Promise<string>;
 }
 
