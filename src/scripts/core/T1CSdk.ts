@@ -291,36 +291,36 @@ export class T1CClient {
     private static init(resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void, optionalConsent?: boolean) {
         // base client config
         let _client = new T1CClient(cfg);
-        const currentConsent = ConsentUtil.getRawConsent(cfg.applicationDomain + "::" + cfg.t1cApiUrl)
-        if (currentConsent != null) {
-            // Validate
-            _client.core().validateConsent().then(validateRes => {
-                resolve(validateRes);
-            }, err => {
-                if (!callback || typeof callback !== 'function') { callback = function () {}; }
-                callback(new T1CLibException("814501", err.description ? err.description : "No valid consent", _client), undefined)
-                reject(new T1CLibException("814501", err.description ? err.description : "No valid consent", _client));
-            })
-        } else {
-            if (optionalConsent) {
-                // create a client based upon the first agent it can find.
-                _client.core().getAgents().then(agentResponse => {
-                    if (agentResponse.data.length > 0) {
-                        _client.connection.cfg.t1cApiPort = agentResponse.data[0].apiPort
-                        const newClient = new T1CClient(_client.connection.cfg);
-                        newClient.core().getDevicePublicKey();
-                        if (callback && typeof callback === 'function') {callback(undefined, newClient);}
-                        resolve(newClient)
-                    } else {
-                        let error = new T1CLibException("112999", "No agents connected", _client)
-                        if (callback && typeof callback === 'function') {callback(error, undefined);}
-                        reject(error)
-                    }
-
-                }, err => {
-                    let error = new T1CLibException("112999", "Could not retrieve agent information", _client)
+        if (optionalConsent) {
+            // create a client based upon the first agent it can find.
+            _client.core().getAgents().then(agentResponse => {
+                if (agentResponse.data.length > 0) {
+                    _client.connection.cfg.t1cApiPort = agentResponse.data[0].apiPort
+                    const newClient = new T1CClient(_client.connection.cfg);
+                    newClient.core().getDevicePublicKey();
+                    if (callback && typeof callback === 'function') {callback(undefined, newClient);}
+                    resolve(newClient)
+                } else {
+                    let error = new T1CLibException("112999", "No agents connected", _client)
                     if (callback && typeof callback === 'function') {callback(error, undefined);}
                     reject(error)
+                }
+
+            }, err => {
+                let error = new T1CLibException("112999", "Could not retrieve agent information", _client)
+                if (callback && typeof callback === 'function') {callback(error, undefined);}
+                reject(error)
+            })
+        } else {
+            const currentConsent = ConsentUtil.getRawConsent(cfg.applicationDomain + "::" + cfg.t1cApiUrl)
+            if (currentConsent != null) {
+                // Validate
+                _client.core().validateConsent().then(validateRes => {
+                    resolve(validateRes);
+                }, err => {
+                    if (!callback || typeof callback !== 'function') { callback = function () {}; }
+                    callback(new T1CLibException("814501", err.description ? err.description : "No valid consent", _client), undefined)
+                    reject(new T1CLibException("814501", err.description ? err.description : "No valid consent", _client));
                 })
             } else {
                 // Consent required

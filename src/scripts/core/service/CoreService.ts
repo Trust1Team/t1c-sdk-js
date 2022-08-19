@@ -28,6 +28,25 @@ export class CoreService implements AbstractCore {
   }
 
   /**
+   * Function that will force the T1C API to synchronise the CORS list with its connected DS
+   * If no DS is connected it will not do anything
+   */
+  dsCorsSync(): Promise<boolean> {
+    return new Promise((resolve: (value?: (PromiseLike<boolean> | boolean)) => void, reject: (reason?: any) => void) => {
+      this.connection.get(
+        this.connection.cfg.t1cApiUrl,
+        CORE_VERSION + CORE_DS_AGENTS,
+        undefined,
+        undefined
+      ).then(res => {
+        resolve(true)
+      }, err => {
+        reject(new T1CLibException("112001", err.description ? err.description : "Could not sync cors"));
+      });
+    });
+    }
+
+  /**
    * This function is only available for the registry
    */
   getAgents(): Promise<AgentsResponse> {
