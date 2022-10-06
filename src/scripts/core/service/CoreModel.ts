@@ -32,13 +32,13 @@ export interface AbstractCore {
 }
 
 export class T1CResponse {
-  constructor(public success: boolean, public data: any) {
+  constructor(public success: boolean, public data: any, public signature?: string) {
   }
 }
 
 export class TokenValidateSignatureResponse extends T1CResponse {
-  constructor(public data: TokenValidateSignature, public success: boolean) {
-    super(success, data);
+  constructor(public data: TokenValidateSignature, public success: boolean, public signature?: string) {
+    super(success, data, signature);
   }
 }
 
@@ -48,26 +48,26 @@ export class TokenValidateSignature {
 }
 
 export class BoolDataResponse extends T1CResponse {
-  constructor(public data: boolean, public success: boolean) {
-    super(success, data);
+  constructor(public data: boolean, public success: boolean, public signature?: string) {
+    super(success, data, signature);
   }
 }
 
 export class DataResponse extends T1CResponse {
-  constructor(public data: string, public success: boolean) {
-    super(success, data);
+  constructor(public data: string, public success: boolean, public signature?: string) {
+    super(success, data, signature);
   }
 }
 
 export class DataArrayResponse extends T1CResponse {
-  constructor(public data: any[], public success: boolean) {
-    super(success, data);
+  constructor(public data: any[], public success: boolean, public signature?: string) {
+    super(success, data, signature);
   }
 }
 
 export class DataObjectResponse extends T1CResponse {
-  constructor(public data: { [key: string]: any }, public success: boolean) {
-    super(success, data);
+  constructor(public data: { [key: string]: any }, public success: boolean, public signature?: string) {
+    super(success, data, signature);
   }
 }
 
@@ -135,8 +135,7 @@ export class InfoApi {
 }
 
 export class InfoResponse { //extends T1CResponse
-  constructor(public t1CInfoOS?: InfoOS,
-              public t1CInfoJava?: InfoJava, public t1CInfoRuntime?: T1CInfoRuntime, public t1CInfoUser?: InfoUser, public t1CInfoAPI?: InfoApi) {
+  constructor(public t1CInfoOS?: InfoOS, public t1CInfoJava?: InfoJava, public t1CInfoRuntime?: T1CInfoRuntime, public t1CInfoUser?: InfoUser, public t1CInfoAPI?: InfoApi) {
   }
 }
 
@@ -182,20 +181,20 @@ export class CardReader {
 }
 
 export class AgentsResponse extends T1CResponse {
-  constructor(public data: Agent[], public success: boolean) {
-    super(success, data);
+  constructor(public data: Agent[], public success: boolean, public signature?: string) {
+    super(success, data, signature);
   }
 }
 
 export class CardReadersResponse extends T1CResponse {
-  constructor(public data: CardReader[], public success: boolean) {
-    super(success, data);
+  constructor(public data: CardReader[], public success: boolean, public signature?: string) {
+    super(success, data, signature);
   }
 }
 
 export class TokenCertificateExtendedResponse extends T1CResponse {
-  constructor(public data: TokenCertificateExtended, public success: boolean) {
-    super(success, data);
+  constructor(public data: TokenCertificateExtended, public success: boolean, public signature?: string) {
+    super(success, data, signature);
   }
 }
 
@@ -242,15 +241,15 @@ export class TokenAllCertsExtended {
 }
 
 export class TokenAllCertsExtendedResponse extends DataObjectResponse {
-  constructor(public data: TokenAllCertsExtended, public success: boolean) {
-    super(data, success);
+  constructor(public data: TokenAllCertsExtended, public success: boolean, public signature?: string) {
+    super(data, success, signature);
   }
 }
 
 
 export class TokenCertificateResponse extends T1CResponse {
-  constructor(public data: TokenCertificate, public success: boolean) {
-    super(success, data);
+  constructor(public data: TokenCertificate, public success: boolean, public signature?: string) {
+    super(success, data, signature);
   }
 }
 
@@ -267,8 +266,8 @@ export class TokenCertificate {
 }
 
 export class TokenAllCertsResponse extends DataObjectResponse {
-  constructor(public data: TokenAllCerts, public success: boolean) {
-    super(data, success);
+  constructor(public data: TokenAllCerts, public success: boolean, public signature?: string) {
+    super(data, success, signature);
   }
 }
 
@@ -285,8 +284,8 @@ export class TokenAllCerts {
 }
 
 export class PaymentCertificateResponse extends DataObjectResponse {
-  constructor(public data: PaymentCertificate, public success: boolean) {
-    super(data, success);
+  constructor(public data: PaymentCertificate, public success: boolean, public signature?: string) {
+    super(data, success, signature);
   }
 }
 
@@ -298,8 +297,8 @@ export class PaymentCertificate {
 }
 
 export class PaymentAllCertsResponse extends DataObjectResponse {
-  constructor(public data: PaymentAllCerts, public success: boolean) {
-    super(data, success);
+  constructor(public data: PaymentAllCerts, public success: boolean, public signature?: string) {
+    super(data, success, signature);
   }
 }
 
@@ -312,8 +311,8 @@ export class PaymentAllCerts {
 }
 
 export class SingleReaderResponse extends T1CResponse {
-  constructor(public data: CardReader, public success: boolean) {
-    super(success, data);
+  constructor(public data: CardReader, public success: boolean, public signature?: string) {
+    super(success, data, signature);
   }
 }
 
@@ -330,8 +329,8 @@ export class CheckT1CVersion {
 
 export class TokenInfoResponse extends T1CResponse {
   // use union type to be backwards compatible with versions before 3.6.0
-  constructor(public data: TokenInfo | BaseTokenInfo, public success: boolean) {
-    super(success, data);
+  constructor(public data: TokenInfo | BaseTokenInfo, public success: boolean, public signature?: string) {
+    super(success, data, signature);
   }
 }
 

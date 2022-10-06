@@ -23,7 +23,7 @@ import {TokenAuthenticateOrSignData, TokenVerifyPinData} from "../../TokenCard";
 import {Options} from "../../../Card";
 import {CertParser} from "../../../../../util/CertParser";
 import {ResponseHandler} from "../../../../../util/ResponseHandler";
-import {Pinutil} from "../../../../../../index";
+import {ConnectorKeyUtil} from "../../../../../../index";
 
 const semver = require('semver');
 
@@ -59,7 +59,7 @@ export class Certinomis implements AbstractCertinomis {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
-        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
         return this.connection.post(this.baseUrl, this.tokenApp(Certinomis.SIGN_RAW_DATA, true), body,  this.getBulkSignQueryParams(bulk), undefined, callback);
     }
@@ -68,7 +68,7 @@ export class Certinomis implements AbstractCertinomis {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
-        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version)
         return this.connection.post(this.baseUrl, this.tokenApp(Certinomis.VALIDATE_SIGNATURE, true), body,  undefined, undefined, callback);
     }
 
@@ -107,7 +107,7 @@ export class Certinomis implements AbstractCertinomis {
     }
 
     public verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: TokenVerifyPinResponse) => void): Promise<TokenVerifyPinResponse> {
-        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
         return this.connection.post(this.baseUrl, this.tokenApp(Certinomis.VERIFY_PIN, true), body, undefined, undefined, callback);
     }
@@ -130,7 +130,7 @@ export class Certinomis implements AbstractCertinomis {
 
     public authenticate(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse> {
         body.algorithm = body.algorithm.toLowerCase();
-        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
         return this.connection.post(this.baseUrl, this.tokenApp(Certinomis.AUTHENTICATE, true), body, undefined, undefined, callback);
     }
@@ -139,7 +139,7 @@ export class Certinomis implements AbstractCertinomis {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
-        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
         return this.connection.post(this.baseUrl, this.tokenApp(Certinomis.SIGN_DATA, true), body,  this.getBulkSignQueryParams(bulk), undefined, callback);
     }

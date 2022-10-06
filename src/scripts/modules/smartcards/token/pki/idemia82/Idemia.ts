@@ -24,7 +24,7 @@ import {
 import {TokenAuthenticateOrSignData, TokenVerifyPinData} from "../../TokenCard";
 import {CertParser} from "../../../../../util/CertParser";
 import {ResponseHandler} from "../../../../../util/ResponseHandler";
-import {Pinutil} from "../../../../../..";
+import {ConnectorKeyUtil} from "../../../../../..";
 
 const semver = require('semver');
 
@@ -57,7 +57,7 @@ export class Idemia implements AbstractIdemia {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
-        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
         return this.connection.post(this.baseUrl, this.tokenApp(Idemia.SIGN_RAW_DATA, true), body,  this.getBulkSignQueryParams(bulk), undefined, callback);
     }
@@ -66,7 +66,7 @@ export class Idemia implements AbstractIdemia {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
-        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version)
         return this.connection.post(this.baseUrl, this.tokenApp(Idemia.VALIDATE_SIGNATURE, true), body,  undefined, undefined, callback);
     }
 
@@ -120,7 +120,7 @@ export class Idemia implements AbstractIdemia {
     }
 
     public verifyPin(body: TokenVerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
-        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
         return this.connection.post(this.baseUrl, this.tokenApp(Idemia.VERIFY_PIN, true), body, undefined, undefined, callback);
     }
@@ -143,7 +143,7 @@ export class Idemia implements AbstractIdemia {
 
     public authenticate(body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse> {
         body.algorithm = body.algorithm.toLowerCase();
-        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
         return this.connection.post(this.baseUrl, this.tokenApp(Idemia.AUTHENTICATE, true), body, undefined, undefined, callback);
     }
@@ -152,7 +152,7 @@ export class Idemia implements AbstractIdemia {
         if (body.algorithm) {
             body.algorithm = body.algorithm.toLowerCase();
         }
-        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
         return this.connection.post(this.baseUrl, this.tokenApp(Idemia.SIGN_DATA, true), body,  this.getBulkSignQueryParams(bulk), undefined, callback);
     }

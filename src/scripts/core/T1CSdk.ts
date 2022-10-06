@@ -1,13 +1,5 @@
 import {CoreService} from './service/CoreService';
-import {
-    LocalConnection,
-    RemoteJwtConnection,
-    LocalAuthConnection,
-    LocalTestConnection,
-    RemoteApiKeyConnection,
-    LocalAuthAdminConnection,
-    LocalAdminConnection,
-} from './client/Connection';
+import {LocalConnection} from './client/Connection';
 import {T1CLibException} from './exceptions/CoreExceptions';
 import {AbstractEidGeneric} from "../modules/smartcards/token/eid/generic/EidGenericModel";
 import {AbstractEidBE} from '../modules/smartcards/token/eid/be/EidBeModel';
@@ -49,26 +41,14 @@ export class T1CClient {
     private moduleFactory: ModuleFactory;
     private coreService: CoreService;
     private connection: LocalConnection;
-    private authConnection: LocalAuthConnection;
-    private authAdminConnection: LocalAuthAdminConnection;
-    private adminConnection: LocalAdminConnection;
-    private remoteConnection: RemoteJwtConnection;
-    private remoteApiKeyConnection: RemoteApiKeyConnection;
-    private localTestConnection: LocalTestConnection;
+    // private authConnection: LocalAuthConnection;
 
     public constructor(cfg: T1CConfig) {
-        // resolve config to singleton
         this.localConfig = cfg;
-        // init communication
         this.connection = new LocalConnection(this.localConfig);
-        this.authConnection = new LocalAuthConnection(this.localConfig);
-        this.authAdminConnection = new LocalAuthAdminConnection(this.localConfig);
-        this.adminConnection = new LocalAdminConnection(this.localConfig);
-        this.remoteConnection = new RemoteJwtConnection(this.localConfig);
-        this.remoteApiKeyConnection = new RemoteApiKeyConnection(this.localConfig);
+        // this.authConnection = new LocalAuthConnection(this.localConfig);
         this.moduleFactory = new ModuleFactory(this.localConfig.t1cApiUrl + urlVersion, this.connection);
-        this.localTestConnection = new LocalTestConnection(this.localConfig);
-        this.coreService = new CoreService(this.localConfig.t1cApiUrl, this.authConnection);
+        this.coreService = new CoreService(this.localConfig.t1cApiUrl, this.connection);
         // this.coreService.version().then(info => console.info("Running T1C-sdk-js version: " + info))
     }
 
