@@ -606,7 +606,21 @@ export class CoreService implements AbstractCore {
       undefined,
       undefined,
       callback
-    );
+    ).then((res: any) => {
+      if (res.data) {
+        console.log("new info response")
+        return ResponseHandler.response(res.data)
+      } else {
+        console.log("regular info response")
+        return ResponseHandler.response(res)
+      }
+    }, err => {
+      let error = new T1CLibException(
+          err.response?.data.code,
+          err.response?.data.description
+      )
+      return ResponseHandler.error(error, callback)
+    });
   }
 
   public reader(
@@ -644,3 +658,4 @@ export class CoreService implements AbstractCore {
   }
 
 }
+

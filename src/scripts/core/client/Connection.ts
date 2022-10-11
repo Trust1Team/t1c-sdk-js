@@ -236,8 +236,10 @@ export abstract class GenericConnection implements Connection {
     return new Promise((resolve, reject) => {
       axios.request(config)
         .then((response: AxiosResponse) => {
-
+          console.log("signature", response.data.signature)
+          console.log("public key",ConnectorKeyUtil.getPubKey())
           if (response.data.signature && ConnectorKeyUtil.getPubKey() != undefined) {
+            console.log("new response handler")
             // base64 encode response data
             let base64Encoded = window.btoa(response.data);
 
@@ -261,6 +263,7 @@ export abstract class GenericConnection implements Connection {
             }
 
           } else {
+            console.log("regular response handler")
             // call callback function
             // @ts-ignore
             callback(undefined, response.data);
