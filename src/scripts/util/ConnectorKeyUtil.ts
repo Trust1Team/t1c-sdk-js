@@ -1,4 +1,5 @@
-import {JSEncrypt} from 'jsencrypt';
+import { JSEncrypt } from "jsencrypt";
+const CryptoJS = require("crypto-js");
 const semver = require('semver');
 
 
@@ -17,13 +18,44 @@ export class ConnectorKeyUtil {
     }
 
     public static decryptData(data: string | undefined): string | undefined {
-        let pubKey = ConnectorKeyUtil.getPubKey();
-        if (pubKey != null || pubKey != undefined) {
-            let crypt = new JSEncrypt();
-            crypt.setKey(pubKey);
-            return crypt.decrypt(data);
+        if (data) {
+            let pubKey = ConnectorKeyUtil.getPubKey();
+            if (pubKey != null || pubKey != undefined) {
+                let crypt = new JSEncrypt();
+                crypt.setKey(pubKey);
+                let response: string | false = crypt.decrypt(data);
+                if (response != false) {
+                    // @ts-ignore
+                    return response
+                }
+                else {
+                    return undefined
+                }
+            } else {
+                return undefined;
+            }
         } else {
-            return undefined;
+            return undefined
+        }
+    }
+
+
+    public static verifySignature(data: string | undefined, signature: string | undefined): boolean | undefined {
+        if (data && signature) {
+            let pubKey = ConnectorKeyUtil.getPubKey();
+            if (pubKey != null || pubKey != undefined) {
+                let crypt = new JSEncrypt();
+                crypt.setPublicKey(pubKey);
+                console.log("Verify signature");
+                console.log(data);
+                console.log(signature);
+                return crypt.verify(data, signature, CryptoJS.SHA256)
+            }
+            else {
+                return undefined
+            }
+        } else {
+            return undefined
         }
     }
 
@@ -33,7 +65,14 @@ export class ConnectorKeyUtil {
             if (pubKey != null || pubKey != undefined) {
                 let crypt = new JSEncrypt();
                 crypt.setKey(pubKey);
-                return crypt.encrypt(data);
+                let response: string | boolean = crypt.encrypt(data);
+                if (response != false) {
+                    // @ts-ignore
+                    return response
+                }
+                else {
+                    return undefined
+                }
             } else {
                 if (version != undefined && semver.lt(semver.coerce(version).version, '3.5.0')) return btoa(data); else return data;
             }

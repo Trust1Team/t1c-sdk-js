@@ -3,6 +3,7 @@ import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
 import { T1CLibException } from "../exceptions/CoreExceptions";
 import { ConnectorKeyUtil, DataArrayResponse, T1CResponse } from "../../..";
 import { UrlUtil } from "../../util/UrlUtil";
+const md5 = require('md5');
 
 export interface Connection {
   get<T extends T1CResponse>(
@@ -236,17 +237,10 @@ export abstract class GenericConnection implements Connection {
     return new Promise((resolve, reject) => {
       axios.request(config)
         .then((response: AxiosResponse) => {
-          console.log("signature", response.data.signature)
-          console.log("public key",ConnectorKeyUtil.getPubKey())
           if (response.data.signature && ConnectorKeyUtil.getPubKey() != undefined) {
-            console.log("new response handler")
-            // base64 encode response data
-            let base64Encoded = window.btoa(response.data);
+            let verification = ConnectorKeyUtil.verifySignature(JSON.stringify(response.data.data), response.data.signature)
 
-            // decrypt signature
-            let decryptedData = ConnectorKeyUtil.decryptData(response.data.signature)
-
-            if (base64Encoded == decryptedData) {
+            if (verification) {
               // call callback function
               // @ts-ignore
               callback(undefined, response.data);
@@ -254,7 +248,7 @@ export abstract class GenericConnection implements Connection {
               return resolve(response.data);
             } else {
               const thrownError = new T1CLibException(
-                "000000", //TODO change the error number!
+                "904300",
                 "Signature data does not equal the expected data"
               );
               // @ts-ignore
@@ -273,6 +267,7 @@ export abstract class GenericConnection implements Connection {
 
         })
         .catch((error: AxiosError) => {
+          console.log(error)
           // check for generic network error
           if (!error.code && !error.response) {
             const thrownError = new T1CLibException(
