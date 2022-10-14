@@ -608,10 +608,8 @@ export class CoreService implements AbstractCore {
       callback
     ).then((res: any) => {
       if (res.data) {
-        console.log("new info response")
         return ResponseHandler.response(res.data)
       } else {
-        console.log("regular info response")
         return ResponseHandler.response(res)
       }
     }, err => {

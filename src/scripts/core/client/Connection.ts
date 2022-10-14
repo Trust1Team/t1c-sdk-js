@@ -257,7 +257,6 @@ export abstract class GenericConnection implements Connection {
             }
 
           } else {
-            console.log("regular response handler")
             // call callback function
             // @ts-ignore
             callback(undefined, response.data);

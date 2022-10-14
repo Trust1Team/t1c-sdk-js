@@ -99,6 +99,19 @@ export class T1CClient {
 
 
 
+/**
+     * New initialisation flow
+     * 1. get public key of the registry
+     * 2. get info of registry
+     * 3. consent or validate
+     * 4. initialize new instance to api
+     * 5. get public key of api
+     * 6. get info of api
+     * 7. done
+     *
+     * If the call towards the public key fails. We give back an error. TODO Custom error code for this
+     */
+
 
     /**
      * Initializing the TrustConnector can be done with both requiring explicit consent or having it optional
@@ -111,6 +124,7 @@ export class T1CClient {
         return new Promise((resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void) => {
             // Base client
             let _client = new T1CClient(cfg);
+            _client.core().getDevicePublicKey();
             _client.core().info().then(infoRes => {
                 _client.config().version = infoRes.t1CInfoAPI?.version;
                 if (infoRes.t1CInfoAPI?.service?.deviceType === "PROXY") {
@@ -265,6 +279,7 @@ export class T1CClient {
     }
 
 
+
     /**
      * Initialise function that is used by versions higher than 3.5.0
      */
@@ -272,25 +287,7 @@ export class T1CClient {
         // base client config
         let _client = new T1CClient(cfg);
         if (optionalConsent) {
-            // create a client based upon the first agent it can find.
-            _client.core().getAgents().then(agentResponse => {
-                if (agentResponse.data.length > 0) {
-                    _client.connection.cfg.t1cApiPort = agentResponse.data[0].apiPort
-                    const newClient = new T1CClient(_client.connection.cfg);
-                    newClient.core().getDevicePublicKey();
-                    if (callback && typeof callback === 'function') {callback(undefined, newClient);}
-                    resolve(newClient)
-                } else {
-                    let error = new T1CLibException("112999", "No agents connected", _client)
-                    if (callback && typeof callback === 'function') {callback(error, undefined);}
-                    reject(error)
-                }
-
-            }, err => {
-                let error = new T1CLibException("112999", "Could not retrieve agent information", _client)
-                if (callback && typeof callback === 'function') {callback(error, undefined);}
-                reject(error)
-            })
+            T1CClient.optionalFlow(_client, resolve, reject, callback)
         } else {
             const currentConsent = ConsentUtil.getRawConsent(cfg.applicationDomain + "::" + cfg.t1cApiUrl)
             if (currentConsent != null) {
@@ -309,6 +306,28 @@ export class T1CClient {
                 reject(error)
             }
         }
+    }
+
+    private static optionalFlow(_client: T1CClient, resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, callback?: (error?: T1CLibException, client?: T1CClient) => void) {
+        // create a client based upon the first agent it can find.
+        _client.core().getAgents().then(agentResponse => {
+            if (agentResponse.data.length > 0) {
+                _client.connection.cfg.t1cApiPort = agentResponse.data[0].apiPort
+                const newClient = new T1CClient(_client.connection.cfg);
+                newClient.core().getDevicePublicKey();
+                if (callback && typeof callback === 'function') {callback(undefined, newClient);}
+                resolve(newClient)
+            } else {
+                let error = new T1CLibException("112999", "No agents connected", _client)
+                if (callback && typeof callback === 'function') {callback(error, undefined);}
+                reject(error)
+            }
+
+        }, err => {
+            let error = new T1CLibException("112999", "Could not retrieve agent information", _client)
+            if (callback && typeof callback === 'function') {callback(error, undefined);}
+            reject(error)
+        })
     }
 
     // Random generation for copy to clipboard
