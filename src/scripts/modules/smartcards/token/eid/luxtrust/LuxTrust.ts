@@ -15,7 +15,7 @@ import { Options } from "../../../Card";
 import { AbstractLuxTrust } from "./LuxTrustModel";
 import { CertParser } from "../../../../../util/CertParser";
 import { ResponseHandler } from "../../../../../util/ResponseHandler";
-import { Pinutil } from "../../../../../..";
+import { ConnectorKeyUtil } from "../../../../../..";
 
 const semver = require("semver");
 
@@ -48,7 +48,7 @@ export class LuxTrust implements AbstractLuxTrust {
   }
 
   signRaw(body: TokenAuthenticateOrSignData, bulk?: boolean | undefined, callback?: ((error: T1CLibException, data: TokenSignResponse) => void) | undefined): Promise<TokenSignResponse> {
-    body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+    body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version)
     body.base64Encoded = true;
     return this.connection.post(
       this.baseUrl,
@@ -235,7 +235,7 @@ export class LuxTrust implements AbstractLuxTrust {
     body: TokenVerifyPinData,
     callback?: (error: T1CLibException, data: T1CResponse) => void
   ): Promise<T1CResponse> {
-    body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version);
+    body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version);
     body.base64Encoded = true;
     return this.connection.post(
       this.baseUrl,
@@ -251,7 +251,7 @@ export class LuxTrust implements AbstractLuxTrust {
     body: TokenAuthenticateOrSignData,
     callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void
   ): Promise<TokenAuthenticateResponse> {
-    body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version);
+    body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version);
     body.base64Encoded = true;
     return this.connection.post(
       this.baseUrl,
@@ -269,7 +269,7 @@ export class LuxTrust implements AbstractLuxTrust {
     bulk?: boolean,
     callback?: (error: T1CLibException, data: TokenSignResponse) => void
   ): Promise<TokenSignResponse> {
-    body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version);
+    body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version);
     body.base64Encoded = true;
     return this.connection.post(
       this.baseUrl,
