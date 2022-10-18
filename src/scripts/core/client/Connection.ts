@@ -179,6 +179,7 @@ export abstract class GenericConnection implements Connection {
     const reqHeaders = headers || {};
     reqHeaders["Accept-Language"] = "en-US";
     reqHeaders["X-CSRF-Token"] = "t1c-js";
+    reqHeaders["Access-Control-Request-Private-Network"] = "true";
     return reqHeaders;
   }
 
