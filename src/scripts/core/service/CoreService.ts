@@ -15,6 +15,7 @@ const CORE_VERSION = "/v3";
 const CORE_DS_AGENTS = "/agents";
 const CORE_READERS = "/readers";
 const CORE_CONSENT_IMPLICIT = "/agents/consent";
+const CORE_PUSH_LOGS = "/logs/push"
 
 
 declare let VERSION: string;
@@ -25,6 +26,23 @@ declare let VERSION: string;
 export class CoreService implements AbstractCore {
   // constructor
   constructor(private url: string, private connection: LocalConnection) {
+  }
+
+
+
+  pushLogs(): Promise<boolean> {
+    return new Promise((resolve: (value?: (PromiseLike<boolean> | boolean)) => void, reject: (reason?: any) => void) => {
+      this.connection.get(
+          this.connection.cfg.t1cApiUrl,
+          CORE_PUSH_LOGS,
+          undefined,
+          undefined
+      ).then(res => {
+        resolve(true)
+      }, err => {
+        resolve(false);
+      });
+    });
   }
 
   /**
@@ -654,6 +672,7 @@ export class CoreService implements AbstractCore {
   public version(): Promise<string> {
     return Promise.resolve(VERSION);
   }
+
 
 }
 

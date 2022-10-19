@@ -28,6 +28,8 @@ export interface AbstractCore {
 
   dsCorsSync(): Promise<boolean>;
 
+  pushLogs(): Promise<boolean>;
+
   version(): Promise<string>;
 }
 
