@@ -46,9 +46,6 @@ export class ConnectorKeyUtil {
             if (pubKey != null || pubKey != undefined) {
                 let crypt = new JSEncrypt();
                 crypt.setPublicKey(pubKey);
-                console.log("Verify signature");
-                console.log(data);
-                console.log(signature);
                 return crypt.verify(data, signature, CryptoJS.SHA256)
             }
             else {

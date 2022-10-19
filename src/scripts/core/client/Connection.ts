@@ -267,7 +267,6 @@ export abstract class GenericConnection implements Connection {
 
         })
         .catch((error: AxiosError) => {
-          console.log(error)
           // check for generic network error
           if (!error.code && !error.response) {
             const thrownError = new T1CLibException(
