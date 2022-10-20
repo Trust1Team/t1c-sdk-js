@@ -1,9 +1,9 @@
-import { LocalAuthConnection } from "../client/Connection";
+import { LocalAuthConnection, LocalConnection } from "../client/Connection";
 import { AbstractCore, AgentsResponse, CardReadersResponse, InfoResponse, SingleReaderResponse } from "./CoreModel";
 import { T1CLibException } from "../exceptions/CoreExceptions";
 import { T1CClient } from "../../..";
 import { ResponseHandler } from "../../util/ResponseHandler";
-import { Pinutil } from "../../util/PinUtil";
+import { ConnectorKeyUtil } from "../../util/ConnectorKeyUtil";
 import { ConsentUtil } from "../../util/ConsentUtil";
 
 const semver = require("semver");
@@ -15,6 +15,7 @@ const CORE_VERSION = "/v3";
 const CORE_DS_AGENTS = "/agents";
 const CORE_READERS = "/readers";
 const CORE_CONSENT_IMPLICIT = "/agents/consent";
+const CORE_PUSH_LOGS = "/logs/push"
 
 
 declare let VERSION: string;
@@ -24,7 +25,24 @@ declare let VERSION: string;
  */
 export class CoreService implements AbstractCore {
   // constructor
-  constructor(private url: string, private connection: LocalAuthConnection) {
+  constructor(private url: string, private connection: LocalConnection) {
+  }
+
+
+
+  pushLogs(): Promise<boolean> {
+    return new Promise((resolve: (value?: (PromiseLike<boolean> | boolean)) => void, reject: (reason?: any) => void) => {
+      this.connection.get(
+          this.connection.cfg.t1cApiUrl,
+          CORE_PUSH_LOGS,
+          undefined,
+          undefined
+      ).then(res => {
+        resolve(true)
+      }, err => {
+        resolve(false);
+      });
+    });
   }
 
   /**
@@ -65,9 +83,10 @@ export class CoreService implements AbstractCore {
       undefined,
       undefined
     ).then(res => {
-      Pinutil.setPubKey(res.data);
+      ConnectorKeyUtil.setPubKey(res.data);
     }, err => {
-      // do nothing
+      // do nothing just output to the console
+      console.error(err)
     });
   }
 
@@ -599,13 +618,25 @@ export class CoreService implements AbstractCore {
   }
 
   public info(callback?: (error: T1CLibException, data: InfoResponse) => void): Promise<InfoResponse> {
-    return this.connection.get(
+    return this.connection._get(
       this.url,
       CORE_INFO,
       undefined,
       undefined,
       callback
-    );
+    ).then((res: any) => {
+      if (res.data) {
+        return ResponseHandler.response(res.data)
+      } else {
+        return ResponseHandler.response(res)
+      }
+    }, err => {
+      let error = new T1CLibException(
+          err.response?.data.code,
+          err.response?.data.description
+      )
+      return ResponseHandler.error(error, callback)
+    });
   }
 
   public reader(
@@ -642,4 +673,6 @@ export class CoreService implements AbstractCore {
     return Promise.resolve(VERSION);
   }
 
+
 }
+
