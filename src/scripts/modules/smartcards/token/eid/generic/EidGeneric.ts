@@ -21,7 +21,7 @@ import {TokenAuthenticateOrSignData, TokenVerifyPinData} from '../../TokenCard';
 import {Options} from "../../../Card";
 import {CertParser} from "../../../../../util/CertParser";
 import {ResponseHandler} from "../../../../../util/ResponseHandler";
-import {PinType, Pinutil} from "../../../../../..";
+import {PinType, ConnectorKeyUtil} from "../../../../../..";
 
 const semver = require('semver');
 
@@ -59,7 +59,7 @@ export class EidGeneric implements AbstractEidGeneric {
     }
 
     public signRaw(module: string, body: TokenAuthenticateOrSignData, bulk?: boolean | undefined, callback?: ((error: T1CLibException, data: TokenSignResponse) => void) | undefined): Promise<TokenSignResponse> {
-        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
         return this.connection.post(
           this.baseUrl,
@@ -76,10 +76,10 @@ export class EidGeneric implements AbstractEidGeneric {
         if (code && pinType) {
             if (pinType === PinType.CAN) {
                 // @ts-ignore
-                return {'X-Pace-Can': Pinutil.encryptPin(code)};
+                return {'X-Pace-Can': ConnectorKeyUtil.encryptData(code)};
             } else {
                 // @ts-ignore
-                return {'X-Pace-Pin': Pinutil.encryptPin(code)};
+                return {'X-Pace-Pin': ConnectorKeyUtil.encryptData(code)};
             }
         } else {
             return undefined;
@@ -405,7 +405,7 @@ export class EidGeneric implements AbstractEidGeneric {
     }
 
     public verifyPin(module: string, body: TokenVerifyPinData, callback?: (error: T1CLibException, data: T1CResponse) => void): Promise<T1CResponse> {
-        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
         return this.connection.post(
             this.baseUrl,
@@ -418,7 +418,7 @@ export class EidGeneric implements AbstractEidGeneric {
     }
 
     public authenticate(module: string, body: TokenAuthenticateOrSignData, callback?: (error: T1CLibException, data: TokenAuthenticateResponse) => void): Promise<TokenAuthenticateResponse> {
-        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
         return this.connection.post(
             this.baseUrl,
@@ -432,7 +432,7 @@ export class EidGeneric implements AbstractEidGeneric {
 
 
     public sign(module: string, body: TokenAuthenticateOrSignData, bulk?: boolean, callback?: (error: T1CLibException, data: TokenSignResponse) => void): Promise<TokenSignResponse> {
-        body.pin = Pinutil.encryptPin(body.pin, this.connection.cfg.version)
+        body.pin = ConnectorKeyUtil.encryptData(body.pin, this.connection.cfg.version)
         body.base64Encoded = true;
         return this.connection.post(
             this.baseUrl,
