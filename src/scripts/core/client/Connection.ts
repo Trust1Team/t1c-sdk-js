@@ -286,6 +286,15 @@ export abstract class GenericConnection implements Connection {
               callback(thrownError, null);
               return reject(thrownError);
             }
+            if (error.response?.status === 404) {
+              const thrownError = new T1CLibException(
+                "112999",
+                "Functionality not found"
+              );
+              // @ts-ignore
+              callback(thrownError, null);
+              return reject(thrownError);
+            }
             // @ts-ignore
             callback(
               new T1CLibException(
@@ -344,6 +353,25 @@ export abstract class GenericConnection implements Connection {
           return resolve(response.data);
         })
         .catch((error: AxiosError) => {
+          // check on unauthorized error
+            if (error.response?.status === 401) {
+              const thrownError = new T1CLibException(
+                "112999",
+                "Unauthorized"
+              );
+              // @ts-ignore
+              callback(thrownError, null);
+              return reject(thrownError);
+            }
+            if (error.response?.status === 404) {
+              const thrownError = new T1CLibException(
+                "112999",
+                "Functionality not found"
+              );
+              // @ts-ignore
+              callback(thrownError, null);
+              return reject(thrownError);
+            }
           // check for generic network error
           if (!error.code && !error.response) {
             const thrownError = new T1CLibException(
