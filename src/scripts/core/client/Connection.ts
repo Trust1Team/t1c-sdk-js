@@ -287,17 +287,13 @@ export abstract class GenericConnection implements Connection {
             }
             // @ts-ignore
             callback(
-              new T1CLibException(
-                error.response?.data.code,
-                error.response?.data.description
-              ),
+               // @ts-ignore
+               new T1CLibException(error.response?.data.code, error.response?.data.description),
               null
             );
             return reject(
-              new T1CLibException(
-                error.response?.data.code,
-                error.response?.data.description
-              )
+                // @ts-ignore
+                new T1CLibException(error.response?.data.code, error.response?.data.description)
             );
           }
         });
@@ -364,17 +360,13 @@ export abstract class GenericConnection implements Connection {
           } else {
             // @ts-ignore
             callback(
-              new T1CLibException(
-                error.response?.data.code,
-                error.response?.data.description
-              ),
+                // @ts-ignore
+                new T1CLibException(error.response?.data.code, error.response?.data.description),
               null
             );
             return reject(
-              new T1CLibException(
-                error.response?.data.code,
-                error.response?.data.description
-              )
+                // @ts-ignore
+                new T1CLibException(error.response?.data.code, error.response?.data.description)
             );
           }
         });

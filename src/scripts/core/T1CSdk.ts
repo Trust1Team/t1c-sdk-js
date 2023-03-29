@@ -121,7 +121,7 @@ export class T1CClient {
      * agent that is available in the registry. To support multiple agents a consent flow is required
      */
     public static initialize(cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
-        return new Promise((resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void) => {
+        return new Promise((resolve: (value: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void) => {
             // Base client
             let _client = new T1CClient(cfg);
             _client.core().getDevicePublicKey();
@@ -147,7 +147,7 @@ export class T1CClient {
                 }
             }, err => {
                 console.error(err)
-                if (callback && typeof callback === 'function') {callback(new T1CLibException("112999", "Failed to contact the Trust1Connector", _client), _client);}
+                // if (callback && typeof callback === 'function') {callback(new T1CLibException("112999", "Failed to contact the Trust1Connector", _client), _client);}
                 reject(new T1CLibException("112999", "Failed to contact the Trust1Connector", _client));
             });
         });
@@ -283,7 +283,7 @@ export class T1CClient {
     /**
      * Initialise function that is used by versions higher than 3.5.0
      */
-    private static init(resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void, optionalConsent?: boolean) {
+    private static init(resolve: (value: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void, optionalConsent?: boolean) {
         // base client config
         let _client = new T1CClient(cfg);
         if (optionalConsent) {
@@ -308,7 +308,7 @@ export class T1CClient {
         }
     }
 
-    private static optionalFlow(_client: T1CClient, resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, callback?: (error?: T1CLibException, client?: T1CClient) => void) {
+    private static optionalFlow(_client: T1CClient, resolve: (value: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, callback?: (error?: T1CLibException, client?: T1CClient) => void) {
         // create a client based upon the first agent it can find.
         _client.core().getAgents().then(agentResponse => {
             if (agentResponse.data.length > 0) {
@@ -348,7 +348,7 @@ export class T1CClient {
      * @Deprecated
      * Initialise function for Trust1Connector versions lower then 3.5.0
      */
-    private static _init(resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void) {
+    private static _init(resolve: (value: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void) {
         axios.get(cfg.t1cApiUrl + "/info", {
             withCredentials: true, headers: {
                 Authorization: "Bearer " + cfg.t1cJwt,

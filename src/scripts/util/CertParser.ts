@@ -1,5 +1,4 @@
 import * as asn1js from 'asn1js';
-import Certificate from 'pkijs/src/Certificate';
 import {
     T1CCertificate,
     T1CLibException, TokenAllCertsExtended,
@@ -18,6 +17,7 @@ import {
     PaymentAllCerts
 } from '../core/service/CoreModel';
 import { ResponseHandler } from './ResponseHandler';
+import {Certificate} from "pkijs";
 
 export class CertParser {
 

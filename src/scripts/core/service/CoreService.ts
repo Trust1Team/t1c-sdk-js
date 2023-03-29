@@ -31,7 +31,7 @@ export class CoreService implements AbstractCore {
 
 
   pushLogs(): Promise<boolean> {
-    return new Promise((resolve: (value?: (PromiseLike<boolean> | boolean)) => void, reject: (reason?: any) => void) => {
+    return new Promise((resolve: (value: (PromiseLike<boolean> | boolean)) => void, reject: (reason?: any) => void) => {
       this.connection.get(
           this.connection.cfg.t1cApiUrl,
           CORE_PUSH_LOGS,
@@ -50,7 +50,7 @@ export class CoreService implements AbstractCore {
    * If no DS is connected it will not do anything
    */
   dsCorsSync(): Promise<boolean> {
-    return new Promise((resolve: (value?: (PromiseLike<boolean> | boolean)) => void, reject: (reason?: any) => void) => {
+    return new Promise((resolve: (value: (PromiseLike<boolean> | boolean)) => void, reject: (reason?: any) => void) => {
       this.connection.get(
         this.connection.cfg.t1cApiUrl,
         CORE_VERSION + CORE_DS_AGENTS,
@@ -91,13 +91,13 @@ export class CoreService implements AbstractCore {
   }
 
   validateConsent(callback?: (error?: T1CLibException, data?: T1CClient) => void): Promise<T1CClient> {
-    return new Promise((resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void) => {
+    return new Promise((resolve: (value: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void) => {
       this._validateConsent(0, resolve, reject, callback)
     });
   }
 
   // Recursive retry of consent for 3 times then it will fail.
-  private _validateConsent(retries: number, resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, callback?: (error?: T1CLibException, data?: T1CClient) => void) {
+  private _validateConsent(retries: number, resolve: (value: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void, callback?: (error?: T1CLibException, data?: T1CClient) => void) {
     if (retries < 3) {
       let url = this.connection.cfg.t1cApiUrl;
       if (semver.lt(semver.coerce(this.connection.cfg.version).version, "3.5.10")) {
@@ -280,7 +280,7 @@ export class CoreService implements AbstractCore {
   ): Promise<T1CClient> {
     let url = this.connection.cfg.t1cApiUrl;
     let suffixValue = CORE_VERSION;
-    return new Promise((resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void) => {
+    return new Promise((resolve: (value: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void) => {
       this.getImplicitConsentHandler(0, codeWord, resolve, reject, durationInDays, callback)
     });
   }
@@ -288,7 +288,7 @@ export class CoreService implements AbstractCore {
   private getImplicitConsentHandler(
     retries: number,
     codeWord: string,
-    resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void,
+    resolve: (value: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void,
     durationInDays?: number,
     callback?: (error?: T1CLibException, data?: T1CClient) => void,
   ) {
@@ -578,7 +578,7 @@ export class CoreService implements AbstractCore {
    * Deprecated
    */
   private _getImplicitConsent(
-    resolve: (value?: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void,
+    resolve: (value: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void,
     codeWord: string,
     durationInDays: number,
     callback?: (error?: T1CLibException, data?: T1CClient) => void
