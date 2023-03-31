@@ -267,41 +267,70 @@ export abstract class GenericConnection implements Connection {
         })
         .catch((error: AxiosError) => {
           // check for generic network error
-          if (!error.code && !error.response) {
-            const thrownError = new T1CLibException(
-              "112999",
-              "Internal error"
-            );
-            // @ts-ignore
-            callback(thrownError, null);
-            return reject(thrownError);
-          } else {
-            if (error.response?.status === 404) {
-              const thrownError = new T1CLibException(
-                "112999",
-                "Functionality not found"
-              );
-              // @ts-ignore
-              callback(thrownError, null);
-              return reject(thrownError);
-            }
-            // @ts-ignore
-            callback(
-              new T1CLibException(
-                error.response?.data.code,
-                error.response?.data.description
-              ),
-              null
-            );
-            return reject(
-              new T1CLibException(
-                error.response?.data.code,
-                error.response?.data.description
-              )
-            );
-          }
+          return this.handleError(error, reject, callback)
         });
     });
+  }
+
+  private handleError(error, reject, callback) {
+    const defaultCode = '000000';
+    const defaultDescription = 'Unknown error occured';
+    const code = error.response?.data?.code ? error.response.data.code : defaultCode;
+    const description = error.response?.data?.description ? error.response.data.description : defaultDescription;
+    if (!error.response) {
+      // @ts-ignore
+      callback(
+        new T1CLibException(
+          code,
+          description
+        ),
+        null
+      );
+      return reject(
+        new T1CLibException(
+          code,
+          description
+        )
+      );
+    } else {
+      switch (error.response?.status) {
+        case 404: {
+          const thrownError = new T1CLibException(
+            "112999",
+            "Functionality not found"
+          );
+          // @ts-ignore
+          callback(thrownError, null);
+          return reject(thrownError);
+        }
+        case 401: {
+          const thrownError = new T1CLibException(
+            "104025",
+            "Unauthorized to do this action"
+          );
+          // @ts-ignore
+          callback(thrownError, null);
+          return reject(thrownError);
+        }
+        default: {
+          // @ts-ignore
+          callback(
+            new T1CLibException(
+              code,
+              description
+            ),
+            null
+          );
+          return reject(
+            new T1CLibException(
+              code,
+              description
+            )
+          );
+        }
+      }
+    }
+
   }
 
   protected handleFileRequest(basePath: string, suffix: string, method: string, t1cConfig: T1CConfig, securityConfig: HeaderConfig, body?: RequestBody, params?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any> {
