@@ -1,4 +1,3 @@
-import { local } from "store2";
 
 export class ConsentUtil {
     private static consentKey: string = "t1c-consent-";
