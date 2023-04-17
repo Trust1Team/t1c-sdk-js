@@ -27,6 +27,14 @@ We're present on Gitter in the following room:
 [Trust1Connector-gitter]
 
 ## Build from source
+[on Mac M2] Make sure you install perl
+```shell
+brew install perl
+```
+and update hte .zshrc
+
+Node version 19
+
 To build the Trust1Connector JS SDK yourself you need to do the following:
 ```shell script
 $ yarn 
