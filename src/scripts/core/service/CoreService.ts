@@ -28,8 +28,6 @@ export class CoreService implements AbstractCore {
   constructor(private url: string, private connection: LocalConnection) {
   }
 
-
-
   pushLogs(): Promise<boolean> {
     return new Promise((resolve: (value: (PromiseLike<boolean> | boolean)) => void, reject: (reason?: any) => void) => {
       this.connection.get(

@@ -237,7 +237,7 @@ export abstract class GenericConnection implements Connection {
     return new Promise((resolve, reject) => {
       axios.request(config)
         .then((response: AxiosResponse) => {
-          if (response.data && response.data.signature && ConnectorKeyUtil.getPubKey() != undefined) {
+          if (response.data && response.data.signature && ConnectorKeyUtil.getPubKey() != undefined && !ConnectorKeyUtil.keyReset()) {
             let verification = ConnectorKeyUtil.verifySignature(JSON.stringify(response.data.data), response.data.signature)
 
             if (verification) {

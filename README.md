@@ -35,6 +35,11 @@ and update hte .zshrc
 
 Node version 19
 
+### Install webpack
+```shell
+npm install --global webpack
+```
+
 To build the Trust1Connector JS SDK yourself you need to do the following:
 ```shell script
 $ yarn 

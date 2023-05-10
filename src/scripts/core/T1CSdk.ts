@@ -31,6 +31,7 @@ import { AbstractLuxTrust } from "../modules/smartcards/token/eid/luxtrust/LuxTr
 import { AbstractCamerfirma } from "../modules/smartcards/token/pki/camerfirma/CamerfirmaModel";
 import { AbstractChambersign } from "../modules/smartcards/token/pki/chambersign/ChambersignModel";
 import { InfoResponse } from "./service/CoreModel";
+import {ConnectorKeyUtil} from "../util/ConnectorKeyUtil";
 
 const urlVersion = "/v3";
 const semver = require('semver');
@@ -62,7 +63,7 @@ export class T1CClient {
      * The optional consent is a feature that is available in the Trust1Connector and must be enabled there.
      *
      * This function does not take into account this optional value. It will require a consent to be present
-     * or to be done to function
+     * or to be done to function appropriatly
      */
     public static initializeExplicitConsent(cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
         return new Promise((resolve, reject) => {
@@ -100,7 +101,7 @@ export class T1CClient {
 
 
 /**
-     * New initialisation flow
+     * Initialisation flow
      * 1. get public key of the registry
      * 2. get info of registry
      * 3. consent or validate
@@ -119,11 +120,15 @@ export class T1CClient {
      *
      * This function takes into account this optional value. When this is enabled it will implicitly use the first
      * agent that is available in the registry. To support multiple agents a consent flow is required
+     *
+     * used from version > 3.5
      */
     public static initialize(cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
         return new Promise((resolve: (value: (PromiseLike<T1CClient> | T1CClient)) => void, reject: (reason?: any) => void) => {
             // Base client
             let _client = new T1CClient(cfg);
+            // make sure the device public key is reset when starting initialization - that accomodates the use case for upgrade
+            ConnectorKeyUtil.clearPubKey();
             _client.core().getDevicePublicKey();
             _client.core().info().then(infoRes => {
                 _client.config().version = infoRes.t1CInfoAPI?.version;
