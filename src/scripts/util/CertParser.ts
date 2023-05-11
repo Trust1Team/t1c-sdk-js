@@ -158,7 +158,8 @@ export class CertParser {
             }
             return new TokenCertificate(certificate.certificate, certificate.certificates, certificate.certificateType, certificate.id, parsedCertificate, parsedCertificates);
         } else {
-            return certificate;
+            let certificates = [certificate.certificate]
+            return new TokenCertificate(certificate.certificate, certificates);
         }
     }
 

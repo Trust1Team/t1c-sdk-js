@@ -394,7 +394,7 @@ export class EidGeneric implements AbstractEidGeneric {
             EidGeneric.EncryptedHeader(this.pin, this.pinType),
             callback
         ).then((res: TokenAllCertsResponse | TokenAllCertsExtendedResponse) => {
-             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
+            if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
                 return CertParser.processTokenAllCertificates(<TokenAllCertsResponse>res, parseCerts, callback)
             } else {
                 return CertParser.processTokenAllCertificates36(<TokenAllCertsExtendedResponse>res, parseCerts, callback)
