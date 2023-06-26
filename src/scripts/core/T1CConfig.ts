@@ -18,7 +18,7 @@ export class T1CConfig {
   private _t1cProxyUrl = 'https://t1c.t1t.io';
   private _t1cProxyPort = '51983';
   private _jwt: string | undefined = undefined;
-  private _applicationDomain: string | undefined = undefined; // "rmc.t1t.be"
+  private _applicationDomain: string | undefined = undefined; // "rmc.t1t.be" -> free field which correlates in dashboard
   private _version;
   private _dsUrl;
   private _deviceHostName;
