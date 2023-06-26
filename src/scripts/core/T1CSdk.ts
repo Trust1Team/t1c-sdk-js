@@ -59,16 +59,20 @@ export class T1CClient {
 
 
     /**
+     * @deprecated since version 3.7.7 Will be deleted as the
      * Initializing the TrustConnector can be done with both requiring explicit consent or having it optional
      * The optional consent is a feature that is available in the Trust1Connector and must be enabled there.
      *
      * This function does not take into account this optional value. It will require a consent to be present
-     * or to be done to function appropriatly
+     * or to be done by the calling function appropriately
      */
     public static initializeExplicitConsent(cfg: T1CConfig, callback?: (error?: T1CLibException, client?: T1CClient) => void): Promise<T1CClient> {
         return new Promise((resolve, reject) => {
             // Base client
             let _client = new T1CClient(cfg);
+            // make sure the device public key is reset when starting initialization - that accomodates the use case for upgrade
+            ConnectorKeyUtil.clearPubKey();
+            _client.core().getDevicePublicKey();
             _client.core().info().then(infoRes => {
                 _client.config().version = infoRes.t1CInfoAPI?.version;
                 if (infoRes.t1CInfoAPI?.service?.deviceType === "PROXY") {
@@ -97,8 +101,6 @@ export class T1CClient {
             });
         });
     }
-
-
 
 /**
      * Initialisation flow
