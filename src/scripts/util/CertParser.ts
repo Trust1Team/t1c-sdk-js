@@ -89,7 +89,9 @@ export class CertParser {
     public static processTokenAllCertificates36(response: TokenAllCertsExtendedResponse, parseCerts: boolean | undefined, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void):  Promise<TokenAllCertsResponse> {
         let updatedCerts = new TokenAllCerts();
         if (response.data.authenticationCertificate && response.data.authenticationCertificate.certificates) {
+            //TODO not empty
             const cert = response.data.authenticationCertificate.certificates[0];
+            //TODO check not null
             const tokenCert = new TokenCertificate(cert.certificate, undefined, cert.certificateType, cert.id, undefined, undefined)
             updatedCerts = new TokenAllCerts(this.processTokenCert(tokenCert, parseCerts))
         }
