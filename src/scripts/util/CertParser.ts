@@ -86,36 +86,36 @@ export class CertParser {
     }
 
     // certificate parse function for version 3.6.0 or later
+    // will only take the first certificate found
+    // If all certs are required, use processExtendedTokenAllCertificates
     public static processTokenAllCertificates36(response: TokenAllCertsExtendedResponse, parseCerts: boolean | undefined, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void):  Promise<TokenAllCertsResponse> {
         let updatedCerts = new TokenAllCerts();
-        if (response.data.authenticationCertificate && response.data.authenticationCertificate.certificates) {
-            //TODO not empty
-            const cert = response.data.authenticationCertificate.certificates[0];
-            //TODO check not null
-            const tokenCert = new TokenCertificate(cert.certificate, undefined, cert.certificateType, cert.id, undefined, undefined)
-            updatedCerts = new TokenAllCerts(this.processTokenCert(tokenCert, parseCerts))
+        if (response.data.authenticationCertificate && response.data.authenticationCertificate.certificates && response.data.authenticationCertificate.certificates.length > 0) {
+                const cert = response.data.authenticationCertificate.certificates[0];
+                const tokenCert = new TokenCertificate(cert.certificate, undefined, cert.certificateType, cert.id, undefined, undefined)
+                updatedCerts = new TokenAllCerts(this.processTokenCert(tokenCert, parseCerts))
         }
-        if (response.data.intermediateCertificates && response.data.intermediateCertificates.certificates) {
+        if (response.data.intermediateCertificates && response.data.intermediateCertificates.certificates && response.data.intermediateCertificates.certificates.length > 0) {
             const cert = response.data.intermediateCertificates.certificates[0];
             const tokenCert = new TokenCertificate(cert.certificate, undefined, cert.certificateType, cert.id, undefined, undefined)
             updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, this.processTokenCert(tokenCert, parseCerts))
         }
-        if (response.data.nonRepudiationCertificate && response.data.nonRepudiationCertificate.certificates) {
+        if (response.data.nonRepudiationCertificate && response.data.nonRepudiationCertificate.certificates && response.data.nonRepudiationCertificate.certificates.length > 0) {
             const cert = response.data.nonRepudiationCertificate.certificates[0];
             const tokenCert = new TokenCertificate(cert.certificate, undefined, cert.certificateType, cert.id, undefined, undefined)
             updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, this.processTokenCert(tokenCert, parseCerts))
         }
-        if (response.data.rootCertificate && response.data.rootCertificate.certificates) {
+        if (response.data.rootCertificate && response.data.rootCertificate.certificates && response.data.rootCertificate.certificates.length > 0) {
             const cert = response.data.rootCertificate.certificates[0];
             const tokenCert = new TokenCertificate(cert.certificate, undefined, cert.certificateType, cert.id, undefined, undefined)
             updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, updatedCerts.nonRepudiationCertificate, this.processTokenCert(tokenCert, parseCerts))
         }
-        if (response.data.encryptionCertificate && response.data.encryptionCertificate.certificates) {
+        if (response.data.encryptionCertificate && response.data.encryptionCertificate.certificates && response.data.encryptionCertificate.certificates.length > 0) {
             const cert = response.data.encryptionCertificate.certificates[0];
             const tokenCert = new TokenCertificate(cert.certificate, undefined, cert.certificateType, cert.id, undefined, undefined)
             updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, updatedCerts.nonRepudiationCertificate, updatedCerts.rootCertificate, this.processTokenCert(tokenCert, parseCerts))
         }
-        if (response.data.issuerCertificate && response.data.issuerCertificate.certificates) {
+        if (response.data.issuerCertificate && response.data.issuerCertificate.certificates && response.data.issuerCertificate.certificates.length > 0) {
             const cert = response.data.issuerCertificate.certificates[0];
             const tokenCert = new TokenCertificate(cert.certificate, undefined, cert.certificateType, cert.id, undefined, undefined)
             updatedCerts = new TokenAllCerts(updatedCerts.authenticationCertificate, updatedCerts.intermediateCertificates, updatedCerts.nonRepudiationCertificate, updatedCerts.rootCertificate, updatedCerts.encryptionCertificate, this.processTokenCert(tokenCert, parseCerts))
