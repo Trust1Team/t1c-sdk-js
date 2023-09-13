@@ -93,6 +93,12 @@ Use npm install
 $ npm install
 ```
 
+### Publish to NPM
+
+```
+npm publish
+```
+
 ## License
 
 ```
