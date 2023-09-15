@@ -39,7 +39,7 @@ module.exports = (env, argv) => {
       argv.mode === 'production'
         ? {
             minimize: true,
-            minimizer: [new TerserPlugin({sourceMap: true })],
+            minimizer: [new TerserPlugin()],
           }
         : {
             minimize: false,

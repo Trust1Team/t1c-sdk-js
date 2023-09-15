@@ -94,8 +94,8 @@ $ npm install
 ```
 
 ### Publish to NPM
-
-```
+To publish to NPM you need to be logged in to the Trust1Team NPM account. You can do this by running:
+```bash
 npm publish
 ```
 
