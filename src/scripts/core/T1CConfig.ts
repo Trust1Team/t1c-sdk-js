@@ -6,6 +6,7 @@ export class T1CConfigOptions {
     public t1cProxyPort?: string, // deprecated
     public jwt?: string,
     public applicationDomain?: string, // "rmc.t1t.be"
+    public skipResponseValidation?: boolean,
   ) {}
 }
 
@@ -22,6 +23,7 @@ export class T1CConfig {
   private _version;
   private _dsUrl;
   private _deviceHostName;
+  private _skipResponseValidation = false;
 
   // constructor for DTO
   public constructor(options: T1CConfigOptions) {
@@ -43,6 +45,9 @@ export class T1CConfig {
       }
       if (options.jwt) {
         this._jwt = options.jwt;
+      }
+      if (options.skipResponseValidation) {
+        this._skipResponseValidation = options.skipResponseValidation;
       }
     }
   }
@@ -104,5 +109,13 @@ export class T1CConfig {
 
   set deviceHostName(value) {
     this._deviceHostName = value;
+  }
+
+  get skipResponseValidation(): boolean {
+    return this._skipResponseValidation;
+  }
+
+  set skipResponseValidation(value: boolean) {
+    this._skipResponseValidation = value;
   }
 }
