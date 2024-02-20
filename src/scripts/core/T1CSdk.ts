@@ -12,7 +12,6 @@ import {AbstractIdemia} from '../modules/smartcards/token/pki/idemia82/IdemiaMod
 import {AbstractEmv} from '../modules/smartcards/payment/emv/EmvModel';
 import {AbstractFileExchange} from '../modules/file/fileExchange/FileExchangeModel';
 import {AbstractRemoteLoading} from '../modules/hsm/remoteloading/RemoteLoadingModel';
-import axios from 'axios';
 import {AbstractPaymentGeneric} from '../modules/smartcards/payment/generic/PaymentGenericModel';
 import {AbstractCrelan} from '../modules/smartcards/payment/crelan/CrelanModel';
 import {
@@ -40,12 +39,10 @@ const urlVersion = '/v3';
 const semver = require('semver');
 
 export class T1CClient {
-  private _t1cInstalled: boolean | undefined;
   private localConfig: T1CConfig;
   private moduleFactory: ModuleFactory;
   private coreService: CoreService;
   private connection: LocalConnection;
-  // private authConnection: LocalAuthConnection;
 
   public constructor(cfg: T1CConfig) {
     this.localConfig = cfg;
@@ -59,7 +56,6 @@ export class T1CClient {
       this.localConfig.t1cApiUrl,
       this.connection
     );
-    // this.coreService.version().then(info => console.info("Running T1C-sdk-js version: " + info))
   }
 
   public static checkPolyfills() {
@@ -67,28 +63,41 @@ export class T1CClient {
   }
 
   /**
-   * @deprecated since version 3.7.7 Will be deleted as the
+   * Initialisation flow
+   * 1. get public key of the registry
+   * 2. get info of registry
+   * 3. consent or validate
+   * 4. initialize new instance to api
+   * 5. get public key of api
+   * 6. get info of api
+   * 7. done
+   *
+   * If the call towards the public key fails. We give back an error. TODO Custom error code for this
+   *
    * Initializing the TrustConnector can be done with both requiring explicit consent or having it optional
    * The optional consent is a feature that is available in the Trust1Connector and must be enabled there.
    *
-   * This function does not take into account this optional value. It will require a consent to be present
-   * or to be done by the calling function appropriately
+   * This function takes into account this optional value. When this is enabled it will implicitly use the first
+   * agent that is available in the registry. To support multiple agents a consent flow is required
+   *
+   * used from version > 3.5
    */
-  public static initializeExplicitConsent(
+  public static async initialize(
     cfg: T1CConfig,
     callback?: (error?: T1CLibException, client?: T1CClient) => void
   ): Promise<T1CClient> {
-    return new Promise((resolve, reject) => {
-      // Base client
-      let _client = new T1CClient(cfg);
-      // make sure the device public key is reset when starting initialization - that accomodates the use case for upgrade
-      ConnectorKeyUtil.clearPubKey();
-      _client.core().getDevicePublicKey();
-      _client
-        .core()
-        .info()
-        .then(
-          infoRes => {
+    return new Promise(
+      async (
+        resolve: (value: PromiseLike<T1CClient> | T1CClient) => void,
+        reject: (reason?: any) => void
+      ) => {
+        try {
+          const config = await this.getActiveConnectorConfig(cfg);
+          let _client = new T1CClient(config);
+          try {
+            ConnectorKeyUtil.clearPubKey();
+            _client.core().getDevicePublicKey();
+            const infoRes = await _client.core().info();
             _client.config().version = infoRes.t1CInfoAPI?.version;
             if (infoRes.t1CInfoAPI?.service?.deviceType === 'PROXY') {
               if (
@@ -101,27 +110,18 @@ export class T1CClient {
               if (infoRes.t1CInfoUser?.hostName) {
                 _client.config().deviceHostName = infoRes.t1CInfoUser.hostName;
               }
-
-              if (
-                infoRes.t1CInfoAPI &&
-                semver.lt(
-                  semver.coerce(infoRes.t1CInfoAPI.version).version,
-                  '3.5.0'
-                )
-              ) {
-                this._init(resolve, reject, _client.config(), callback);
-              } else {
-                // we do not provide the optional consent value, even if it's set to false
-                // because we explicitly want the consent flow to be triggered
-                this.init(resolve, reject, _client.config(), callback);
-              }
+              this.init(
+                resolve,
+                reject,
+                _client.config(),
+                callback,
+                infoRes.t1CInfoAPI.optionalConsent
+              );
             } else {
               _client.coreService.getDevicePublicKey();
               resolve(_client);
             }
-          },
-          err => {
-            console.error(err);
+          } catch (err) {
             if (callback && typeof callback === 'function') {
               callback(
                 new T1CLibException(
@@ -140,111 +140,30 @@ export class T1CClient {
               )
             );
           }
-        );
-    });
-  }
-
-  /**
-   * Initialisation flow
-   * 1. get public key of the registry
-   * 2. get info of registry
-   * 3. consent or validate
-   * 4. initialize new instance to api
-   * 5. get public key of api
-   * 6. get info of api
-   * 7. done
-   *
-   * If the call towards the public key fails. We give back an error. TODO Custom error code for this
-   */
-
-  /**
-   * Initializing the TrustConnector can be done with both requiring explicit consent or having it optional
-   * The optional consent is a feature that is available in the Trust1Connector and must be enabled there.
-   *
-   * This function takes into account this optional value. When this is enabled it will implicitly use the first
-   * agent that is available in the registry. To support multiple agents a consent flow is required
-   *
-   * used from version > 3.5
-   */
-  public static initialize(
-    cfg: T1CConfig,
-    callback?: (error?: T1CLibException, client?: T1CClient) => void
-  ): Promise<T1CClient> {
-    return new Promise(
-      (
-        resolve: (value: PromiseLike<T1CClient> | T1CClient) => void,
-        reject: (reason?: any) => void
-      ) => {
-        // Base client
-        let _client = new T1CClient(cfg);
-        // make sure the device public key is reset when starting initialization - that accomodates the use case for upgrade
-        ConnectorKeyUtil.clearPubKey();
-        _client.core().getDevicePublicKey();
-        _client
-          .core()
-          .info()
-          .then(
-            infoRes => {
-              _client.config().version = infoRes.t1CInfoAPI?.version;
-              if (infoRes.t1CInfoAPI?.service?.deviceType === 'PROXY') {
-                if (
-                  infoRes.t1CInfoAPI?.service?.distributionServiceUrl &&
-                  infoRes.t1CInfoAPI.service.dsRegistryActivated
-                ) {
-                  _client.config().dsUrl =
-                    infoRes.t1CInfoAPI.service.distributionServiceUrl;
-                }
-                if (infoRes.t1CInfoUser?.hostName) {
-                  _client.config().deviceHostName =
-                    infoRes.t1CInfoUser.hostName;
-                }
-
-                if (
-                  infoRes.t1CInfoAPI &&
-                  semver.lt(
-                    semver.coerce(infoRes.t1CInfoAPI.version).version,
-                    '3.5.0'
-                  )
-                ) {
-                  this._init(resolve, reject, _client.config(), callback);
-                } else {
-                  // we provide the optional consent value to check if we need to consent flow or not
-                  this.init(
-                    resolve,
-                    reject,
-                    _client.config(),
-                    callback,
-                    infoRes.t1CInfoAPI.optionalConsent
-                  );
-                }
-              } else {
-                _client.coreService.getDevicePublicKey();
-                resolve(_client);
-              }
-            },
-            err => {
-              console.error(err);
-              // if (callback && typeof callback === 'function') {callback(new T1CLibException("112999", "Failed to contact the Trust1Connector", _client), _client);}
-              reject(
-                new T1CLibException(
-                  '112999',
-                  'Failed to contact the Trust1Connector',
-                  _client
-                )
-              );
-            }
+        } catch (error) {
+          let _client = new T1CClient(cfg);
+          if (callback && typeof callback === 'function') {
+            callback(
+              new T1CLibException(
+                '112999',
+                'Failed to contact the Trust1Connector',
+                _client
+              ),
+              _client
+            );
+          }
+          reject(
+            new T1CLibException(
+              '112999',
+              'Failed to contact the Trust1Connector',
+              _client
+            )
           );
+        }
       }
     );
   }
 
-  /**
-   * Init security context
-   */
-  // get auth service
-  /*    public auth = (): AuthClient => {
-          return this.authClient;
-        };*/
   // get core services
   public core = (): CoreService => {
     return this.coreService;
@@ -369,10 +288,6 @@ export class T1CClient {
     return this.moduleFactory.createx509();
   };
 
-  set t1cInstalled(value: boolean) {
-    this._t1cInstalled = value;
-  }
-
   /**
    * Initialise function that is used by versions higher than 3.5.0
    */
@@ -492,96 +407,37 @@ export class T1CClient {
     return prefix + result;
   }
 
-  /**
-   * @Deprecated
-   * Initialise function for Trust1Connector versions lower then 3.5.0
-   */
-  private static _init(
-    resolve: (value: PromiseLike<T1CClient> | T1CClient) => void,
-    reject: (reason?: any) => void,
-    cfg: T1CConfig,
-    callback?: (error?: T1CLibException, client?: T1CClient) => void
-  ) {
-    axios
-      .get(cfg.t1cApiUrl + '/info', {
-        withCredentials: true,
-        headers: {
-          Authorization: 'Bearer ' + cfg.t1cJwt,
-          'X-CSRF-Token': 't1c-js',
-        },
-      })
-      .then(
-        infoRes => {
-          if (infoRes.status >= 200 && infoRes.status < 300) {
-            if (
-              infoRes.data.t1CInfoAPI.service.deviceType &&
-              infoRes.data.t1CInfoAPI.service.deviceType == 'PROXY'
-            ) {
-              console.info('Proxy detected');
-              axios
-                .get(cfg.t1cApiUrl + '/consent', {
-                  withCredentials: true,
-                  headers: {
-                    Authorization: 'Bearer ' + cfg.t1cJwt,
-                    'X-CSRF-Token': 't1c-js',
-                  },
-                })
-                .then(
-                  res => {
-                    cfg.t1cApiPort = res.data.data.apiPort;
-                    const client = new T1CClient(cfg);
-                    client.t1cInstalled = true;
-                    client.coreService.getDevicePublicKey();
-                    if (callback && typeof callback === 'function') {
-                      callback(undefined, client);
-                    }
-                    resolve(client);
-                  },
-                  err => {
-                    const client = new T1CClient(cfg);
-                    reject(
-                      new T1CLibException(
-                        err.response?.data.code,
-                        err.response?.data.description,
-                        client
-                      )
-                    );
-                  }
-                );
-            } else {
-              cfg.version = infoRes.data.t1CInfoAPI.version;
-              const client = new T1CClient(cfg);
-              client.coreService.getDevicePublicKey();
-              if (callback && typeof callback === 'function') {
-                callback(undefined, client);
-              }
-              resolve(client);
-            }
-          } else {
-            const client = new T1CClient(cfg);
-            client.coreService.getDevicePublicKey();
-            const error = new T1CLibException(
-              '112999',
-              infoRes.statusText,
-              client
-            );
-            if (callback && typeof callback === 'function') {
-              callback(error, client);
-            }
-            reject(error);
+  private static async getActiveConnectorConfig(
+    cfg: T1CConfig
+  ): Promise<T1CConfig> {
+    return new Promise(
+      async (
+        resolve: (value: T1CConfig) => void,
+        reject: (reason?: T1CLibException) => void
+      ) => {
+        for (var item of cfg.t1cApiConnections) {
+          cfg.t1cApiUrl = item.url;
+          cfg.t1cApiPort = item.port;
+          // Base client
+          let _client = new T1CClient(cfg);
+          // make sure the device public key is reset when starting initialization - that accomodates the use case for upgrade
+          try {
+            await _client.core().info();
+            resolve(cfg);
+            break;
+          } catch (_err) {
+            // do not fail, let it go trough the whole loop
+            continue;
           }
-        },
-        err => {
-          const client = new T1CClient(cfg);
-          reject(
-            new T1CLibException(
-              '112999',
-              'Failed to contact the Trust1Connector API',
-              client
-            )
-          );
-          console.error(err);
         }
-      );
+        reject(
+          new T1CLibException(
+            '112999',
+            'Failed to contact the Trust1Connector',
+            new T1CClient(cfg)
+          )
+        );
+      }
+    );
   }
 }

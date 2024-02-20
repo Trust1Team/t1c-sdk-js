@@ -5,7 +5,7 @@ export class T1CConfigOptions {
     public jwt?: string,
     public applicationDomain?: string, // "rmc.t1t.be"
     public skipResponseValidation?: boolean,
-    public t1cApiPorts?: Array<ApiPort>
+    public t1cApiConnections?: Array<ApiPort>
   ) {}
 }
 // if api url and port are defined, also insert them in the api ports list first port we find we use
@@ -27,14 +27,13 @@ export interface ApiPort {
 export class T1CConfig {
   private _t1cApiUrl = 'https://t1c.t1t.io';
   private _t1cApiPort = '51983';
-  private _t1cProxyUrl = 'https://t1c.t1t.io';
-  private _t1cProxyPort = '51983';
   private _jwt: string | undefined = undefined;
   private _applicationDomain: string | undefined = undefined; // "rmc.t1t.be" -> free field which correlates in dashboard
   private _version;
   private _dsUrl;
   private _deviceHostName;
   private _skipResponseValidation = false;
+  private _t1cApiConnections: Array<ApiPort> = [];
 
   // constructor for DTO
   public constructor(options: T1CConfigOptions) {
@@ -45,11 +44,8 @@ export class T1CConfig {
       if (options.t1cApiPort) {
         this._t1cApiPort = options.t1cApiPort;
       }
-      if (options.t1cProxyUrl) {
-        this._t1cProxyUrl = options.t1cProxyUrl;
-      }
-      if (options.t1cProxyPort) {
-        this._t1cProxyPort = options.t1cProxyPort;
+      if (options.t1cApiConnections) {
+        this._t1cApiConnections = options.t1cApiConnections;
       }
       if (options.applicationDomain) {
         this._applicationDomain = options.applicationDomain;
@@ -59,6 +55,13 @@ export class T1CConfig {
       }
       if (options.skipResponseValidation) {
         this._skipResponseValidation = options.skipResponseValidation;
+      }
+
+      if (options.t1cApiUrl && options.t1cApiPort) {
+        this._t1cApiConnections.push({
+          url: options.t1cApiUrl,
+          port: options.t1cApiPort,
+        });
       }
     }
   }
@@ -71,6 +74,14 @@ export class T1CConfig {
     this._applicationDomain = value;
   }
 
+  set t1cApiConnections(value: Array<ApiPort>) {
+    this._t1cApiConnections = value;
+  }
+
+  get t1cApiConnections(): Array<ApiPort> {
+    return this._t1cApiConnections;
+  }
+
   set t1cApiPort(value: string) {
     this._t1cApiPort = value;
   }
@@ -81,10 +92,6 @@ export class T1CConfig {
 
   set t1cApiUrl(value: string) {
     this._t1cApiUrl = value;
-  }
-
-  get t1cProxyUrl(): string {
-    return this._t1cProxyUrl + ':' + this._t1cProxyPort;
   }
 
   get t1cJwt(): string | undefined {
