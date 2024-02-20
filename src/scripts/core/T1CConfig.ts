@@ -8,18 +8,6 @@ export class T1CConfigOptions {
     public t1cApiConnections?: Array<ApiPort>
   ) {}
 }
-// if api url and port are defined, also insert them in the api ports list first port we find we use
-// guard, minimum 1 port
-// resolution of port is the first one we can find that works
-// TODO: taking in account the version of the SDK will be implemented in a later stage
-// TODO gitbook documentation
-/* logic:
- * run trough the list of api ports if you find one then replace the apiurl and port from the config to be used trough the rest of the SDK
- */
-export interface ApiPort {
-  url: string;
-  port: string;
-}
 
 /**
  * T1C SDK Configuration object.
@@ -57,10 +45,10 @@ export class T1CConfig {
         this._skipResponseValidation = options.skipResponseValidation;
       }
 
-      if (options.t1cApiUrl && options.t1cApiPort) {
+      if (this._t1cApiUrl && this._t1cApiPort) {
         this._t1cApiConnections.push({
-          url: options.t1cApiUrl,
-          port: options.t1cApiPort,
+          url: this._t1cApiUrl,
+          port: this._t1cApiPort,
         });
       }
     }
@@ -132,4 +120,13 @@ export class T1CConfig {
   set skipResponseValidation(value: boolean) {
     this._skipResponseValidation = value;
   }
+}
+
+// if api url and port are defined, also insert them in the api ports list first port we find we use
+// guard, minimum 1 port
+// resolution of port is the first one we can find that works
+// TODO: taking in account the version of the SDK will be implemented in a later stage
+export interface ApiPort {
+  url: string;
+  port: string;
 }
