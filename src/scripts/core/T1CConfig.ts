@@ -123,7 +123,6 @@ export class T1CConfig {
 }
 
 // if api url and port are defined, also insert them in the api ports list first port we find we use
-// guard, minimum 1 port
 // resolution of port is the first one we can find that works
 // TODO: taking in account the version of the SDK will be implemented in a later stage
 export interface ApiPort {
