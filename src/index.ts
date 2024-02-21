@@ -77,4 +77,7 @@ export * from './scripts/modules/smartcards/token/pki/chambersign/ChambersignMod
 export * from './scripts/modules/truststore/truststore';
 export * from './scripts/modules/truststore/truststoreModel';
 
+export * from './scripts/modules/x509/x509';
+export * from './scripts/modules/x509/x509Model';
+
 Polyfills.check();

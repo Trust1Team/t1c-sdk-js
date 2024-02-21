@@ -2,11 +2,10 @@ export class T1CConfigOptions {
   constructor(
     public t1cApiUrl?: string,
     public t1cApiPort?: string,
-    public t1cProxyUrl?: string, // deprecated
-    public t1cProxyPort?: string, // deprecated
     public jwt?: string,
     public applicationDomain?: string, // "rmc.t1t.be"
     public skipResponseValidation?: boolean,
+    public t1cApiConnections?: Array<ApiConnection>
   ) {}
 }
 
@@ -16,14 +15,13 @@ export class T1CConfigOptions {
 export class T1CConfig {
   private _t1cApiUrl = 'https://t1c.t1t.io';
   private _t1cApiPort = '51983';
-  private _t1cProxyUrl = 'https://t1c.t1t.io';
-  private _t1cProxyPort = '51983';
   private _jwt: string | undefined = undefined;
   private _applicationDomain: string | undefined = undefined; // "rmc.t1t.be" -> free field which correlates in dashboard
   private _version;
   private _dsUrl;
   private _deviceHostName;
   private _skipResponseValidation = false;
+  private _t1cApiConnections: Array<ApiConnection> = [];
 
   // constructor for DTO
   public constructor(options: T1CConfigOptions) {
@@ -34,11 +32,8 @@ export class T1CConfig {
       if (options.t1cApiPort) {
         this._t1cApiPort = options.t1cApiPort;
       }
-      if (options.t1cProxyUrl) {
-        this._t1cProxyUrl = options.t1cProxyUrl;
-      }
-      if (options.t1cProxyPort) {
-        this._t1cProxyPort = options.t1cProxyPort;
+      if (options.t1cApiConnections) {
+        this._t1cApiConnections = options.t1cApiConnections;
       }
       if (options.applicationDomain) {
         this._applicationDomain = options.applicationDomain;
@@ -49,9 +44,15 @@ export class T1CConfig {
       if (options.skipResponseValidation) {
         this._skipResponseValidation = options.skipResponseValidation;
       }
+
+      if (this._t1cApiUrl && this._t1cApiPort) {
+        this._t1cApiConnections.push({
+          url: this._t1cApiUrl,
+          port: this._t1cApiPort,
+        });
+      }
     }
   }
-
 
   get applicationDomain(): string | undefined {
     return this._applicationDomain;
@@ -61,20 +62,24 @@ export class T1CConfig {
     this._applicationDomain = value;
   }
 
+  set t1cApiConnections(value: Array<ApiConnection>) {
+    this._t1cApiConnections = value;
+  }
+
+  get t1cApiConnections(): Array<ApiConnection> {
+    return this._t1cApiConnections;
+  }
+
   set t1cApiPort(value: string) {
-    this._t1cApiPort = value
+    this._t1cApiPort = value;
   }
 
   get t1cApiUrl(): string {
-    return this._t1cApiUrl + ":" + this._t1cApiPort;
+    return this._t1cApiUrl + ':' + this._t1cApiPort;
   }
 
   set t1cApiUrl(value: string) {
     this._t1cApiUrl = value;
-  }
-
-  get t1cProxyUrl(): string {
-    return this._t1cProxyUrl + ":" + this._t1cProxyPort;
   }
 
   get t1cJwt(): string | undefined {
@@ -84,7 +89,6 @@ export class T1CConfig {
     this._jwt = value;
   }
 
-
   get version() {
     return this._version;
   }
@@ -93,7 +97,6 @@ export class T1CConfig {
     this._version = value;
   }
 
-
   get dsUrl() {
     return this._dsUrl;
   }
@@ -101,7 +104,6 @@ export class T1CConfig {
   set dsUrl(value) {
     this._dsUrl = value;
   }
-
 
   get deviceHostName() {
     return this._deviceHostName;
@@ -118,4 +120,12 @@ export class T1CConfig {
   set skipResponseValidation(value: boolean) {
     this._skipResponseValidation = value;
   }
+}
+
+// if api url and port are defined, also insert them in the api ports list first port we find we use
+// resolution of port is the first one we can find that works
+// TODO: taking in account the version of the SDK will be implemented in a later stage
+export interface ApiConnection {
+  url: string;
+  port: string;
 }
