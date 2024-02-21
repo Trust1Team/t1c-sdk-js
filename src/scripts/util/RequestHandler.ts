@@ -38,7 +38,6 @@ export class RequestHandler {
                     result.params.filter = firstParam.filters.join(',');
                 }
             }
-            if (firstParam.parseCerts) { result.parseCerts = firstParam.parseCerts }
         }
         return result;
     }

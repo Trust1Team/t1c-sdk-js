@@ -1,7 +1,5 @@
 import {T1CLibException} from '../exceptions/CoreExceptions';
 import {T1CClient} from '../T1CSdk';
-import {Certificate} from 'pkijs';
-
 export interface AbstractCore {
   // getConsent(title: string, codeWord: string, durationInDays?: number, alertLevel?: string, alertPosition?: string, type?: string, timeoutInSeconds?: number, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse>;
   getImplicitConsent(
@@ -304,7 +302,6 @@ export class T1CCertificate {
     public hashIssPubKey?: string,
     public exponent?: string,
     public remainder?: string,
-    public parsedCertificate?: Certificate
   ) {}
 }
 
@@ -347,8 +344,6 @@ export class TokenCertificate {
     public certificates?: Array<string>,
     public certificateType?: string,
     public id?: string,
-    public parsedCertificate?: Certificate,
-    public parsedCertificates?: Array<Certificate>
   ) {}
 }
 

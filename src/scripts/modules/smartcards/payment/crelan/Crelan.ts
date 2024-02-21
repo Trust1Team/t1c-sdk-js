@@ -44,7 +44,7 @@ export class Crelan implements AbstractCrelan {
           reqOptions.params,
           callback
         ).then((res: TokenAllCertsExtendedResponse) => {
-            return CertParser.processExtendedTokenAllCertificates(res, false, callback)
+            return CertParser.processExtendedTokenAllCertificates(res, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -59,9 +59,9 @@ export class Crelan implements AbstractCrelan {
           callback
         ).then((res: PaymentAllCertsResponse | TokenAllCertsExtendedResponse) => {
             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
-                return CertParser.processPaymentAllCertificates(<PaymentAllCertsResponse>res, false, callback)
+                return CertParser.processPaymentAllCertificates(<PaymentAllCertsResponse>res, callback)
             } else {
-                return CertParser.processPaymentAllCertificates36(<TokenAllCertsExtendedResponse>res, false, callback)
+                return CertParser.processPaymentAllCertificates36(<TokenAllCertsExtendedResponse>res, callback)
             }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
@@ -77,9 +77,9 @@ export class Crelan implements AbstractCrelan {
           callback
         ).then((res: PaymentCertificateResponse | TokenCertificateExtendedResponse) => {
             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
-                return CertParser.processPaymentCertificate(<PaymentCertificateResponse>res, false, callback)
+                return CertParser.processPaymentCertificate(<PaymentCertificateResponse>res, callback)
             } else {
-                return CertParser.processPaymentCertificate36(<TokenCertificateExtendedResponse>res, false, callback)
+                return CertParser.processPaymentCertificate36(<TokenCertificateExtendedResponse>res, callback)
             }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
@@ -95,9 +95,9 @@ export class Crelan implements AbstractCrelan {
           callback
         ).then((res: PaymentCertificateResponse | TokenCertificateExtendedResponse) => {
             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
-                return CertParser.processPaymentCertificate(<PaymentCertificateResponse>res, false, callback)
+                return CertParser.processPaymentCertificate(<PaymentCertificateResponse>res, callback)
             } else {
-                return CertParser.processPaymentCertificate36(<TokenCertificateExtendedResponse>res, false, callback)
+                return CertParser.processPaymentCertificate36(<TokenCertificateExtendedResponse>res, callback)
             }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
@@ -112,7 +112,7 @@ export class Crelan implements AbstractCrelan {
           undefined,
           callback
         ).then((res: TokenCertificateExtendedResponse) => {
-            return CertParser.processExtendedTokenCertificate(res, false, callback)
+            return CertParser.processExtendedTokenCertificate(res, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -126,7 +126,7 @@ export class Crelan implements AbstractCrelan {
           undefined,
           callback
         ).then((res: TokenCertificateExtendedResponse) => {
-            return CertParser.processExtendedTokenCertificate(res, false, callback)
+            return CertParser.processExtendedTokenCertificate(res, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });

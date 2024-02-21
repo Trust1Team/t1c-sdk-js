@@ -70,7 +70,6 @@
     "logger-bootstrap": "^2.0.0-alpha2",
     "md5": "^2.3.0",
     "object-assign": "^4.1.1",
-    "pkijs": "^3.0.14",
     "semver": "^7.3.2",
     "sha256": "^0.2.0",
     "uuid": "^9.0.0"
