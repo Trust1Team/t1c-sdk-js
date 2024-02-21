@@ -24,7 +24,7 @@ export interface AbstractTruststore {
     body: TruststoreAuthenticateOrSignRequest,
     bulk?: boolean
   ): Promise<GenericT1CResponse<TruststoreAuthenticateOrSignResponse>>;
-  allAlgoRefs(): Promise<GenericT1CResponse<string>>;
+  allAlgoRefs(certId: string): Promise<GenericT1CResponse<TruststoreAlgorithmReferenceResponse>>;
   resetBulkPin(): Promise<GenericT1CResponse<boolean>>;
 }
 
@@ -59,6 +59,7 @@ export interface TruststoreVerifyPinRequest {
   pin?: string;
   osDialog?: boolean;
   timeout?: Number;
+  certId?: string;
 }
 
 export interface TruststoreAuthenticateOrSignRequest {
@@ -66,9 +67,12 @@ export interface TruststoreAuthenticateOrSignRequest {
   data: String;
   osDialog?: boolean;
   timeout?: Number;
-  id?: string;
+  certId?: string;
 }
 
 export interface TruststoreAuthenticateOrSignResponse {
   data?: string;
+}
+export interface TruststoreAlgorithmReferenceResponse {
+  ref?: Array<string>;
 }

@@ -1,4 +1,5 @@
 import {LocalConnection, GenericT1CResponse, ConnectorKeyUtil} from '../../..';
+import { RequestHandler } from '../../util/RequestHandler';
 import {Options} from '../smartcards/Card';
 import {
   AbstractTruststore,
@@ -8,11 +9,12 @@ import {
   TruststoreCertificate,
   CertificatesResponse,
   TruststoreVerifyPinRequest,
+  TruststoreAlgorithmReferenceResponse,
 } from './truststoreModel';
 
 export class Truststore implements AbstractTruststore {
   static CONTAINER_PREFIX = 'truststore';
-  static GET_CERT = '/certs/';
+  static GET_CERT = '/certs';
   static ALL_CERTIFICATES = '/certs-list';
   static CERT_ROOT = '/certs-root';
   static CERT_AUTHENTICATION = '/certs-authentication';
@@ -95,8 +97,18 @@ export class Truststore implements AbstractTruststore {
     }
   }
 
-  async allAlgoRefs(): Promise<GenericT1CResponse<string>> {
-    throw new Error('Method not implemented.');
+  async allAlgoRefs(certId: string): Promise<GenericT1CResponse<TruststoreAlgorithmReferenceResponse>> {
+    try {
+      return this.connection.get(
+        this.baseUrl,
+        this.app('/certs/' + certId + Truststore.SUPPORTED_ALGOS),
+        undefined,
+        undefined,
+        undefined
+      );
+    } catch (error) {
+      return Promise.reject(error);
+    }
   }
 
   async resetBulkPin(): Promise<GenericT1CResponse<boolean>> {
@@ -117,9 +129,12 @@ export class Truststore implements AbstractTruststore {
 
   async getCertificate(id: string): Promise<GenericT1CResponse<TruststoreCertificate>> {
     try {
-      return await this.connection.get(
+      return await this.connection.post(
         this.baseUrl,
-        this.app(Truststore.GET_CERT) + id,
+        this.app(Truststore.GET_CERT),
+        {
+          id: id
+        },
         undefined,
         undefined,
         undefined
@@ -130,13 +145,15 @@ export class Truststore implements AbstractTruststore {
   }
 
   async allCerts(
-    filters?: Options | string[] | undefined
+    filters?: Options | string[] 
   ): Promise<GenericT1CResponse<TruststoreAllCertificatesResponse>> {
     try {
+        // @ts-ignore
+      const reqOptions = RequestHandler.determineOptionsWithFilter(filters);
       return await this.connection.get(
         this.baseUrl,
         this.app(Truststore.ALL_CERTIFICATES),
-        undefined,
+        reqOptions.params,
         undefined,
         undefined
       );
