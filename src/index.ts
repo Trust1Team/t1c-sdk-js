@@ -12,13 +12,13 @@ export * from './scripts/util/ObjectUtil';
 export * from './scripts/util/Polyfills';
 export * from './scripts/util/UrlUtil';
 export * from './scripts/util/Utils';
-export * from './scripts/util/ConnectorKeyUtil'
+export * from './scripts/util/ConnectorKeyUtil';
 
 export * from './scripts/modules/smartcards/payment/PaymentCard';
 export * from './scripts/modules/smartcards/token/TokenCard';
 
 export * from './scripts/modules/smartcards/payment/generic/PaymentGeneric';
-export * from './scripts/modules/smartcards/payment/generic/PaymentGenericModel'
+export * from './scripts/modules/smartcards/payment/generic/PaymentGenericModel';
 
 export * from './scripts/modules/smartcards/payment/emv/Emv';
 export * from './scripts/modules/smartcards/payment/emv/EmvModel';
@@ -73,5 +73,8 @@ export * from './scripts/modules/smartcards/token/pki/camerfirma/CamerfirmaModel
 
 export * from './scripts/modules/smartcards/token/pki/chambersign/Chambersign';
 export * from './scripts/modules/smartcards/token/pki/chambersign/ChambersignModel';
+
+export * from './scripts/modules/truststore/truststore';
+export * from './scripts/modules/truststore/truststoreModel';
 
 Polyfills.check();

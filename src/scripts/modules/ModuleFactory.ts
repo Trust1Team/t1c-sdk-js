@@ -53,6 +53,8 @@ import {Camerfirma} from './smartcards/token/pki/camerfirma/Camerfirma';
 import {Chambersign} from './smartcards/token/pki/chambersign/Chambersign';
 import {Abstractx509} from './x509/x509Model';
 import {X509} from './x509/x509';
+import {AbstractTruststore} from './truststore/truststoreModel';
+import {Truststore} from './truststore/truststore';
 
 export interface AbstractFactory {
   createEidGeneric(reader_id: string): AbstractEidGeneric;
@@ -111,6 +113,7 @@ const CONTAINER_RAW_PRINT = CONTAINER_NEW_CONTEXT_PATH + 'rawprint';
 const CONTAINER_CERTIGNA = CONTAINER_NEW_CONTEXT_PATH + 'certigna';
 const CONTAINER_CERTINOMIS = CONTAINER_NEW_CONTEXT_PATH + 'certinomis';
 const CONTAINER_X509 = CONTAINER_NEW_CONTEXT_PATH + 'x509';
+const CONTAINER_TRUSTSTORE = CONTAINER_NEW_CONTEXT_PATH + 'truststore';
 
 export class ModuleFactory implements AbstractFactory {
   constructor(
@@ -288,5 +291,9 @@ export class ModuleFactory implements AbstractFactory {
 
   public createx509(): Abstractx509 {
     return new X509(this.url, CONTAINER_X509, this.connection);
+  }
+
+  public createTruststore(): AbstractTruststore {
+    return new Truststore(this.url, CONTAINER_TRUSTSTORE, this.connection);
   }
 }

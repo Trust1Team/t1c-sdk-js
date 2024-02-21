@@ -35,6 +35,7 @@ import {AbstractCamerfirma} from '../modules/smartcards/token/pki/camerfirma/Cam
 import {AbstractChambersign} from '../modules/smartcards/token/pki/chambersign/ChambersignModel';
 import {ConnectorKeyUtil} from '../util/ConnectorKeyUtil';
 import {Abstractx509} from '../modules/x509/x509Model';
+import {AbstractTruststore} from '../modules/truststore/truststoreModel';
 
 const urlVersion = '/v3';
 const semver = require('semver');
@@ -367,6 +368,10 @@ export class T1CClient {
 
   public x509 = (): Abstractx509 => {
     return this.moduleFactory.createx509();
+  };
+
+  public truststore = (): AbstractTruststore => {
+    return this.moduleFactory.createTruststore();
   };
 
   set t1cInstalled(value: boolean) {
