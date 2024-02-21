@@ -2,12 +2,12 @@ import {LocalConnection, GenericT1CResponse, ConnectorKeyUtil} from '../../..';
 import {Options} from '../smartcards/Card';
 import {
   AbstractTruststore,
-  AllCertificatesResponse,
-  AuthenticateOrSignRequest,
-  AuthenticateOrSignResponse,
-  Certificate,
+  TruststoreAllCertificatesResponse,
+  TruststoreAuthenticateOrSignRequest,
+  TruststoreAuthenticateOrSignResponse,
+  TruststoreCertificate,
   CertificatesResponse,
-  VerifyPinRequest,
+  TruststoreVerifyPinRequest,
 } from './truststoreModel';
 
 export class Truststore implements AbstractTruststore {
@@ -33,7 +33,7 @@ export class Truststore implements AbstractTruststore {
   ) {}
 
   async verifyPin(
-    body: VerifyPinRequest
+    body: TruststoreVerifyPinRequest
   ): Promise<GenericT1CResponse<boolean>> {
     try {
       body.pin = ConnectorKeyUtil.encryptData(
@@ -53,8 +53,8 @@ export class Truststore implements AbstractTruststore {
     }
   }
   async authenticate(
-    body: AuthenticateOrSignRequest
-  ): Promise<GenericT1CResponse<AuthenticateOrSignResponse>> {
+    body: TruststoreAuthenticateOrSignRequest
+  ): Promise<GenericT1CResponse<TruststoreAuthenticateOrSignResponse>> {
     try {
       body.pin = ConnectorKeyUtil.encryptData(
         body.pin,
@@ -74,9 +74,9 @@ export class Truststore implements AbstractTruststore {
   }
 
   async sign(
-    body: AuthenticateOrSignRequest,
+    body: TruststoreAuthenticateOrSignRequest,
     bulk?: boolean | undefined
-  ): Promise<GenericT1CResponse<AuthenticateOrSignResponse>> {
+  ): Promise<GenericT1CResponse<TruststoreAuthenticateOrSignResponse>> {
     try {
       body.pin = ConnectorKeyUtil.encryptData(
         body.pin,
@@ -115,7 +115,7 @@ export class Truststore implements AbstractTruststore {
     }
   }
 
-  async getCertificate(id: string): Promise<GenericT1CResponse<Certificate>> {
+  async getCertificate(id: string): Promise<GenericT1CResponse<TruststoreCertificate>> {
     try {
       return await this.connection.get(
         this.baseUrl,
@@ -131,7 +131,7 @@ export class Truststore implements AbstractTruststore {
 
   async allCerts(
     filters?: Options | string[] | undefined
-  ): Promise<GenericT1CResponse<AllCertificatesResponse>> {
+  ): Promise<GenericT1CResponse<TruststoreAllCertificatesResponse>> {
     try {
       return await this.connection.get(
         this.baseUrl,

@@ -1,7 +1,7 @@
 import {LocalConnection, GenericT1CResponse} from '../../..';
 import {
   Abstractx509,
-  ToJSONResponse,
+  X509ToJSONResponse,
   X509CertificateRequest,
 } from './x509Model';
 
@@ -29,8 +29,8 @@ export class X509 implements Abstractx509 {
     );
     return response.data;
   }
-  async toJSON(input: X509CertificateRequest): Promise<ToJSONResponse> {
-    const response: GenericT1CResponse<ToJSONResponse> =
+  async toJSON(input: X509CertificateRequest): Promise<X509ToJSONResponse> {
+    const response: GenericT1CResponse<X509ToJSONResponse> =
       await this.connection.post(
         this.baseUrl,
         this.app(X509.TOJSON),

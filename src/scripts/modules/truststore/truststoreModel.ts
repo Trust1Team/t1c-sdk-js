@@ -4,7 +4,7 @@ import {Options} from '../smartcards/Card';
 export interface AbstractTruststore {
   allCerts(
     filters?: string[] | Options
-  ): Promise<GenericT1CResponse<AllCertificatesResponse>>;
+  ): Promise<GenericT1CResponse<TruststoreAllCertificatesResponse>>;
   rootCertificates(): Promise<GenericT1CResponse<CertificatesResponse>>;
   intermediateCertificates(): Promise<GenericT1CResponse<CertificatesResponse>>;
   authenticationCertificates(): Promise<
@@ -14,21 +14,21 @@ export interface AbstractTruststore {
     GenericT1CResponse<CertificatesResponse>
   >;
   encryptionCertificates(): Promise<GenericT1CResponse<CertificatesResponse>>;
-  getCertificate(id: string): Promise<GenericT1CResponse<Certificate>>;
+  getCertificate(id: string): Promise<GenericT1CResponse<TruststoreCertificate>>;
 
-  verifyPin(body: VerifyPinRequest): Promise<GenericT1CResponse<boolean>>;
+  verifyPin(body: TruststoreVerifyPinRequest): Promise<GenericT1CResponse<boolean>>;
   authenticate(
-    body: AuthenticateOrSignRequest
-  ): Promise<GenericT1CResponse<AuthenticateOrSignResponse>>;
+    body: TruststoreAuthenticateOrSignRequest
+  ): Promise<GenericT1CResponse<TruststoreAuthenticateOrSignResponse>>;
   sign(
-    body: AuthenticateOrSignRequest,
+    body: TruststoreAuthenticateOrSignRequest,
     bulk?: boolean
-  ): Promise<GenericT1CResponse<AuthenticateOrSignResponse>>;
+  ): Promise<GenericT1CResponse<TruststoreAuthenticateOrSignResponse>>;
   allAlgoRefs(): Promise<GenericT1CResponse<string>>;
   resetBulkPin(): Promise<GenericT1CResponse<boolean>>;
 }
 
-export interface AllCertificatesResponse {
+export interface TruststoreAllCertificatesResponse {
   authenticationCertificate: CertificatesResponse;
   intermediateCertificates: CertificatesResponse;
   nonRepudiationCertificate: CertificatesResponse;
@@ -38,10 +38,10 @@ export interface AllCertificatesResponse {
 }
 
 export interface CertificatesResponse {
-  certificates: Array<Certificate>;
+  certificates: Array<TruststoreCertificate>;
 }
 
-export interface Certificate {
+export interface TruststoreCertificate {
   certificate?: string;
   certificateType?: string;
   id?: string;
@@ -55,13 +55,13 @@ export interface Certificate {
   remainder?: string;
 }
 
-export interface VerifyPinRequest {
+export interface TruststoreVerifyPinRequest {
   pin?: string;
   osDialog?: boolean;
   timeout?: Number;
 }
 
-export interface AuthenticateOrSignRequest {
+export interface TruststoreAuthenticateOrSignRequest {
   pin?: string;
   data: String;
   osDialog?: boolean;
@@ -69,6 +69,6 @@ export interface AuthenticateOrSignRequest {
   id?: string;
 }
 
-export interface AuthenticateOrSignResponse {
+export interface TruststoreAuthenticateOrSignResponse {
   data?: string;
 }
