@@ -35,6 +35,7 @@ import {AbstractChambersign} from '../modules/smartcards/token/pki/chambersign/C
 import {ConnectorKeyUtil} from '../util/ConnectorKeyUtil';
 import {Abstractx509} from '../modules/x509/x509Model';
 import {AbstractTruststore} from '../modules/truststore/truststoreModel';
+import { AbstractPkcs11 } from '../modules/smartcards/token/pki/pkcs11/Pkcs11Model';
 
 const urlVersion = '/v3';
 const semver = require('semver');
@@ -283,6 +284,10 @@ export class T1CClient {
 
   public chambersign = (reader_id: string): AbstractChambersign => {
     return this.moduleFactory.createChambersign(reader_id);
+  };
+
+  public pkcs11 = (reader_id: string): AbstractPkcs11 => {
+    return this.moduleFactory.createPkcs11(reader_id);
   };
 
   public x509 = (): Abstractx509 => {
