@@ -138,7 +138,7 @@ export class EidGeneric implements AbstractEidGeneric {
         );
     }
 
-    public rootCertificate(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+    public rootCertificate(module: string, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_ROOT, true),
@@ -147,16 +147,16 @@ export class EidGeneric implements AbstractEidGeneric {
             callback
         ).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
              if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
-                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, callback)
             } else {
-                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, callback)
             }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
 
-    public intermediateCertificates(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+    public intermediateCertificates(module: string, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_INTERMEDIATE, true),
@@ -165,16 +165,16 @@ export class EidGeneric implements AbstractEidGeneric {
             callback
         ).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
              if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
-                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, callback)
             } else {
-                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, callback)
             }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
 
-    public authenticationCertificate(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+    public authenticationCertificate(module: string, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_AUTHENTICATION, true),
@@ -183,16 +183,16 @@ export class EidGeneric implements AbstractEidGeneric {
             callback
         ).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
              if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
-                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, callback)
             } else {
-                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, callback)
             }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
 
-    public nonRepudiationCertificate(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+    public nonRepudiationCertificate(module: string, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_NON_REPUDIATION, true),
@@ -201,16 +201,16 @@ export class EidGeneric implements AbstractEidGeneric {
             callback
         ).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
              if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
-                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, callback)
             } else {
-                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, callback)
             }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
 
-    public issuerCertificate(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+    public issuerCertificate(module: string, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_ISSUER, true),
@@ -219,16 +219,16 @@ export class EidGeneric implements AbstractEidGeneric {
             callback
         ).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
              if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
-                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, callback)
             } else {
-                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, callback)
             }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
 
-    public encryptionCertificate(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+    public encryptionCertificate(module: string, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(
             this.baseUrl,
             this.tokenApp(module, EidGeneric.CERT_ENCRYPTION, true),
@@ -237,9 +237,9 @@ export class EidGeneric implements AbstractEidGeneric {
             callback
         ).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
              if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
-                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, callback)
             } else {
-                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, callback)
             }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
@@ -250,7 +250,7 @@ export class EidGeneric implements AbstractEidGeneric {
 
     public rootCertificateExtended(
       module: string,
-      parseCerts?: boolean,
+      
       callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
     ): Promise<TokenCertificateExtendedResponse> {
         return this.connection.get(
@@ -260,7 +260,7 @@ export class EidGeneric implements AbstractEidGeneric {
           EidGeneric.EncryptedHeader(this.pin, this.pinType),
           callback
         ).then((res: TokenCertificateExtendedResponse) => {
-            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+            return CertParser.processExtendedTokenCertificate(res, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -268,7 +268,7 @@ export class EidGeneric implements AbstractEidGeneric {
 
     public intermediateCertificatesExtended(
       module: string,
-      parseCerts?: boolean,
+      
       callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
     ): Promise<TokenCertificateExtendedResponse> {
         return this.connection.get(
@@ -278,7 +278,7 @@ export class EidGeneric implements AbstractEidGeneric {
           EidGeneric.EncryptedHeader(this.pin, this.pinType),
           callback
         ).then((res: TokenCertificateExtendedResponse) => {
-            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+            return CertParser.processExtendedTokenCertificate(res, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -286,7 +286,7 @@ export class EidGeneric implements AbstractEidGeneric {
 
     public authenticationCertificateExtended(
       module: string,
-      parseCerts?: boolean,
+      
       callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
     ): Promise<TokenCertificateExtendedResponse> {
         return this.connection.get(
@@ -296,7 +296,7 @@ export class EidGeneric implements AbstractEidGeneric {
           EidGeneric.EncryptedHeader(this.pin, this.pinType),
           callback
         ).then((res: TokenCertificateExtendedResponse) => {
-            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+            return CertParser.processExtendedTokenCertificate(res, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -304,7 +304,7 @@ export class EidGeneric implements AbstractEidGeneric {
 
     public nonRepudiationCertificateExtended(
       module: string,
-      parseCerts?: boolean,
+      
       callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
     ): Promise<TokenCertificateExtendedResponse> {
         return this.connection.get(
@@ -314,7 +314,7 @@ export class EidGeneric implements AbstractEidGeneric {
           EidGeneric.EncryptedHeader(this.pin, this.pinType),
           callback
         ).then((res: TokenCertificateExtendedResponse) => {
-            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+            return CertParser.processExtendedTokenCertificate(res, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -322,7 +322,7 @@ export class EidGeneric implements AbstractEidGeneric {
 
     public encryptionCertificateExtended(
       module: string,
-      parseCerts?: boolean,
+      
       callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
     ): Promise<TokenCertificateExtendedResponse> {
         return this.connection.get(
@@ -332,13 +332,13 @@ export class EidGeneric implements AbstractEidGeneric {
           EidGeneric.EncryptedHeader(this.pin, this.pinType),
           callback
         ).then((res: TokenCertificateExtendedResponse) => {
-            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+            return CertParser.processExtendedTokenCertificate(res, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
 
-    public issuerCertificateExtended(module: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+    public issuerCertificateExtended(module: string, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
         return this.connection.get(
           this.baseUrl,
           this.tokenApp(module, EidGeneric.CERT_ISSUER, true),
@@ -346,7 +346,7 @@ export class EidGeneric implements AbstractEidGeneric {
           EidGeneric.EncryptedHeader(this.pin, this.pinType),
           callback
         ).then((res: TokenCertificateExtendedResponse) => {
-            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+            return CertParser.processExtendedTokenCertificate(res, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -354,7 +354,7 @@ export class EidGeneric implements AbstractEidGeneric {
 
     public allCertsExtended(
       module: string,
-      parseCerts?: boolean,
+      
       options?: string[] | Options,
       callback?: (error: T1CLibException, data: TokenAllCertsExtendedResponse) => void
     ): Promise<TokenAllCertsExtendedResponse> {
@@ -367,7 +367,7 @@ export class EidGeneric implements AbstractEidGeneric {
           EidGeneric.EncryptedHeader(this.pin, this.pinType),
           callback
         ).then((res: TokenAllCertsExtendedResponse ) => {
-            return CertParser.processExtendedTokenAllCertificates(res, parseCerts, callback)
+            return CertParser.processExtendedTokenAllCertificates(res, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -384,7 +384,7 @@ export class EidGeneric implements AbstractEidGeneric {
         );
     }
 
-    public allCerts(module: string, parseCerts?: boolean, options?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
+    public allCerts(module: string, options?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
         // @ts-ignore
         const reqOptions = RequestHandler.determineOptionsWithFilter(options);
         return this.connection.get(
@@ -395,9 +395,9 @@ export class EidGeneric implements AbstractEidGeneric {
             callback
         ).then((res: TokenAllCertsResponse | TokenAllCertsExtendedResponse) => {
              if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
-                return CertParser.processTokenAllCertificates(<TokenAllCertsResponse>res, parseCerts, callback)
+                return CertParser.processTokenAllCertificates(<TokenAllCertsResponse>res, callback)
             } else {
-                return CertParser.processTokenAllCertificates36(<TokenAllCertsExtendedResponse>res, parseCerts, callback)
+                return CertParser.processTokenAllCertificates36(<TokenAllCertsExtendedResponse>res, callback)
             }
         }).catch(error => {
             return ResponseHandler.error(error, callback);

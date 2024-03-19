@@ -65,27 +65,27 @@ export class DNIe implements AbstractDNIe {
         return this.connection.post(this.baseUrl, this.tokenApp(DNIe.VALIDATE_SIGNATURE, true), body,  undefined, undefined, callback);
     }
 
-    public authenticationCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
-        return this.getCertificate(DNIe.CERT_AUTHENTICATION, parseCerts, callback);
+    public authenticationCertificate( callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+        return this.getCertificate(DNIe.CERT_AUTHENTICATION, callback);
     }
 
-    public nonRepudiationCertificate(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
-        return this.getCertificate(DNIe.CERT_NON_REPUDIATION, parseCerts, callback);
-    }
-
-
-    public authenticationCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
-        return this.getCertificateExtended(DNIe.CERT_AUTHENTICATION, parseCerts, callback);
-    }
-
-    public nonRepudiationCertificateExtended(parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
-        return this.getCertificateExtended(DNIe.CERT_NON_REPUDIATION, parseCerts, callback);
+    public nonRepudiationCertificate( callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+        return this.getCertificate(DNIe.CERT_NON_REPUDIATION, callback);
     }
 
 
-    public allCertsExtended(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsExtendedResponse) => void): Promise<TokenAllCertsExtendedResponse> {
+    public authenticationCertificateExtended( callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(DNIe.CERT_AUTHENTICATION, callback);
+    }
+
+    public nonRepudiationCertificateExtended( callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+        return this.getCertificateExtended(DNIe.CERT_NON_REPUDIATION, callback);
+    }
+
+
+    public allCertsExtended( filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsExtendedResponse) => void): Promise<TokenAllCertsExtendedResponse> {
         return this.connection.get(this.baseUrl, this.tokenApp(DNIe.ALL_CERTIFICATES, true), filters, undefined, callback).then((res: TokenAllCertsExtendedResponse) => {
-            return CertParser.processExtendedTokenAllCertificates(res, parseCerts, callback)
+            return CertParser.processExtendedTokenAllCertificates(res, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -101,9 +101,9 @@ export class DNIe implements AbstractDNIe {
         return this.connection.get(this.baseUrl, this.tokenApp(DNIe.SUPPORTED_ALGOS, true), undefined, undefined, callback);
     }
 
-    public allCerts(parseCerts?: boolean, filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
+    public allCerts( filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse> {
         return this.connection.get(this.baseUrl, this.tokenApp(DNIe.ALL_CERTIFICATES, true), filters, undefined, callback).then((res: TokenAllCertsResponse) => {
-            return CertParser.processTokenAllCertificates(res, parseCerts, callback)
+            return CertParser.processTokenAllCertificates(res, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
@@ -125,21 +125,21 @@ export class DNIe implements AbstractDNIe {
         return this.connection.post(this.baseUrl, this.tokenApp(DNIe.SIGN_DATA, true), body,  this.getBulkSignQueryParams(bulk), undefined, callback);
     }
 
-    protected getCertificate(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
+    protected getCertificate(certUrl: string, callback?: (error: T1CLibException, data: TokenCertificateResponse) => void): Promise<TokenCertificateResponse> {
         return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined,undefined, callback).then((res: TokenCertificateResponse | TokenCertificateExtendedResponse) => {
             if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.6.0')) {
-                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, parseCerts, callback)
+                return CertParser.processTokenCertificate(<TokenCertificateResponse>res, callback)
             } else {
-                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, parseCerts, callback)
+                return CertParser.processTokenCertificate36(<TokenCertificateExtendedResponse>res, callback)
             }
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
     }
 
-    protected getCertificateExtended(certUrl: string, parseCerts?: boolean, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
+    protected getCertificateExtended(certUrl: string, callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void): Promise<TokenCertificateExtendedResponse> {
         return this.connection.get(this.baseUrl, this.tokenApp(certUrl, true), undefined,undefined, callback).then((res: TokenCertificateExtendedResponse) => {
-            return CertParser.processExtendedTokenCertificate(res, parseCerts, callback)
+            return CertParser.processExtendedTokenCertificate(res, callback)
         }).catch(error => {
             return ResponseHandler.error(error, callback);
         });
