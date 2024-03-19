@@ -128,6 +128,21 @@ export abstract class GenericConnection implements Connection {
   }
 
   /**
+   * Helper function for PATCH requests
+   * @param {string} basePath
+   * @param {string} suffix
+   * @param {RequestBody} body
+   * @param {QueryParams} queryParams
+   * @param {RequestHeaders} headers
+   * @param {RequestCallback} callback
+   * @returns {Promise<any>}
+   */
+  public patch<T extends T1CResponse>(basePath: string, suffix: string, body?: RequestBody, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<T> {
+    const securityConfig = this.getHeaderConfig();
+    return this.handleRequest(basePath, suffix, "PATCH", this.cfg, securityConfig, body, queryParams, headers, callback);
+  }
+
+  /**
    * Helper function for POST requests
    * @param {string} basePath
    * @param {string} suffix
