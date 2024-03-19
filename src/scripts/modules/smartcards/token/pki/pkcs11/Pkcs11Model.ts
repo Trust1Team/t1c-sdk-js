@@ -18,7 +18,7 @@ import {Options} from "../../../Card";
 
 
 export interface AbstractPkcs11 {
-    getConfig(callback?: (error: T1CLibException, data: Pkcs11ConfigurationResponse) => void): Promise<GenericT1CResponse<Pkcs11ConfigurationResponse>>;
+    getConfig(callback?: (error: T1CLibException, data: Pkcs11Configruation) => void): Promise<GenericT1CResponse<Pkcs11Configruation>>;
     setConfig(config: Pkcs11Configruation, callback?: (error: T1CLibException, data: Pkcs11Configruation) => void): Promise<GenericT1CResponse<Pkcs11Configruation>>
     resetConfig(callback?: (error: T1CLibException, data: boolean)=> void): Promise<GenericT1CResponse<boolean>>
 
@@ -42,9 +42,4 @@ export interface Pkcs11Configruation {
     macos: string,
     win: string,
     linux: string
-}
-
-
-export interface Pkcs11ConfigurationResponse {
-
 }

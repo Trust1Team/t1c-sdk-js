@@ -19,7 +19,7 @@ import {Options} from "../../../Card";
 import {CertParser} from "../../../../../util/CertParser";
 import {ResponseHandler} from "../../../../../util/ResponseHandler";
 import {ConnectorKeyUtil} from "../../../../../../index";
-import {AbstractPkcs11, Pkcs11Configruation, Pkcs11ConfigurationResponse} from "./Pkcs11Model";
+import {AbstractPkcs11, Pkcs11Configruation } from "./Pkcs11Model";
 
 const semver = require('semver');
 
@@ -55,7 +55,7 @@ export class Pkcs11 implements AbstractPkcs11 {
     constructor(protected baseUrl: string, protected containerUrl: string, protected connection: LocalConnection, protected reader_id: string) {
     }
 
-    getConfig(callback?: (error: T1CLibException, data: Pkcs11ConfigurationResponse) => void): Promise<GenericT1CResponse<Pkcs11ConfigurationResponse>> {
+    getConfig(callback?: (error: T1CLibException, data: Pkcs11Configruation) => void): Promise<GenericT1CResponse<Pkcs11Configruation>> {
         return this.connection.get(this.baseUrl, this.tokenApp(Pkcs11.GET_CONFIG, false), undefined, undefined, callback);
     }
 
