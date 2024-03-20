@@ -230,6 +230,7 @@ export abstract class GenericConnection implements Connection {
       };
     }
     let config: AxiosRequestConfig = {};
+    config.timeout = 1000;
     config.withCredentials = true;
     config.url = UrlUtil.create(basePath, suffix);
     // @ts-ignore
