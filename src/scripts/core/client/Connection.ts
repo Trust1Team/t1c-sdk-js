@@ -93,9 +93,9 @@ export abstract class GenericConnection implements Connection {
    * @param {RequestCallback} callback???
    * @returns {Promise<any>}
    */
-  public _get<T>(basePath: string, suffix: string, queryParams?: QueryParams, headers?: any, callback?: RequestCallback): Promise<T> {
+  public _get<T>(basePath: string, suffix: string, queryParams?: QueryParams, headers?: any, callback?: RequestCallback, timeout?: number): Promise<T> {
     const securityConfig = this.getHeaderConfig();
-    return this.handleRequest(basePath, suffix, "GET", this.cfg, securityConfig, undefined, queryParams, headers, callback);
+    return this.handleRequest(basePath, suffix, "GET", this.cfg, securityConfig, undefined, queryParams, headers, callback, timeout);
   }
 
   /**
@@ -107,9 +107,9 @@ export abstract class GenericConnection implements Connection {
    * @param {RequestCallback} callback???
    * @returns {Promise<any>}
    */
-  public get<T extends T1CResponse>(basePath: string, suffix: string, queryParams?: QueryParams, headers?: any, callback?: RequestCallback): Promise<T> {
+  public get<T extends T1CResponse>(basePath: string, suffix: string, queryParams?: QueryParams, headers?: any, callback?: RequestCallback, timeout?: number): Promise<T> {
     const securityConfig = this.getHeaderConfig();
-    return this.handleRequest(basePath, suffix, "GET", this.cfg, securityConfig, undefined, queryParams, headers, callback);
+    return this.handleRequest(basePath, suffix, "GET", this.cfg, securityConfig, undefined, queryParams, headers, callback, timeout);
   }
 
   /**
@@ -122,9 +122,9 @@ export abstract class GenericConnection implements Connection {
    * @param {RequestCallback} callback
    * @returns {Promise<any>}
    */
-  public post<T extends T1CResponse>(basePath: string, suffix: string, body: RequestBody, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<T> {
+  public post<T extends T1CResponse>(basePath: string, suffix: string, body: RequestBody, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback, timeout?: number): Promise<T> {
     const securityConfig = this.getHeaderConfig();
-    return this.handleRequest(basePath, suffix, "POST", this.cfg, securityConfig, body, queryParams, headers, callback);
+    return this.handleRequest(basePath, suffix, "POST", this.cfg, securityConfig, body, queryParams, headers, callback, timeout);
   }
 
   /**
@@ -137,9 +137,9 @@ export abstract class GenericConnection implements Connection {
    * @param {RequestCallback} callback
    * @returns {Promise<any>}
    */
-  public patch<T extends T1CResponse>(basePath: string, suffix: string, body?: RequestBody, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<T> {
+  public patch<T extends T1CResponse>(basePath: string, suffix: string, body?: RequestBody, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback, timeout?: number): Promise<T> {
     const securityConfig = this.getHeaderConfig();
-    return this.handleRequest(basePath, suffix, "PATCH", this.cfg, securityConfig, body, queryParams, headers, callback);
+    return this.handleRequest(basePath, suffix, "PATCH", this.cfg, securityConfig, body, queryParams, headers, callback, timeout);
   }
 
   /**
@@ -167,9 +167,9 @@ export abstract class GenericConnection implements Connection {
    * @param {RequestCallback} callback
    * @returns {Promise<any>}
    */
-  public put<T extends T1CResponse>(basePath: string, suffix: string, body: RequestBody, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<T> {
+  public put<T extends T1CResponse>(basePath: string, suffix: string, body: RequestBody, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback, timeout?: number): Promise<T> {
     const securityConfig = this.getHeaderConfig();
-    return this.handleRequest(basePath, suffix, "PUT", this.cfg, securityConfig, body, queryParams, headers, callback);
+    return this.handleRequest(basePath, suffix, "PUT", this.cfg, securityConfig, body, queryParams, headers, callback, timeout);
   }
 
   /**
@@ -181,9 +181,9 @@ export abstract class GenericConnection implements Connection {
    * @param {RequestCallback} callback
    * @returns {Promise<any>}
    */
-  public delete<T extends T1CResponse>(basePath: string, suffix: string, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<T> {
+  public delete<T extends T1CResponse>(basePath: string, suffix: string, queryParams?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback, timeout?: number): Promise<T> {
     const securityConfig = this.getHeaderConfig();
-    return this.handleRequest(basePath, suffix, "DELETE", this.cfg, securityConfig, undefined, queryParams, headers, callback);
+    return this.handleRequest(basePath, suffix, "DELETE", this.cfg, securityConfig, undefined, queryParams, headers, callback, timeout);
   }
 
   /**
@@ -222,7 +222,7 @@ export abstract class GenericConnection implements Connection {
    * @param {RequestCallback} callback: Optional callback function if not using Promises
    * @returns {Promise<any>}
    */
-  protected handleRequest(basePath: string, suffix: string, method: string, t1cConfig: T1CConfig, securityConfig: HeaderConfig, body?: RequestBody, params?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback): Promise<any> {
+  protected handleRequest(basePath: string, suffix: string, method: string, t1cConfig: T1CConfig, securityConfig: HeaderConfig, body?: RequestBody, params?: QueryParams, headers?: RequestHeaders, callback?: RequestCallback, timeout?: number): Promise<any> {
     // init callback if necessary
     if (!callback || typeof callback !== "function") {
       callback = function() {
@@ -230,6 +230,9 @@ export abstract class GenericConnection implements Connection {
       };
     }
     let config: AxiosRequestConfig = {};
+    if (timeout) {
+      config.timeout = timeout;
+    }
     config.withCredentials = true;
     config.url = UrlUtil.create(basePath, suffix);
     // @ts-ignore
