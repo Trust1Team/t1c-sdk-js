@@ -107,7 +107,7 @@ export class CoreService implements AbstractCore {
 
   getDevicePublicKey(): void {
     this.connection
-      .get(this.connection.cfg.t1cApiUrl, '/device-key', undefined, undefined)
+      .get(this.connection.cfg.t1cApiUrl, '/device-key', undefined, undefined, undefined, 1000)
       .then(
         res => {
           ConnectorKeyUtil.setPubKey(res.data);
@@ -545,7 +545,10 @@ export class CoreService implements AbstractCore {
               codeWord: codeWord,
               durationInDays: days,
             },
-            undefined
+            undefined,
+            undefined,
+            undefined,
+            2000
           )
           .then(
             res => {
@@ -989,7 +992,7 @@ export class CoreService implements AbstractCore {
     callback?: (error: T1CLibException, data: InfoResponse) => void
   ): Promise<InfoResponse> {
     return this.connection
-      ._get(this.url, CORE_INFO, undefined, undefined, callback)
+      ._get(this.url, CORE_INFO, undefined, undefined, callback, 1000)
       .then(
         (res: any) => {
           if (res.data) {

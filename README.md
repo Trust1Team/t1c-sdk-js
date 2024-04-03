@@ -95,8 +95,13 @@ $ npm install
 
 ### Publish to NPM
 To publish to NPM you need to be logged in to the Trust1Team NPM account. You can do this by running:
+publish will by default add the `latest` tag.
 ```bash
 npm publish
+```
+to push with a specific tag use 
+```shell
+npm publish --tag some-tag-name
 ```
 
 ## License
