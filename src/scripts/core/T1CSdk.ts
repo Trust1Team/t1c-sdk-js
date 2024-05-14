@@ -1,41 +1,42 @@
-import {CoreService} from './service/CoreService';
-import {LocalConnection} from './client/Connection';
-import {T1CLibException} from './exceptions/CoreExceptions';
-import {AbstractEidGeneric} from '../modules/smartcards/token/eid/generic/EidGenericModel';
-import {AbstractEidBE} from '../modules/smartcards/token/eid/be/EidBeModel';
-import {AbstractAventra} from '../modules/smartcards/token/pki/aventra4/AventraModel';
-import {AbstractOberthur73} from '../modules/smartcards/token/pki/oberthur73/OberthurModel';
-import {T1CConfig} from './T1CConfig';
-import {Polyfills} from '../util/Polyfills';
-import {ModuleFactory} from '../modules/ModuleFactory';
-import {AbstractIdemia} from '../modules/smartcards/token/pki/idemia82/IdemiaModel';
-import {AbstractEmv} from '../modules/smartcards/payment/emv/EmvModel';
-import {AbstractFileExchange} from '../modules/file/fileExchange/FileExchangeModel';
-import {AbstractRemoteLoading} from '../modules/hsm/remoteloading/RemoteLoadingModel';
-import {AbstractPaymentGeneric} from '../modules/smartcards/payment/generic/PaymentGenericModel';
-import {AbstractCrelan} from '../modules/smartcards/payment/crelan/CrelanModel';
+import { CoreService } from './service/CoreService';
+import { LocalConnection } from './client/Connection';
+import { T1CLibException } from './exceptions/CoreExceptions';
+import { AbstractEidGeneric } from '../modules/smartcards/token/eid/generic/EidGenericModel';
+import { AbstractEidBE } from '../modules/smartcards/token/eid/be/EidBeModel';
+import { AbstractAventra } from '../modules/smartcards/token/pki/aventra4/AventraModel';
+import { AbstractOberthur73 } from '../modules/smartcards/token/pki/oberthur73/OberthurModel';
+import { T1CConfig } from './T1CConfig';
+import { Polyfills } from '../util/Polyfills';
+import { ModuleFactory } from '../modules/ModuleFactory';
+import { AbstractIdemia } from '../modules/smartcards/token/pki/idemia82/IdemiaModel';
+import { AbstractEmv } from '../modules/smartcards/payment/emv/EmvModel';
+import { AbstractFileExchange } from '../modules/file/fileExchange/FileExchangeModel';
+import { AbstractRemoteLoading } from '../modules/hsm/remoteloading/RemoteLoadingModel';
+import { AbstractPaymentGeneric } from '../modules/smartcards/payment/generic/PaymentGenericModel';
+import { AbstractCrelan } from '../modules/smartcards/payment/crelan/CrelanModel';
 import {
   AbstractEidLux,
   PinType,
 } from '../modules/smartcards/token/eid/lux/EidLuxModel';
-import {AbstractWacom} from '../modules/wacom/WacomModel';
-import {AbstractEidDiplad} from '../modules/smartcards/token/eid/diplad/EidDipladModel';
-import {AbstractRawPrint} from '../modules/print/rawprint/RawPrintModel';
-import {AbstractCertigna} from '../modules/smartcards/token/pki/certigna/CertignaModel';
-import {AbstractCertinomis} from '../modules/smartcards/token/pki/certinomis/CertinomisModel';
-import {ConsentUtil} from '../util/ConsentUtil';
-import {AbstractDNIe} from '../modules/smartcards/token/pki/dnie/DNIeModel';
-import {AbstractSafenet} from '../modules/smartcards/token/pki/safenet/SafenetModel';
-import {AbstractEherkenning} from '../modules/smartcards/token/pki/eHerkenning/eHerkenningModel';
-import {AbstractJcop} from '../modules/smartcards/token/pki/jcop/JcopModel';
-import {AbstractAirbus} from '../modules/smartcards/token/pki/airbus/AirbusModel';
-import {AbstractLuxTrust} from '../modules/smartcards/token/eid/luxtrust/LuxTrustModel';
-import {AbstractCamerfirma} from '../modules/smartcards/token/pki/camerfirma/CamerfirmaModel';
-import {AbstractChambersign} from '../modules/smartcards/token/pki/chambersign/ChambersignModel';
-import {ConnectorKeyUtil} from '../util/ConnectorKeyUtil';
-import {Abstractx509} from '../modules/x509/x509Model';
-import {AbstractTruststore} from '../modules/truststore/truststoreModel';
+import { AbstractWacom } from '../modules/wacom/WacomModel';
+import { AbstractEidDiplad } from '../modules/smartcards/token/eid/diplad/EidDipladModel';
+import { AbstractRawPrint } from '../modules/print/rawprint/RawPrintModel';
+import { AbstractCertigna } from '../modules/smartcards/token/pki/certigna/CertignaModel';
+import { AbstractCertinomis } from '../modules/smartcards/token/pki/certinomis/CertinomisModel';
+import { ConsentUtil } from '../util/ConsentUtil';
+import { AbstractDNIe } from '../modules/smartcards/token/pki/dnie/DNIeModel';
+import { AbstractSafenet } from '../modules/smartcards/token/pki/safenet/SafenetModel';
+import { AbstractEherkenning } from '../modules/smartcards/token/pki/eHerkenning/eHerkenningModel';
+import { AbstractJcop } from '../modules/smartcards/token/pki/jcop/JcopModel';
+import { AbstractAirbus } from '../modules/smartcards/token/pki/airbus/AirbusModel';
+import { AbstractLuxTrust } from '../modules/smartcards/token/eid/luxtrust/LuxTrustModel';
+import { AbstractCamerfirma } from '../modules/smartcards/token/pki/camerfirma/CamerfirmaModel';
+import { AbstractChambersign } from '../modules/smartcards/token/pki/chambersign/ChambersignModel';
+import { ConnectorKeyUtil } from '../util/ConnectorKeyUtil';
+import { Abstractx509 } from '../modules/x509/x509Model';
+import { AbstractTruststore } from '../modules/truststore/truststoreModel';
 import { AbstractPkcs11 } from '../modules/smartcards/token/pki/pkcs11/Pkcs11Model';
+import { AbstractSimpleSign } from '../modules/simplesign/simpleSignModel';
 
 const urlVersion = '/v3';
 const semver = require('semver');
@@ -298,6 +299,10 @@ export class T1CClient {
     return this.moduleFactory.createTruststore();
   };
 
+  public simplesign = (): AbstractSimpleSign => {
+    return this.moduleFactory.createSimpleSign();
+  };
+
   /**
    * Initialise function that is used by versions higher than 3.5.0
    */
@@ -327,7 +332,7 @@ export class T1CClient {
             },
             err => {
               if (!callback || typeof callback !== 'function') {
-                callback = function () {};
+                callback = function () { };
               }
               callback(
                 new T1CLibException(
