@@ -1030,7 +1030,7 @@ export class CoreService implements AbstractCore {
     return this.connection.get(
       this.url,
       CORE_VERSION + CORE_READERS,
-      undefined,
+      { excluded: 'hello'},
       undefined,
       callback
     );
@@ -1042,7 +1042,7 @@ export class CoreService implements AbstractCore {
     return this.connection.get(
       this.url,
       CORE_VERSION + CORE_READERS,
-      { cardInserted: true },
+      { cardInserted: true, excluded: 'hello' },
       undefined,
       callback
     );
@@ -1068,7 +1068,7 @@ export class CoreService implements AbstractCore {
     return this.connection.get(
       this.url,
       CORE_VERSION + CORE_READERS,
-      { cardInserted: false },
+      { cardInserted: false, excluded: 'hello' },
       undefined,
       callback
     );
