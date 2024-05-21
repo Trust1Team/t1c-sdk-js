@@ -1,4 +1,4 @@
-import {LocalConnection} from '../client/Connection';
+import { LocalConnection } from '../client/Connection';
 import {
   AbstractCore,
   AgentsResponse,
@@ -6,11 +6,11 @@ import {
   InfoResponse,
   SingleReaderResponse,
 } from './CoreModel';
-import {T1CLibException} from '../exceptions/CoreExceptions';
-import {T1CClient} from '../../..';
-import {ResponseHandler} from '../../util/ResponseHandler';
-import {ConnectorKeyUtil} from '../../util/ConnectorKeyUtil';
-import {ConsentUtil} from '../../util/ConsentUtil';
+import { T1CLibException } from '../exceptions/CoreExceptions';
+import { T1CClient } from '../../..';
+import { ResponseHandler } from '../../util/ResponseHandler';
+import { ConnectorKeyUtil } from '../../util/ConnectorKeyUtil';
+import { ConsentUtil } from '../../util/ConsentUtil';
 
 const semver = require('semver');
 
@@ -32,7 +32,7 @@ export class CoreService implements AbstractCore {
   constructor(
     private url: string,
     private connection: LocalConnection
-  ) {}
+  ) { }
 
   pushLogs(): Promise<boolean> {
     return new Promise(
@@ -146,8 +146,8 @@ export class CoreService implements AbstractCore {
       ) {
         const currentConsent = ConsentUtil.getRawConsent(
           this.connection.cfg.applicationDomain +
-            '::' +
-            this.connection.cfg.t1cApiUrl
+          '::' +
+          this.connection.cfg.t1cApiUrl
         );
         let url = this.connection.cfg.t1cApiUrl;
         let suffixValue = CORE_VERSION;
@@ -169,31 +169,31 @@ export class CoreService implements AbstractCore {
               ConsentUtil.setConsent(
                 res.data,
                 this.connection.cfg.applicationDomain +
-                  '::' +
-                  this.connection.cfg.t1cApiUrl
+                '::' +
+                this.connection.cfg.t1cApiUrl
               );
               const parsed_response = ConsentUtil.getConsent(
                 this.connection.cfg.applicationDomain +
-                  '::' +
-                  this.connection.cfg.t1cApiUrl
+                '::' +
+                this.connection.cfg.t1cApiUrl
               );
               if (parsed_response != null) {
                 this.connection.cfg.t1cApiPort = parsed_response?.agent.apiPort;
                 const newClient = new T1CClient(this.connection.cfg);
                 newClient.core().getDevicePublicKey();
                 if (!callback || typeof callback !== 'function') {
-                  callback = function () {};
+                  callback = function () { };
                 }
                 callback(undefined, newClient);
                 resolve(newClient);
               } else {
                 ConsentUtil.removeConsent(
                   this.connection.cfg.applicationDomain +
-                    '::' +
-                    this.connection.cfg.t1cApiUrl
+                  '::' +
+                  this.connection.cfg.t1cApiUrl
                 );
                 if (!callback || typeof callback !== 'function') {
-                  callback = function () {};
+                  callback = function () { };
                 }
                 callback(
                   new T1CLibException(
@@ -221,8 +221,8 @@ export class CoreService implements AbstractCore {
       } else {
         let consent = ConsentUtil.getConsents(
           this.connection.cfg.applicationDomain +
-            '::' +
-            this.connection.cfg.t1cApiUrl
+          '::' +
+          this.connection.cfg.t1cApiUrl
         );
         if (consent != null) {
           return this.connection
@@ -239,8 +239,8 @@ export class CoreService implements AbstractCore {
                 ConsentUtil.setConsents(
                   res.data.consents,
                   this.connection.cfg.applicationDomain +
-                    '::' +
-                    this.connection.cfg.t1cApiUrl
+                  '::' +
+                  this.connection.cfg.t1cApiUrl
                 );
                 if (res.data.consentState === 'USE_DS_CENTRAL_REG') {
                   // use central registry for validation
@@ -265,11 +265,11 @@ export class CoreService implements AbstractCore {
         } else {
           ConsentUtil.removeConsent(
             this.connection.cfg.applicationDomain +
-              '::' +
-              this.connection.cfg.t1cApiUrl
+            '::' +
+            this.connection.cfg.t1cApiUrl
           );
           if (!callback || typeof callback !== 'function') {
-            callback = function () {};
+            callback = function () { };
           }
           callback(
             new T1CLibException(
@@ -290,7 +290,7 @@ export class CoreService implements AbstractCore {
       }
     } else {
       if (!callback || typeof callback !== 'function') {
-        callback = function () {};
+        callback = function () { };
       }
       callback(
         new T1CLibException(
@@ -339,11 +339,11 @@ export class CoreService implements AbstractCore {
               ConsentUtil.setConsent(
                 dsRes.data.consents,
                 this.connection.cfg.applicationDomain +
-                  '::' +
-                  this.connection.cfg.t1cApiUrl
+                '::' +
+                this.connection.cfg.t1cApiUrl
               );
               if (!callback || typeof callback !== 'function') {
-                callback = function () {};
+                callback = function () { };
               }
               callback(
                 new T1CLibException(
@@ -365,11 +365,11 @@ export class CoreService implements AbstractCore {
                 ConsentUtil.setConsent(
                   dsRes.data.consents,
                   this.connection.cfg.applicationDomain +
-                    '::' +
-                    this.connection.cfg.t1cApiUrl
+                  '::' +
+                  this.connection.cfg.t1cApiUrl
                 );
                 if (!callback || typeof callback !== 'function') {
-                  callback = function () {};
+                  callback = function () { };
                 }
                 callback(
                   new T1CLibException(
@@ -406,7 +406,7 @@ export class CoreService implements AbstractCore {
           },
           dsErr => {
             if (!callback || typeof callback !== 'function') {
-              callback = function () {};
+              callback = function () { };
             }
             callback(
               new T1CLibException(
@@ -433,7 +433,7 @@ export class CoreService implements AbstractCore {
   private handleValidateConsent(res, resolve, reject, callback) {
     if (res.data.consentState != 'APPROVED') {
       if (!callback || typeof callback !== 'function') {
-        callback = function () {};
+        callback = function () { };
       }
       callback(
         new T1CLibException(
@@ -457,18 +457,18 @@ export class CoreService implements AbstractCore {
         const newClient = new T1CClient(this.connection.cfg);
         newClient.core().getDevicePublicKey();
         if (!callback || typeof callback !== 'function') {
-          callback = function () {};
+          callback = function () { };
         }
         callback(undefined, newClient);
         return resolve(newClient);
       } else {
         ConsentUtil.removeConsent(
           this.connection.cfg.applicationDomain +
-            '::' +
-            this.connection.cfg.t1cApiUrl
+          '::' +
+          this.connection.cfg.t1cApiUrl
         );
         if (!callback || typeof callback !== 'function') {
-          callback = function () {};
+          callback = function () { };
         }
         callback(
           new T1CLibException(
@@ -555,19 +555,19 @@ export class CoreService implements AbstractCore {
               ConsentUtil.setConsent(
                 res.data,
                 this.connection.cfg.applicationDomain +
-                  '::' +
-                  this.connection.cfg.t1cApiUrl
+                '::' +
+                this.connection.cfg.t1cApiUrl
               );
               const parsed_response = ConsentUtil.getConsent(
                 this.connection.cfg.applicationDomain +
-                  '::' +
-                  this.connection.cfg.t1cApiUrl
+                '::' +
+                this.connection.cfg.t1cApiUrl
               );
               if (parsed_response != null) {
                 this.connection.cfg.t1cApiPort = parsed_response.agent.apiPort;
               } else {
                 if (!callback || typeof callback !== 'function') {
-                  callback = function () {};
+                  callback = function () { };
                 }
                 callback(
                   new T1CLibException(
@@ -588,7 +588,7 @@ export class CoreService implements AbstractCore {
               const newClient = new T1CClient(this.connection.cfg);
               newClient.core().getDevicePublicKey();
               if (!callback || typeof callback !== 'function') {
-                callback = function () {};
+                callback = function () { };
               }
               callback(undefined, newClient);
               resolve(newClient);
@@ -607,8 +607,8 @@ export class CoreService implements AbstractCore {
       } else {
         const consents = ConsentUtil.getConsents(
           this.connection.cfg.applicationDomain +
-            '::' +
-            this.connection.cfg.t1cApiUrl
+          '::' +
+          this.connection.cfg.t1cApiUrl
         );
         return this.connection
           .post(
@@ -645,7 +645,7 @@ export class CoreService implements AbstractCore {
                     dsRes => {
                       if (dsRes.data.consentState != 'APPROVED') {
                         if (!callback || typeof callback !== 'function') {
-                          callback = function () {};
+                          callback = function () { };
                         }
                         callback(
                           new T1CLibException(
@@ -666,8 +666,8 @@ export class CoreService implements AbstractCore {
                       ConsentUtil.setConsents(
                         dsRes.data.consents,
                         this.connection.cfg.applicationDomain +
-                          '::' +
-                          this.connection.cfg.t1cApiUrl
+                        '::' +
+                        this.connection.cfg.t1cApiUrl
                       );
                       const activeConsent = ConsentUtil.parseConsent(
                         dsRes.data.consent
@@ -678,13 +678,13 @@ export class CoreService implements AbstractCore {
                         const newClient = new T1CClient(this.connection.cfg);
                         newClient.core().getDevicePublicKey();
                         if (!callback || typeof callback !== 'function') {
-                          callback = function () {};
+                          callback = function () { };
                         }
                         callback(undefined, newClient);
                         resolve(newClient);
                       } else {
                         if (!callback || typeof callback !== 'function') {
-                          callback = function () {};
+                          callback = function () { };
                         }
                         callback(
                           new T1CLibException(
@@ -716,7 +716,7 @@ export class CoreService implements AbstractCore {
                         );
                       } else {
                         if (!callback || typeof callback !== 'function') {
-                          callback = function () {};
+                          callback = function () { };
                         }
                         callback(
                           new T1CLibException(
@@ -744,12 +744,12 @@ export class CoreService implements AbstractCore {
                 ConsentUtil.setConsents(
                   res.data.consents,
                   this.connection.cfg.applicationDomain +
-                    '::' +
-                    this.connection.cfg.t1cApiUrl
+                  '::' +
+                  this.connection.cfg.t1cApiUrl
                 );
                 if (res.data.consentState != 'APPROVED') {
                   if (!callback || typeof callback !== 'function') {
-                    callback = function () {};
+                    callback = function () { };
                   }
                   callback(
                     new T1CLibException(
@@ -775,13 +775,13 @@ export class CoreService implements AbstractCore {
                   const newClient = new T1CClient(this.connection.cfg);
                   newClient.core().getDevicePublicKey();
                   if (!callback || typeof callback !== 'function') {
-                    callback = function () {};
+                    callback = function () { };
                   }
                   callback(undefined, newClient);
                   return resolve(newClient);
                 } else {
                   if (!callback || typeof callback !== 'function') {
-                    callback = function () {};
+                    callback = function () { };
                   }
                   callback(
                     new T1CLibException(
@@ -816,11 +816,11 @@ export class CoreService implements AbstractCore {
     } else {
       ConsentUtil.removeConsent(
         this.connection.cfg.applicationDomain +
-          '::' +
-          this.connection.cfg.t1cApiUrl
+        '::' +
+        this.connection.cfg.t1cApiUrl
       );
       if (!callback || typeof callback !== 'function') {
-        callback = function () {};
+        callback = function () { };
       }
       callback(
         new T1CLibException(
@@ -869,8 +869,8 @@ export class CoreService implements AbstractCore {
             ConsentUtil.setConsents(
               dsRes.data.consents,
               this.connection.cfg.applicationDomain +
-                '::' +
-                this.connection.cfg.t1cApiUrl
+              '::' +
+              this.connection.cfg.t1cApiUrl
             );
             if (dsRes.data.consentState != 'APPROVED') {
               this.DsVerifyAgent(
@@ -891,13 +891,13 @@ export class CoreService implements AbstractCore {
                 const newClient = new T1CClient(this.connection.cfg);
                 newClient.core().getDevicePublicKey();
                 if (!callback || typeof callback !== 'function') {
-                  callback = function () {};
+                  callback = function () { };
                 }
                 callback(undefined, newClient);
                 return resolve(newClient);
               } else {
                 if (!callback || typeof callback !== 'function') {
-                  callback = function () {};
+                  callback = function () { };
                 }
                 callback(
                   new T1CLibException(
@@ -921,7 +921,7 @@ export class CoreService implements AbstractCore {
             if (dsErr.code === 1013) {
               if (timeout >= 16) {
                 if (!callback || typeof callback !== 'function') {
-                  callback = function () {};
+                  callback = function () { };
                 }
                 callback(
                   new T1CLibException(
@@ -951,7 +951,7 @@ export class CoreService implements AbstractCore {
               }
             } else {
               if (!callback || typeof callback !== 'function') {
-                callback = function () {};
+                callback = function () { };
               }
               callback(
                 new T1CLibException(
@@ -1042,7 +1042,21 @@ export class CoreService implements AbstractCore {
     return this.connection.get(
       this.url,
       CORE_VERSION + CORE_READERS,
-      {cardInserted: true},
+      { cardInserted: true },
+      undefined,
+      callback
+    );
+  }
+
+
+  readersExcludedByName(
+    name: string, 
+    callback?: ((error: T1CLibException, data: CardReadersResponse) => void) | undefined
+  ): Promise<CardReadersResponse> {
+    return this.connection.get(
+      this.url,
+      CORE_VERSION + CORE_READERS,
+      { cardInserted: true, excluded: name },
       undefined,
       callback
     );
@@ -1054,7 +1068,7 @@ export class CoreService implements AbstractCore {
     return this.connection.get(
       this.url,
       CORE_VERSION + CORE_READERS,
-      {cardInserted: false},
+      { cardInserted: false },
       undefined,
       callback
     );
