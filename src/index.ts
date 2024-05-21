@@ -83,4 +83,8 @@ export * from './scripts/modules/smartcards/token/pki/pkcs11/pkcs11';
 export * from './scripts/modules/x509/x509';
 export * from './scripts/modules/x509/x509Model';
 
+export * from './scripts/modules/simplesign/simpleSign';
+export * from './scripts/modules/simplesign/simpleSignModel';
+
+
 Polyfills.check();
