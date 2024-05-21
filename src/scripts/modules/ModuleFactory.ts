@@ -57,6 +57,8 @@ import {AbstractTruststore} from './truststore/truststoreModel';
 import {Truststore} from './truststore/truststore';
 import { AbstractPkcs11 } from './smartcards/token/pki/pkcs11/Pkcs11Model';
 import { Pkcs11 } from './smartcards/token/pki/pkcs11/pkcs11';
+import { SimpleSign } from './simplesign/simpleSign';
+import { AbstractSimpleSign } from './simplesign/simpleSignModel';
 
 export interface AbstractFactory {
   createEidGeneric(reader_id: string): AbstractEidGeneric;
@@ -117,6 +119,7 @@ const CONTAINER_CERTINOMIS = CONTAINER_NEW_CONTEXT_PATH + 'certinomis';
 const CONTAINER_X509 = CONTAINER_NEW_CONTEXT_PATH + 'x509';
 const CONTAINER_TRUSTSTORE = CONTAINER_NEW_CONTEXT_PATH + 'truststore';
 const CONTAINER_PKCS11 = CONTAINER_NEW_CONTEXT_PATH + 'pkcs11';
+const CONTAINER_SIMPLESIGN= CONTAINER_NEW_CONTEXT_PATH + 'simplesign';
 
 export class ModuleFactory implements AbstractFactory {
   constructor(
@@ -302,5 +305,9 @@ export class ModuleFactory implements AbstractFactory {
 
   public createPkcs11(reader_id: string): AbstractPkcs11{
     return new Pkcs11(this.url, CONTAINER_PKCS11, this.connection, reader_id);
+  }
+
+  public createSimpleSign(): AbstractSimpleSign{
+    return new SimpleSign(this.url, CONTAINER_SIMPLESIGN, this.connection);
   }
 }

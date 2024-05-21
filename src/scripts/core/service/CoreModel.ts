@@ -34,6 +34,11 @@ export interface AbstractCore {
     callback?: (error: T1CLibException, data: CardReadersResponse) => void
   ): Promise<CardReadersResponse>;
 
+  readersExcludedByName(
+    name: string,
+    callback?: (error: T1CLibException, data: CardReadersResponse) => void
+  ): Promise<CardReadersResponse>;
+
   readersCardsUnavailable(
     callback?: (error: T1CLibException, data: CardReadersResponse) => void
   ): Promise<CardReadersResponse>;
