@@ -18,7 +18,7 @@ export interface AbstractEidBE {
   allData(filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllDataResponse) => void): Promise<TokenAllDataResponse>;
   biometric(callback?: (error: T1CLibException, data: TokenBiometricDataResponse) => void): Promise<TokenBiometricDataResponse>;
   tokenData(callback?: (error: T1CLibException, data: TokenInfoResponse) => void): Promise<TokenInfoResponse>;
-  tokenVersion(callback?: (error: T1CLibException, data: TokenInfoResponse) => void): Promise<TokenVersionResponse> 
+  tokenVersion(callback?: (error: T1CLibException, data: TokenVersionResponse) => void): Promise<TokenVersionResponse> 
   address(callback?: (error: T1CLibException, data: TokenAddressResponse) => void): Promise<TokenAddressResponse>;
   picture(callback?: (error: T1CLibException, data: TokenPictureResponse) => void): Promise<TokenPictureResponse>;
   allCerts( filters?: string[] | Options, callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void): Promise<TokenAllCertsResponse>;
