@@ -9,7 +9,8 @@ import {
     BoolDataResponse,
     TokenCertificateResponse,
     DataObjectResponse, TokenInfoResponse,
-    T1CResponse, TokenAllCertsResponse, TokenCertificateExtendedResponse, TokenAllCertsExtendedResponse
+    T1CResponse, TokenAllCertsResponse, TokenCertificateExtendedResponse, TokenAllCertsExtendedResponse,
+    TokenVersionResponse
 } from "../../../../../core/service/CoreModel";
 import {RequestHandler} from '../../../../../util/RequestHandler';
 import {TokenAuthenticateOrSignData, TokenVerifyPinData} from '../../TokenCard';
@@ -35,6 +36,7 @@ export class EidBe implements AbstractEidBE {
     static ADDRESS = '/address';
     static PHOTO = '/picture';
     static TOKEN = '/info';
+    static VERSION = '/version';
     static VERIFY_PIN = '/verify-pin';
     static SIGN_DATA = '/sign';
     static SIGN_RAW_DATA = '/sign_raw';
@@ -114,6 +116,17 @@ export class EidBe implements AbstractEidBE {
         );
     }
 
+    public tokenVersion(
+        callback?: (error: T1CLibException, data: TokenInfoResponse) => void
+    ): Promise<TokenVersionResponse> {
+        return this.connection.get(
+            this.baseUrl,
+            this.tokenApp(EidBe.VERSION, true),
+            undefined,
+            undefined,
+            callback
+        );
+    }
     public picture(
         callback?: (error: T1CLibException, data: TokenPictureResponse) => void
     ): Promise<TokenPictureResponse> {
@@ -148,7 +161,6 @@ export class EidBe implements AbstractEidBE {
     }
 
     public intermediateCertificates(
-        
         callback?: (error: T1CLibException, data: TokenCertificateResponse) => void
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
@@ -169,7 +181,6 @@ export class EidBe implements AbstractEidBE {
     }
 
     public authenticationCertificate(
-        
         callback?: (error: T1CLibException, data: TokenCertificateResponse) => void
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
@@ -190,7 +201,6 @@ export class EidBe implements AbstractEidBE {
     }
 
     public nonRepudiationCertificate(
-        
         callback?: (error: T1CLibException, data: TokenCertificateResponse) => void
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
@@ -211,7 +221,6 @@ export class EidBe implements AbstractEidBE {
     }
 
     public encryptionCertificate(
-        
         callback?: (error: T1CLibException, data: TokenCertificateResponse) => void
     ): Promise<TokenCertificateResponse> {
         return this.connection.get(
@@ -232,7 +241,6 @@ export class EidBe implements AbstractEidBE {
     }
 
     public allCerts(
-      
       options?: string[] | Options,
       callback?: (error: T1CLibException, data: TokenAllCertsResponse) => void
     ): Promise<TokenAllCertsResponse> {
@@ -256,7 +264,6 @@ export class EidBe implements AbstractEidBE {
 
 
     public rootCertificateExtended(
-      
       callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
     ): Promise<TokenCertificateExtendedResponse> {
         return this.connection.get(
@@ -273,7 +280,6 @@ export class EidBe implements AbstractEidBE {
     }
 
     public intermediateCertificatesExtended(
-      
       callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
     ): Promise<TokenCertificateExtendedResponse> {
         return this.connection.get(
@@ -307,7 +313,6 @@ export class EidBe implements AbstractEidBE {
     }
 
     public nonRepudiationCertificateExtended(
-      
       callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
     ): Promise<TokenCertificateExtendedResponse> {
         return this.connection.get(
@@ -324,7 +329,6 @@ export class EidBe implements AbstractEidBE {
     }
 
     public encryptionCertificateExtended(
-      
       callback?: (error: T1CLibException, data: TokenCertificateExtendedResponse) => void
     ): Promise<TokenCertificateExtendedResponse> {
         return this.connection.get(
