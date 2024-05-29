@@ -117,7 +117,7 @@ export class EidBe implements AbstractEidBE {
     }
 
     public tokenVersion(
-        callback?: (error: T1CLibException, data: TokenInfoResponse) => void
+        callback?: (error: T1CLibException, data: TokenVersionResponse) => void
     ): Promise<TokenVersionResponse> {
         return this.connection.get(
             this.baseUrl,
