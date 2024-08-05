@@ -22,7 +22,7 @@ const CORE_INFO = '/info';
 const CORE_VERSION = '/v3';
 const CORE_DS_AGENTS = '/agents';
 const CORE_DS_TRANSACTIONS = '/ds/transactions';
-const CORE_ATR_LIST = '/atr/list';
+const CORE_ATR_LIST = '/atrs';
 const CORE_READERS = '/readers';
 const CORE_PUSH_LOGS = '/logs/push';
 
