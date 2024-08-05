@@ -445,6 +445,23 @@ export class TokenInfoResponse extends T1CResponse {
   }
 }
 
+export class TokenVersionResponse extends T1CResponse {
+  // use union type to be backwards compatible with versions before 3.6.0
+  constructor(
+    public data: TokenVersion,
+    public success: boolean,
+    public signature?: string
+  ) {
+    super(success, data, signature);
+  }
+}
+
+export class TokenVersion {
+  constructor(
+    version: string,
+  ) {}
+}
+
 /**
  * TokenInfo its info property can be both a regular tokenInfo object or a PKCS11 version of the tokenInfo object
  * We use the Union type to make sure both are accepted but keep typing.
@@ -454,7 +471,16 @@ export class TokenInfoResponse extends T1CResponse {
 export class TokenInfo {
   constructor(
     info?: BaseTokenInfo | PKCS11TokenInfo,
-    infoType?: TokenInfoType
+    infoType?: TokenInfoType,
+    module?: ModuleInfo 
+  ) {}
+}
+
+
+export class ModuleInfo {
+  constructor(
+    name?: string,
+    isHashedByToken?: boolean
   ) {}
 }
 
