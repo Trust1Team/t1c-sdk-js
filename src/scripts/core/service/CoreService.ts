@@ -2,9 +2,11 @@ import { LocalConnection } from '../client/Connection';
 import {
   AbstractCore,
   AgentsResponse,
+  AtrListResponse,
   CardReadersResponse,
   InfoResponse,
   SingleReaderResponse,
+  TransactionsResponse,
 } from './CoreModel';
 import { T1CLibException } from '../exceptions/CoreExceptions';
 import { T1CClient } from '../../..';
@@ -19,6 +21,8 @@ const CORE_VALIDATE = '/validate';
 const CORE_INFO = '/info';
 const CORE_VERSION = '/v3';
 const CORE_DS_AGENTS = '/agents';
+const CORE_DS_TRANSACTIONS = '/ds/transactions';
+const CORE_ATR_LIST = '/atrs';
 const CORE_READERS = '/readers';
 const CORE_PUSH_LOGS = '/logs/push';
 
@@ -33,6 +37,7 @@ export class CoreService implements AbstractCore {
     private url: string,
     private connection: LocalConnection
   ) { }
+
 
   pushLogs(): Promise<boolean> {
     return new Promise(
@@ -100,6 +105,24 @@ export class CoreService implements AbstractCore {
     return this.connection.get(
       this.connection.cfg.t1cApiUrl,
       CORE_VERSION + CORE_DS_AGENTS,
+      undefined,
+      undefined
+    );
+  }
+
+  getAtrList(): Promise<AtrListResponse> {
+    return this.connection.get(
+      this.connection.cfg.t1cApiUrl,
+      CORE_ATR_LIST,
+      undefined,
+      undefined
+    );
+  }
+
+  getTransactions(): Promise<TransactionsResponse> {
+    return this.connection.get(
+      this.connection.cfg.t1cApiUrl,
+      CORE_DS_TRANSACTIONS,
       undefined,
       undefined
     );
