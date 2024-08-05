@@ -45,6 +45,10 @@ export interface AbstractCore {
 
   getAgents(): Promise<AgentsResponse>;
 
+  getTransactions(): Promise<TransactionsResponse>;
+
+  getAtrList(): Promise<AtrListResponse>;
+
   getUrl(): string;
 
   getDevicePublicKey(): void;
@@ -251,6 +255,17 @@ export class Agent {
   ) {}
 }
 
+export class DeviceTransaction {
+  constructor(
+    public label: string,
+    public counter: string,
+    public module: string,
+    public useCase: string,
+    public txDate: string,
+    public tag: string,
+  ) {}
+}
+
 export class CardReader {
   constructor(
     public id: string,
@@ -258,6 +273,34 @@ export class CardReader {
     public pinpad: boolean,
     public card?: SmartCard
   ) {}
+}
+
+export class AtrListItem{
+  constructor(
+    public atr: string,
+    public module: string,
+    public moduleDescription: string,
+  ) {}
+}
+
+export class AtrListResponse extends T1CResponse {
+  constructor(
+    public data: AtrListItem[],
+    public success: boolean,
+    public signature?: string
+  ) {
+    super(success, data, signature);
+  }
+}
+
+export class TransactionsResponse extends T1CResponse {
+  constructor(
+    public data: DeviceTransaction[],
+    public success: boolean,
+    public signature?: string
+  ) {
+    super(success, data, signature);
+  }
 }
 
 export class AgentsResponse extends T1CResponse {
