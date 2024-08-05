@@ -10,14 +10,9 @@ import {
 
 export class SimpleSign implements AbstractSimpleSign {
   static CONTAINER_PREFIX = 'simplesign';
-  static GET_CERT = '/certs';
-  static ALL_CERTIFICATES = '/certs-list';
-  static CERT_ROOT = '/certs-root';
-  static CERT_AUTHENTICATION = '/certs-authentication';
-  static CERT_NON_REPUDIATION = '/certs-non-repudiation';
-  static CERT_ENCRYPTION = '/certs-encryption';
-  static CERT_INTERMEDIATE = '/certs-intermediate';
-  static INFO = '/info';
+  static UPLOAD = '';
+  static INITIALIZE = '/ctx';
+  static INFO = '';
 
   constructor(
     protected baseUrl: string,
@@ -43,7 +38,7 @@ export class SimpleSign implements AbstractSimpleSign {
     try {
       return this.connection.get(
         this.baseUrl,
-        this.app(SimpleSign.INFO),
+        this.app(SimpleSign.INITIALIZE),
         undefined,
         {
           "origin": origin
@@ -59,7 +54,7 @@ export class SimpleSign implements AbstractSimpleSign {
     try {
       return this.connection.post(
         this.baseUrl,
-        this.app(SimpleSign.INFO),
+        this.app(SimpleSign.UPLOAD),
         request,
         undefined,
         {

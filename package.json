@@ -1,6 +1,6 @@
 {
   "name": "t1c-sdk-js",
-  "version": "3.8.3",
+  "version": "3.8.4",
   "description": "Trust1Connector JavaScript SDK",
   "main": "dist/T1CSdk.js",
   "types": "lib/index.d.ts",
@@ -61,16 +61,16 @@
   "dependencies": {
     "Base64": "^1.2.0",
     "asn1js": "^3.0.5",
-    "axios": "^1.3.4",
+    "axios": "^1.7.2",
     "core-js": "^3.29.1",
-    "crypto-js": "4.2.0",
+    "crypto-js": "^4.2.0",
     "es6-object-assign": "^1.1.0",
     "jsencrypt": "^3.3.2",
-    "lodash": "^4.17.19",
+    "lodash": "^4.17.21",
     "logger-bootstrap": "^2.0.0-alpha2",
     "md5": "^2.3.0",
     "object-assign": "^4.1.1",
-    "semver": "^7.3.2",
+    "semver": "^7.6.2",
     "sha256": "^0.2.0",
     "uuid": "^9.0.1"
   },
