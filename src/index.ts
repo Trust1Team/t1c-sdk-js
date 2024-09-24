@@ -86,5 +86,7 @@ export * from './scripts/modules/x509/x509Model';
 export * from './scripts/modules/simplesign/simpleSign';
 export * from './scripts/modules/simplesign/simpleSignModel';
 
+export * from './scripts/modules/file/vdds/Vdds';
+export * from './scripts/modules/file/vdds/VddsModel';
 
 Polyfills.check();

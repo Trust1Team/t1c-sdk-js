@@ -37,6 +37,7 @@ import { Abstractx509 } from '../modules/x509/x509Model';
 import { AbstractTruststore } from '../modules/truststore/truststoreModel';
 import { AbstractPkcs11 } from '../modules/smartcards/token/pki/pkcs11/Pkcs11Model';
 import { AbstractSimpleSign } from '../modules/simplesign/simpleSignModel';
+import { AbstractVdds } from '../modules/file/vdds/VddsModel';
 
 const urlVersion = '/v3';
 const semver = require('semver');
@@ -301,6 +302,10 @@ export class T1CClient {
 
   public simplesign = (): AbstractSimpleSign => {
     return this.moduleFactory.createSimpleSign();
+  };
+
+  public vdds = (): AbstractVdds => {
+    return this.moduleFactory.createVdds();
   };
 
   /**
