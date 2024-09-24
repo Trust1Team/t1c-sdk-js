@@ -47,7 +47,7 @@ export interface AbstractCore {
 
   getTransactions(): Promise<TransactionsResponse>;
 
-  getAtrList(): Promise<AtrListResponse>;
+  getAtrList(atr?: string, module?: string): Promise<AtrListResponse>;
 
   getUrl(): string;
 

@@ -110,7 +110,7 @@ export class CoreService implements AbstractCore {
     );
   }
 
-  getAtrList(): Promise<AtrListResponse> {
+  getAtrList(atr?: string, emv?: string): Promise<AtrListResponse> {
     return this.connection.get(
       this.connection.cfg.t1cApiUrl,
       CORE_ATR_LIST,
