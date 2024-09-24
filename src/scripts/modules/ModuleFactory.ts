@@ -59,6 +59,8 @@ import { AbstractPkcs11 } from './smartcards/token/pki/pkcs11/Pkcs11Model';
 import { Pkcs11 } from './smartcards/token/pki/pkcs11/pkcs11';
 import { SimpleSign } from './simplesign/simpleSign';
 import { AbstractSimpleSign } from './simplesign/simpleSignModel';
+import { Vdds } from './file/vdds/Vdds';
+import { AbstractVdds } from './file/vdds/VddsModel';
 
 export interface AbstractFactory {
   createEidGeneric(reader_id: string): AbstractEidGeneric;
@@ -83,6 +85,7 @@ export interface AbstractFactory {
   createSafenet(reader_id?: string): AbstractSafenet;
   createEherkenning(reader_id?: string): AbstractEherkenning;
   createJcop(reader_id?: string): AbstractJcop;
+  createAirbus(reader_id?: string): AbstractAirbus;
   createAirbus(reader_id?: string): AbstractAirbus;
 }
 
@@ -120,6 +123,7 @@ const CONTAINER_X509 = CONTAINER_NEW_CONTEXT_PATH + 'x509';
 const CONTAINER_TRUSTSTORE = CONTAINER_NEW_CONTEXT_PATH + 'truststore';
 const CONTAINER_PKCS11 = CONTAINER_NEW_CONTEXT_PATH + 'pkcs11';
 const CONTAINER_SIMPLESIGN= CONTAINER_NEW_CONTEXT_PATH + 'simplesign';
+const CONTAINER_VDDS= CONTAINER_NEW_CONTEXT_PATH + 'vdds';
 
 export class ModuleFactory implements AbstractFactory {
   constructor(
@@ -309,5 +313,9 @@ export class ModuleFactory implements AbstractFactory {
 
   public createSimpleSign(): AbstractSimpleSign{
     return new SimpleSign(this.url, CONTAINER_SIMPLESIGN, this.connection);
+  }
+
+  public createVdds(): AbstractVdds {
+    return new Vdds(this.url, CONTAINER_VDDS, this.connection);
   }
 }
