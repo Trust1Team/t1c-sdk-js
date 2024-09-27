@@ -3,7 +3,7 @@ import {
     VddsExportRequest,
     VddsImportRequest,
     VddsResponse,
-    VddsViewRequest,
+    ViewVddsRequest,
 } from "./VddsModel";
 import {
     LocalConnection,
@@ -49,7 +49,7 @@ export class Vdds implements AbstractVdds {
            undefined 
         );
     }
-    view(body: VddsViewRequest): Promise<VddsResponse> {
+    view(body: ViewVddsRequest): Promise<VddsResponse> {
         let request: any = {
             exec: body.exec,
             args: body.args
