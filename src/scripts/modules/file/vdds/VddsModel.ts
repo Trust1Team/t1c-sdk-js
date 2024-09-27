@@ -82,9 +82,6 @@ type BvsSystem = {
 
 
 /**
-   * Update file details.
-   * PUT or PATCH files/:id
-   *
    * @param {BvsSystem} bvsSystem - Return vale of "getAllAvailableBvs" 
    * @param {FileDescriptor} - Descriptor of custom .ini file.
 */
@@ -95,9 +92,6 @@ interface IniVddsRequest {
 
 
 /**
-   * Update file details.
-   * PUT or PATCH files/:id
-   *
    * @param {BvsSystem} bvsSystem - Return vale of "getAllAvailableBvs" 
    * @param {FileDescriptor} - Arguments for VDDS executable
 */
