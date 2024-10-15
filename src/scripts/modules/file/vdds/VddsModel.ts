@@ -4,6 +4,7 @@ export interface AbstractVdds {
     import(body: VddsImportRequest): Promise<VddsResponse>;
     export(body: VddsExportRequest): Promise<VddsResponse>;
     view(body: VddsViewRequest): Promise<VddsResponse>;
+    exec(body: VddsGenericRequest): Promise<VddsResponse>;
 }
 
 /* Model */
@@ -23,10 +24,23 @@ export interface VddsViewRequest {
     args: Array<String> 
 }
 
+export interface VddsGenericRequest {
+    exec: ExecGenericDescriptor,
+    file?: FileDescriptor,
+    args?: Array<String>,
+}
+
 export interface ExecDescriptor {
     entity: String,
     type: String,
     relPath?: Array<String>
+}
+
+export interface ExecGenericDescriptor {
+    entity: String,
+    type: String,
+    relPath?: Array<String>
+    cmd: String,
 }
 
 export interface FileDescriptor {

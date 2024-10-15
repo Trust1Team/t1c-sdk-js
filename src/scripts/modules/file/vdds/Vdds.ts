@@ -1,6 +1,6 @@
 import {
     AbstractVdds,
-    VddsExportRequest,
+    VddsExportRequest, VddsGenericRequest,
     VddsImportRequest,
     VddsResponse,
     VddsViewRequest,
@@ -62,6 +62,21 @@ export class Vdds implements AbstractVdds {
             undefined,
             undefined,
            undefined 
+        );
+    }
+    exec(body: VddsGenericRequest): Promise<VddsResponse> {
+        let request: any = {
+            exec: body.exec,
+            file: body.file,
+            args: body.args,
+        };
+        return this.connection.post(
+            this.baseUrl,
+            this.fileApp(Vdds.EXEC),
+            body,
+            undefined,
+            undefined,
+            undefined
         );
     }
 
