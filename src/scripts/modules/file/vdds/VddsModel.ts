@@ -34,6 +34,7 @@ export interface ExecDescriptor {
     entity: String,
     type: String,
     relPath?: Array<String>
+    argFilePathQuotesDisable?: boolean,
 }
 
 export interface ExecGenericDescriptor {
@@ -41,6 +42,7 @@ export interface ExecGenericDescriptor {
     type: String,
     relPath?: Array<String>
     cmd: String,
+    argFilePathQuotesDisable?: boolean,
 }
 
 export interface FileDescriptor {

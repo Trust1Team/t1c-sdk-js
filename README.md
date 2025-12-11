@@ -97,6 +97,7 @@ $ npm install
 First make sure you have build prod
 ```shell
 npm install build-prod
+yarn build-prod
 ```
 
 To publish to NPM you need to be logged in to the Trust1Team NPM account. You can do this by running:
