@@ -9,7 +9,7 @@ module.exports = {
   },
   testMatch: ['**/*.test.ts'],
   globals: {
-    VERSION: JSON.stringify('3.8.9'),
+    VERSION: JSON.stringify('3.8.10'),
   },
   collectCoverageFrom: [
     'src/**/*.ts',
