@@ -56,7 +56,7 @@ import {X509} from './x509/x509';
 import {AbstractTruststore} from './truststore/truststoreModel';
 import {Truststore} from './truststore/truststore';
 import { AbstractPkcs11 } from './smartcards/token/pki/pkcs11/Pkcs11Model';
-import { Pkcs11 } from './smartcards/token/pki/pkcs11/pkcs11';
+import { Pkcs11 } from './smartcards/token/pki/pkcs11/Pkcs11';
 import { SimpleSign } from './simplesign/simpleSign';
 import { AbstractSimpleSign } from './simplesign/simpleSignModel';
 import { Vdds } from './file/vdds/Vdds';
