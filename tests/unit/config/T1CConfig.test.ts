@@ -1,4 +1,4 @@
-import { T1CConfig, T1CConfigOptions } from '../../../src/scripts/core/T1CConfig';
+import { T1CConfig, T1CConfigOptions, LOCALHOST_FALLBACK_URL } from '../../../src/scripts/core/T1CConfig';
 import { makeConfig, TEST_BASE_URL, TEST_PORT, TEST_JWT, TEST_VERSION } from '../../__fixtures__/mockConfig';
 
 describe('T1CConfig', () => {
@@ -33,7 +33,6 @@ describe('T1CConfig', () => {
   describe('port configuration', () => {
     it('stores the api port as string', () => {
       const cfg = makeConfig();
-      // t1cApiUrl includes the port — verify port is embedded
       expect(cfg.t1cApiUrl).toContain(TEST_PORT);
     });
 
@@ -105,6 +104,77 @@ describe('T1CConfig', () => {
       const cfg = makeConfig();
       cfg.t1cJwt = undefined;
       expect(cfg.t1cJwt).toBeUndefined();
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // localhost fallback behaviour
+  // -----------------------------------------------------------------------
+  describe('localhost fallback', () => {
+    it('automatically appends localhost as the last connection entry', () => {
+      const cfg = new T1CConfig(new T1CConfigOptions('https://custom.domain', '51983'));
+      const last = cfg.t1cApiConnections[cfg.t1cApiConnections.length - 1];
+      expect(last.url).toBe(LOCALHOST_FALLBACK_URL);
+    });
+
+    it('localhost fallback uses the same port as the primary connection', () => {
+      const customPort = '9876';
+      const cfg = new T1CConfig(new T1CConfigOptions('https://custom.domain', customPort));
+      const last = cfg.t1cApiConnections[cfg.t1cApiConnections.length - 1];
+      expect(last.url).toBe(LOCALHOST_FALLBACK_URL);
+      expect(last.port).toBe(customPort);
+    });
+
+    it('primary connection is tried first (index 0)', () => {
+      const cfg = new T1CConfig(new T1CConfigOptions('https://custom.domain', '51983'));
+      expect(cfg.t1cApiConnections[0].url).toBe('https://custom.domain');
+    });
+
+    it('does NOT duplicate localhost when primary URL is already localhost', () => {
+      const cfg = new T1CConfig(new T1CConfigOptions(LOCALHOST_FALLBACK_URL, '51983'));
+      const localhostEntries = cfg.t1cApiConnections.filter(
+        c => c.url === LOCALHOST_FALLBACK_URL
+      );
+      expect(localhostEntries.length).toBe(1);
+    });
+
+    it('does NOT add localhost when it is already present in explicit t1cApiConnections', () => {
+      const explicitConnections = [
+        { url: 'https://primary.domain', port: '51983' },
+        { url: LOCALHOST_FALLBACK_URL, port: '51983' },
+      ];
+      const opts = new T1CConfigOptions(
+        'https://primary.domain',
+        '51983',
+        undefined,
+        undefined,
+        undefined,
+        explicitConnections
+      );
+      const cfg = new T1CConfig(opts);
+      const localhostEntries = cfg.t1cApiConnections.filter(
+        c => c.url === LOCALHOST_FALLBACK_URL
+      );
+      expect(localhostEntries.length).toBe(1);
+    });
+
+    it('uses the default port for localhost fallback when no port is supplied', () => {
+      const cfg = new T1CConfig(new T1CConfigOptions('https://custom.domain'));
+      const localhostEntry = cfg.t1cApiConnections.find(
+        c => c.url === LOCALHOST_FALLBACK_URL
+      );
+      expect(localhostEntry).toBeDefined();
+      // Default port is 51983
+      expect(localhostEntry!.port).toBe('51983');
+    });
+
+    it('connections list has exactly 2 entries for a simple custom-url config', () => {
+      const cfg = new T1CConfig(new T1CConfigOptions('https://customer.example.com', '51983'));
+      expect(cfg.t1cApiConnections).toHaveLength(2);
+    });
+
+    it('LOCALHOST_FALLBACK_URL constant is https://localhost', () => {
+      expect(LOCALHOST_FALLBACK_URL).toBe('https://localhost');
     });
   });
 });

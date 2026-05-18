@@ -5,7 +5,7 @@ import { AbstractEidGeneric } from '../modules/smartcards/token/eid/generic/EidG
 import { AbstractEidBE } from '../modules/smartcards/token/eid/be/EidBeModel';
 import { AbstractAventra } from '../modules/smartcards/token/pki/aventra4/AventraModel';
 import { AbstractOberthur73 } from '../modules/smartcards/token/pki/oberthur73/OberthurModel';
-import { T1CConfig } from './T1CConfig';
+import { T1CConfig, LOCALHOST_FALLBACK_URL } from './T1CConfig';
 import { Polyfills } from '../util/Polyfills';
 import { ModuleFactory } from '../modules/ModuleFactory';
 import { AbstractIdemia } from '../modules/smartcards/token/pki/idemia82/IdemiaModel';
@@ -41,6 +41,9 @@ import { AbstractVdds } from '../modules/file/vdds/VddsModel';
 
 const urlVersion = '/v3';
 const semver = require('semver');
+
+/** Prefix used for all SDK console messages so they are easy to filter. */
+const LOG_PREFIX = '[Trust1Connector SDK]';
 
 export class T1CClient {
   private localConfig: T1CConfig;
@@ -427,6 +430,17 @@ export class T1CClient {
     return prefix + result;
   }
 
+  /**
+   * Iterates over all configured connection endpoints in order and returns
+   * the first T1CConfig that successfully reaches the Trust1Connector.
+   *
+   * Connection order is determined by T1CConfig: the customer-provided URL is
+   * always tried first; https://localhost is automatically appended as the
+   * last-resort fallback (added in T1CConfig constructor).
+   *
+   * A clear message is written to the browser console at every step so
+   * integrators can easily trace which endpoint is being used.
+   */
   private static async getActiveConnectorConfig(
     cfg: T1CConfig
   ): Promise<T1CConfig> {
@@ -435,21 +449,52 @@ export class T1CClient {
         resolve: (value: T1CConfig) => void,
         reject: (reason?: T1CLibException) => void
       ) => {
-        for (var item of cfg.t1cApiConnections) {
+        const connections = cfg.t1cApiConnections;
+
+        for (let i = 0; i < connections.length; i++) {
+          const item = connections[i];
+          const targetUrl = `${item.url}:${item.port}`;
+          const isLocalhost = item.url === LOCALHOST_FALLBACK_URL;
+
+          if (i === 0) {
+            console.log(
+              `${LOG_PREFIX} Attempting connection to configured URL: ${targetUrl}`
+            );
+          } else if (isLocalhost) {
+            console.warn(
+              `${LOG_PREFIX} Primary URL unreachable. Falling back to localhost: ${targetUrl}`
+            );
+          } else {
+            console.warn(
+              `${LOG_PREFIX} Previous URL unreachable. Trying next endpoint: ${targetUrl}`
+            );
+          }
+
           cfg.t1cApiUrl = item.url;
           cfg.t1cApiPort = item.port;
+
           // Base client
           let _client = new T1CClient(cfg);
-          // make sure the device public key is reset when starting initialization - that accomodates the use case for upgrade
+          // make sure the device public key is reset when starting initialization - that accommodates the use case for upgrade
           try {
             await _client.core().info();
+            console.log(
+              `${LOG_PREFIX} Successfully connected to: ${targetUrl}`
+            );
             resolve(cfg);
             break;
           } catch (_err) {
-            // do not fail, let it go trough the whole loop
+            console.warn(
+              `${LOG_PREFIX} Connection failed for: ${targetUrl}`
+            );
+            // do not fail, let it go through the whole loop
             continue;
           }
         }
+
+        console.error(
+          `${LOG_PREFIX} All connection attempts exhausted — Trust1Connector is not reachable.`
+        );
         reject(
           new T1CLibException(
             '112999',

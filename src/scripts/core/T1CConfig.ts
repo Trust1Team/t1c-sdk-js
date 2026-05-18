@@ -1,3 +1,9 @@
+/**
+ * The URL that the Trust1Connector uses from v4 onwards.
+ * When the configured primary URL fails, the SDK falls back to this automatically.
+ */
+export const LOCALHOST_FALLBACK_URL = 'https://localhost';
+
 export class T1CConfigOptions {
   constructor(
     public t1cApiUrl?: string,
@@ -45,9 +51,23 @@ export class T1CConfig {
         this._skipResponseValidation = options.skipResponseValidation;
       }
 
+      // Always add the primary URL+port as the first connection entry
       if (this._t1cApiUrl && this._t1cApiPort) {
         this._t1cApiConnections.push({
           url: this._t1cApiUrl,
+          port: this._t1cApiPort,
+        });
+      }
+
+      // Automatically append the localhost fallback unless:
+      // - the primary URL is already localhost (no need to duplicate it), or
+      // - localhost was explicitly included in the supplied t1cApiConnections list
+      const hasLocalhost = this._t1cApiConnections.some(
+        c => c.url === LOCALHOST_FALLBACK_URL
+      );
+      if (!hasLocalhost) {
+        this._t1cApiConnections.push({
+          url: LOCALHOST_FALLBACK_URL,
           port: this._t1cApiPort,
         });
       }
