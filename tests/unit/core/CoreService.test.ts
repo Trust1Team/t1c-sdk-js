@@ -27,20 +27,34 @@ function callbackTest<T>(
   });
 }
 
-// CoreService.info() unwraps one data layer:
-//   _get() resolves with response.data = {success, data:{...}}
-//   info() then does: ResponseHandler.response(res.data) => resolves with inner data object
-// So result is mockCoreInfoResponse.data (not the {success,data} wrapper).
+// CoreService.info() uses ._get(this.url, '/info', ...) so the request goes to:
+//   TEST_BASE_URL + '/info'  =  'https://t1c.t1t.io/info'
+// (In real usage T1CClient passes url:port, giving 'https://t1c.t1t.io:51983/info')
+//
+// info() then unwraps one data layer:
+//   _get resolves with HTTP body = {success, data:{...}}
+//   info() does ResponseHandler.response(res.data) → resolves with inner data object
+
+const INFO_URL = `${TEST_BASE_URL}/info`;
 
 describe('CoreService - info', () => {
+  it('calls the /info endpoint specifically', async () => {
+    mock.onGet(INFO_URL).reply(200, mockCoreInfoResponse);
+    const result = await makeService().info();
+    expect(result).toMatchObject(mockCoreInfoResponse.data);
+    // Confirm the /info path was the one hit, not some other endpoint
+    const calledUrls = (mock.history.get ?? []).map(r => r.url);
+    expect(calledUrls).toContain(INFO_URL);
+  });
+
   it('resolves with connector info inner data', async () => {
-    mock.onAny().reply(200, mockCoreInfoResponse);
+    mock.onGet(INFO_URL).reply(200, mockCoreInfoResponse);
     const result = await makeService().info();
     expect(result).toMatchObject(mockCoreInfoResponse.data);
   });
 
   it('resolves info via callback', async () => {
-    mock.onAny().reply(200, mockCoreInfoResponse);
+    mock.onGet(INFO_URL).reply(200, mockCoreInfoResponse);
     await callbackTest<any>(
       (cb) => { makeService().info(cb).catch(() => {}); },
       (err, data) => {
@@ -48,6 +62,14 @@ describe('CoreService - info', () => {
         expect(data).toMatchObject(mockCoreInfoResponse);
       },
     );
+  });
+
+  it('does NOT call any endpoint other than /info for the info() method', async () => {
+    mock.onGet(INFO_URL).reply(200, mockCoreInfoResponse);
+    await makeService().info();
+    const calledUrls = (mock.history.get ?? []).map(r => r.url);
+    // Every GET that happened should be the /info URL
+    calledUrls.forEach(url => expect(url).toBe(INFO_URL));
   });
 });
 
@@ -90,7 +112,7 @@ describe('CoreService - getUrl', () => {
 
 describe('CoreService - version', () => {
   it('resolves version from info endpoint', async () => {
-    mock.onAny().reply(200, mockCoreInfoResponse);
+    mock.onGet(INFO_URL).reply(200, mockCoreInfoResponse);
     const result = await makeService().version();
     expect(result).toBeDefined();
   });
