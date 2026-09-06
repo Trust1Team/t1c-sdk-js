@@ -5,7 +5,7 @@ import { AbstractEidGeneric } from '../modules/smartcards/token/eid/generic/EidG
 import { AbstractEidBE } from '../modules/smartcards/token/eid/be/EidBeModel';
 import { AbstractAventra } from '../modules/smartcards/token/pki/aventra4/AventraModel';
 import { AbstractOberthur73 } from '../modules/smartcards/token/pki/oberthur73/OberthurModel';
-import { T1CConfig, LOCALHOST_FALLBACK_URL } from './T1CConfig';
+import { T1CConfig } from './T1CConfig';
 import { Polyfills } from '../util/Polyfills';
 import { ModuleFactory } from '../modules/ModuleFactory';
 import { AbstractIdemia } from '../modules/smartcards/token/pki/idemia82/IdemiaModel';
@@ -38,6 +38,11 @@ import { AbstractTruststore } from '../modules/truststore/truststoreModel';
 import { AbstractPkcs11 } from '../modules/smartcards/token/pki/pkcs11/Pkcs11Model';
 import { AbstractSimpleSign } from '../modules/simplesign/simpleSignModel';
 import { AbstractVdds } from '../modules/file/vdds/VddsModel';
+import {
+  ensureLocalNetworkAccess,
+  isLoopbackConnectorUrl,
+  LOCAL_NETWORK_ACCESS_DENIED_CODE,
+} from '../util/LocalNetworkAccess';
 
 const urlVersion = '/v3';
 const semver = require('semver');
@@ -149,6 +154,16 @@ export class T1CClient {
           }
         } catch (error) {
           let _client = new T1CClient(cfg);
+          if (
+            error instanceof T1CLibException &&
+            error.code === LOCAL_NETWORK_ACCESS_DENIED_CODE
+          ) {
+            if (callback && typeof callback === 'function') {
+              callback(error, _client);
+            }
+            reject(error);
+            return;
+          }
           if (callback && typeof callback === 'function') {
             callback(
               new T1CLibException(
@@ -444,65 +459,64 @@ export class T1CClient {
   private static async getActiveConnectorConfig(
     cfg: T1CConfig
   ): Promise<T1CConfig> {
-    return new Promise(
-      async (
-        resolve: (value: T1CConfig) => void,
-        reject: (reason?: T1CLibException) => void
-      ) => {
-        const connections = cfg.t1cApiConnections;
+    const connections = cfg.t1cApiConnections;
 
-        for (let i = 0; i < connections.length; i++) {
-          const item = connections[i];
-          const targetUrl = `${item.url}:${item.port}`;
-          const isLocalhost = item.url === LOCALHOST_FALLBACK_URL;
+    for (let i = 0; i < connections.length; i++) {
+      const item = connections[i];
+      const targetUrl = `${item.url}:${item.port}`;
+      const isLocalhost = isLoopbackConnectorUrl(targetUrl);
 
-          if (i === 0) {
-            console.log(
-              `${LOG_PREFIX} Attempting connection to configured URL: ${targetUrl}`
-            );
-          } else if (isLocalhost) {
-            console.warn(
-              `${LOG_PREFIX} Primary URL unreachable. Falling back to localhost: ${targetUrl}`
-            );
-          } else {
-            console.warn(
-              `${LOG_PREFIX} Previous URL unreachable. Trying next endpoint: ${targetUrl}`
-            );
-          }
-
-          cfg.t1cApiUrl = item.url;
-          cfg.t1cApiPort = item.port;
-
-          // Base client
-          let _client = new T1CClient(cfg);
-          // make sure the device public key is reset when starting initialization - that accommodates the use case for upgrade
-          try {
-            await _client.core().info();
-            console.log(
-              `${LOG_PREFIX} Successfully connected to: ${targetUrl}`
-            );
-            resolve(cfg);
-            break;
-          } catch (_err) {
-            console.warn(
-              `${LOG_PREFIX} Connection failed for: ${targetUrl}`
-            );
-            // do not fail, let it go through the whole loop
-            continue;
-          }
-        }
-
-        console.error(
-          `${LOG_PREFIX} All connection attempts exhausted — Trust1Connector is not reachable.`
+      if (i === 0) {
+        console.log(
+          `${LOG_PREFIX} Attempting connection to configured URL: ${targetUrl}`
         );
-        reject(
-          new T1CLibException(
-            '112999',
-            'Failed to contact the Trust1Connector',
-            new T1CClient(cfg)
-          )
+      } else if (isLocalhost) {
+        console.warn(
+          `${LOG_PREFIX} Primary URL unreachable. Falling back to localhost: ${targetUrl}`
+        );
+      } else {
+        console.warn(
+          `${LOG_PREFIX} Previous URL unreachable. Trying next endpoint: ${targetUrl}`
         );
       }
+
+      cfg.t1cApiUrl = item.url;
+      cfg.t1cApiPort = item.port;
+
+      try {
+        // This fetch is deliberately performed before axios.info(): Chrome
+        // and Edge may block the request before it reaches Trust1Connector.
+        // Firefox and older browsers return unsupported and keep the legacy
+        // connection flow unchanged.
+        if (isLocalhost) {
+          await ensureLocalNetworkAccess(targetUrl);
+        }
+
+        const client = new T1CClient(cfg);
+        await client.core().info();
+        console.log(
+          `${LOG_PREFIX} Successfully connected to: ${targetUrl}`
+        );
+        return cfg;
+      } catch (error) {
+        if (
+          error instanceof T1CLibException &&
+          error.code === LOCAL_NETWORK_ACCESS_DENIED_CODE
+        ) {
+          throw error;
+        }
+        console.warn(`${LOG_PREFIX} Connection failed for: ${targetUrl}`);
+        // Do not fail; let the loop try the next configured endpoint.
+      }
+    }
+
+    console.error(
+      `${LOG_PREFIX} All connection attempts exhausted — Trust1Connector is not reachable.`
+    );
+    throw new T1CLibException(
+      '112999',
+      'Failed to contact the Trust1Connector',
+      new T1CClient(cfg)
     );
   }
 }

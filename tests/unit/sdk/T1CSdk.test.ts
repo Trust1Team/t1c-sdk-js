@@ -113,3 +113,36 @@ describe('T1CClient.initialize - localhost fallback', () => {
     expect(localhostIndex).toBeGreaterThan(primaryIndex);
   });
 });
+
+describe('T1CClient.initialize - Local Network Access', () => {
+  it('surfaces an explicit browser denial instead of a generic connection error', async () => {
+    const originalDescriptor = Object.getOwnPropertyDescriptor(
+      navigator,
+      'permissions'
+    );
+    Object.defineProperty(navigator, 'permissions', {
+      configurable: true,
+      value: {
+        query: jest.fn().mockResolvedValue({ state: 'denied' }),
+      },
+    });
+    mock.onGet(PRIMARY_INFO_URL).networkError();
+    mockDeviceKey();
+
+    try {
+      await expect(T1CClient.initialize(makeConfig())).rejects.toMatchObject({
+        code: '113001',
+        description: expect.stringContaining('browser site settings'),
+      });
+
+      const calledUrls = (mock.history.get ?? []).map(request => request.url);
+      expect(calledUrls.some(url => url === LOCALHOST_INFO_URL)).toBe(false);
+    } finally {
+      if (originalDescriptor) {
+        Object.defineProperty(navigator, 'permissions', originalDescriptor);
+      } else {
+        delete (navigator as any).permissions;
+      }
+    }
+  });
+});

@@ -1,5 +1,5 @@
 import {ObjectUtil} from '../../util/ObjectUtil';
-import {T1CClient} from "../T1CSdk";
+import type {T1CClient} from "../T1CSdk";
 /**
  * Generic T1CLib exception
  */

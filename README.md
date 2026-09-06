@@ -22,6 +22,18 @@ $ npm i trust1connector@2.4.3
 ```
 > __For security reasons v1 and v2 are deprecated__
 
+## Browser Local Network Access
+
+When the SDK falls back to `https://localhost`, Chrome or Edge may ask the user
+to allow Local Network Access for the website. `T1CClient.initialize()` triggers
+that browser decision before the first connector API call.
+
+If access was explicitly denied, initialization rejects with error code
+`113001` and guidance to re-enable Local Network Access in the browser's site
+settings. This permission is independent from CORS. Applications that need to
+request it from a user-initiated action can call the exported
+`ensureLocalNetworkAccess(connectorUrl)` helper directly before initialization.
+
 ## Community
 We're present on Gitter in the following room:
 [Trust1Connector-gitter]

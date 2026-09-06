@@ -13,6 +13,7 @@ export * from './scripts/util/Polyfills';
 export * from './scripts/util/UrlUtil';
 export * from './scripts/util/Utils';
 export * from './scripts/util/ConnectorKeyUtil';
+export * from './scripts/util/LocalNetworkAccess';
 
 export * from './scripts/modules/smartcards/payment/PaymentCard';
 export * from './scripts/modules/smartcards/token/TokenCard';
