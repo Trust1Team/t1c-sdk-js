@@ -451,6 +451,6 @@ export class EidBe implements AbstractEidBE {
     protected getBulkSignQueryParams(bulk?: boolean): any {
         if(bulk) {
             return {bulk: true};
-        }
+        } else return {bulk: false};
     }
 }
