@@ -166,12 +166,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     }
 
     resetBulkPin(module: string, callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-        if (semver.lt(semver.coerce(this.connection.cfg.version).version, '3.5.0')) {
-            return this.connection.get(this.baseUrl, this.paymentApp(module, PaymentGeneric.RESET_BULK_PIN, undefined, false), undefined, undefined, callback);
-        } else {
-            // @ts-ignore
-            return this.connection.post(this.baseUrl, this.paymentApp(module, PaymentGeneric.RESET_BULK_PIN), null, undefined, undefined, callback);
-        }
+        return this.connection.get(this.baseUrl, this.paymentApp(module, PaymentGeneric.RESET_BULK_PIN, undefined, false), undefined, undefined, callback);
     }
 
     sign(module: string, body: PaymentSignData, bulk?: boolean, callback?: (error: T1CLibException, data: PaymentSignResponse) => void): Promise<PaymentSignResponse> {
@@ -186,9 +181,7 @@ export class PaymentGeneric implements AbstractPaymentGeneric {
     }
 
      protected getBulkSignQueryParams(bulk?: boolean): any {
-        if(bulk) {
-            return {bulk: true};
-        }
+        return {bulk: bulk === true};
     }
 
     // resolves the reader_id in the base URL

@@ -164,12 +164,7 @@ export class Camerfirma implements AbstractCamerfirma {
   }
 
   resetBulkPin(callback?: (error: T1CLibException, data: BoolDataResponse) => void): Promise<BoolDataResponse> {
-    if (semver.gte(semver.coerce(this.connection.cfg.version).version, "3.5.0")) {
-      return this.connection.get(this.baseUrl, this.tokenApp(Camerfirma.RESET_BULK_PIN, false), undefined, undefined, callback);
-    } else {
-      // @ts-ignore
-      return this.connection.post(this.baseUrl, this.tokenApp(Camerfirma.RESET_BULK_PIN), null, undefined, undefined, callback);
-    }
+    return this.connection.get(this.baseUrl, this.tokenApp(Camerfirma.RESET_BULK_PIN, false), undefined, undefined, callback);
   }
 
   // resolves the reader_id in the base URL
@@ -187,8 +182,6 @@ export class Camerfirma implements AbstractCamerfirma {
 
 
   protected getBulkSignQueryParams(bulk?: boolean): any {
-    if (bulk) {
-      return { bulk: true };
-    }
+    return { bulk: bulk === true };
   }
 }

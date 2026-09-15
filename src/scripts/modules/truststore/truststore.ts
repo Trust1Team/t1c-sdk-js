@@ -113,12 +113,9 @@ export class Truststore implements AbstractTruststore {
 
   async resetBulkPin(): Promise<GenericT1CResponse<boolean>> {
     try {
-      return this.connection.post(
+      return this.connection.get(
         this.baseUrl,
         this.app(Truststore.RESET_BULK_PIN),
-        // @ts-ignore
-        null,
-        undefined,
         undefined,
         undefined
       );
@@ -236,9 +233,7 @@ export class Truststore implements AbstractTruststore {
   }
 
   protected getBulkSignQueryParams(bulk?: boolean): any {
-    if (bulk) {
-      return {bulk: true};
-    }
+    return {bulk: bulk === true};
   }
 
   protected app(path?: string): string {

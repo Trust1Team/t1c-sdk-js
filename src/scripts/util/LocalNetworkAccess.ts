@@ -52,7 +52,7 @@ async function queryLocalNetworkAccess(): Promise<{
     try {
       const status = await permissions.query({
         name: permission,
-      } as PermissionDescriptor);
+      } as unknown as PermissionDescriptor);
       return {
         state: status.state as LocalNetworkAccessState,
         permission,
