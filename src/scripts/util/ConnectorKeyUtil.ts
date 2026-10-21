@@ -1,4 +1,7 @@
-import { JSEncrypt } from "jsencrypt";
+// jsencrypt >= 3.5 exports the class itself from its CommonJS build (no named JSEncrypt export),
+// so resolve the constructor for every build variant the bundler may pick
+const JSEncryptModule = require("jsencrypt");
+const JSEncrypt: typeof import("jsencrypt").JSEncrypt = JSEncryptModule.JSEncrypt || JSEncryptModule.default || JSEncryptModule;
 const CryptoJS = require("crypto-js");
 const semver = require('semver');
 
